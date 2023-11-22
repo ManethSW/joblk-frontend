@@ -53,4 +53,12 @@ body {
   height: 100px;
   width: 100px;
   color: #1DBF73;
+  margin-top: -150px;
+}
+
+@media only screen and (max-width: 780px) {
+  .loading {
+    height: 75px;
+    width: 75px;
+  }
 }
