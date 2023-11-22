@@ -6,7 +6,7 @@ import Input from "../../Input/Input";
 import useInputValidation from "../../../hooks/UserInputValidation";
 import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import registerStyles from "../Register.module.css";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9]{3,15}$/;
@@ -34,7 +34,7 @@ const Register = ({ selectedUser }) => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    await router.push('/profile');
+    await router.push("/profile");
 
     // if (
     //   usernameValid === "valid" &&
@@ -116,7 +116,9 @@ const Register = ({ selectedUser }) => {
       <div>
         <div className={registerStyles.title}>Register</div>
         <div className={registerStyles.subtitle}>Enter your details below</div>
-        <div className={styles.bodycontainer}>
+        <div
+          className={`${styles.bodycontainer} ${registerStyles.bodycontainer}`}
+        >
           <GoogleLoginButton />
           <div className={styles.dividercontainer}>
             <div></div>
@@ -165,14 +167,17 @@ const Register = ({ selectedUser }) => {
             <div className={styles.register}>
               {/* If the loading is set to true display with the loading */}
               {isLoading ? (
-                <button type="submit" className={styles.button}>
+                <button type="submit" className={registerStyles.button}>
                   <span className="loading loading-spinner loading-md"></span>
                   Register
                 </button>
               ) : (
-                <button type="submit" className={registerStyles.button}>
-                  Register
-                </button>
+                // <button type="submit" className={registerStyles.button}>
+                //   Register
+                // </button>
+                <div onClick={handleRegister} className={`${registerStyles.button} ${styles.button}`}>
+                  <button type="submit">Register</button>
+                </div>
               )}
             </div>
           </form>

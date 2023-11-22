@@ -50,38 +50,55 @@
     margin-bottom: 35px;
 }
 
-.agreeterms input[type="checkbox"] {
-    display: none;
+.button {
+    width: fit-content;
 }
 
-.agreeterms input[type="checkbox"]+label {
-    position: relative;
-    padding-left: 35px;
-    cursor: pointer;
-    font-family: 'tripsans-bold';
-    color: rgba(0, 0, 0, 0.75);
+@media only screen and (max-width: 1440px) {
+    .bodycontainer {
+        width: 700px;
+        gap: 25px;
+    }
+    
+    .google {
+        padding: 10px 0px;
+        align-items: center;
+    }
+    
+    .googleicon {
+        width: 15px;
+    }
+    
+    .google p {
+        font-size: 14px;
+    }
+    
+    .dividercontainer {
+        padding: 0 20px;
+    }
+    
+    .dividercontainer p {
+        font-size: 14px;
+    }
+    
+    .inputcontainer {
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .button {
+        width: fit-content;
+    }
 }
 
-.agreeterms input[type="checkbox"]+label::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #000;
-    border-radius: 5px;
-}
-
-.agreeterms input[type="checkbox"]:checked+label::after {
-    content: '';
-    position: absolute;
-    left: 7px;
-    top: 3px;
-    width: 8px;
-    height: 12px;
-    border: solid rgba(0, 0, 0, 1);
-    border-width: 0 3px 3px 0;
-    border-radius: 3px;
-    transform: rotate(45deg);
+@media only screen and (max-width: 780px) {
+    .bodycontainer {
+        width: 90%;
+        gap: 25px;
+    }
+    
+    .inputcontainer {
+        display: flex;
+        flex-direction: column;
+    }
 }

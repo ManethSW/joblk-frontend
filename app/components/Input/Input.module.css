@@ -10,6 +10,7 @@
     font-size: 18px;
     padding: 0px 10px;
 }
+
 .input input {
     width: 100%;
     padding: 15px 30px;
@@ -26,4 +27,19 @@
     width: 20px;
     top: 32.5px;
     right: 20px;
+}
+
+@media only screen and (max-width: 1440px) {
+    .input label {
+        font-size: 16px;
+    }
+
+    .input input {
+        padding: 12.5px 29px;
+        font-size: 14px;
+    }
+
+    .validcheck {
+        top: 27.5px;
+    }
 }
