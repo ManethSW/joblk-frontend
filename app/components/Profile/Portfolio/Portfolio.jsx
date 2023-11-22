@@ -106,7 +106,7 @@ const Portfolio = () => {
         className={styles.buttoncontainer}
         onClick={() => setIsFormOpen(!isFormOpen)}
       >
-        <i class="fa-solid fa-plus"></i>
+        <i className="fa-solid fa-plus"></i>
         <h3 className={styles.addProject}>Add new project</h3>
       </div>
 
@@ -166,16 +166,16 @@ const Portfolio = () => {
                     />
                     <div className={styles.imageactions}>
                       <button onClick={() => handleImageDelete(index)}>
-                        <i class="fa-solid fa-trash"></i>
+                        <i className="fa-solid fa-trash"></i>
                       </button>
                       <button onClick={() => handleImageEdit(index)}>
-                        <i class="fa-solid fa-pen"></i>
+                        <i className="fa-solid fa-pen"></i>
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className={styles.placeholderImage}>
-                    <i class="fa-solid fa-question"></i>
+                    <i className="fa-solid fa-question"></i>
                   </div>
                 )}
               </div>

@@ -43,7 +43,7 @@ const NavBar = () => {
         {isLoggedIn ? (
           <>
             <div className={styles.userContainer}>
-              <i class="fa-solid fa-user"></i>
+              <i className="fa-solid fa-user"></i>
               <p>Thinal</p>
             </div>
           </>

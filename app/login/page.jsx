@@ -8,6 +8,7 @@ import useInputValidation from "../hooks/UserInputValidation";
 import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from 'next/navigation';
+// import { fetch } from 'node-fetch';
 
 const USERNAME_OR_EMAIL_REGEX =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9]{3,15}$/;
@@ -26,39 +27,84 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    router.push('/profile');
-    // if (usernameOrEmailValid === "valid" && passwordValid === "valid") {
-    //   const loginUrl =
-    //     "https://1e33-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/auth/login";
-    //   const headers = {
-    //     auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
-    //   };
-    //   const data = {
-    //     email: usernameOrEmail,
-    //     password: password,
-    //   };
+    if (usernameOrEmailValid === "valid" && passwordValid === "valid") {
+      const loginUrl =
+        "https://9f1b-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/auth/login";
+      const headers = {
+        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+      };
+      const data = {
+        email: usernameOrEmail,
+        password: password,
+      };
 
-    //   try {
-    //     const loginResponse = await axios.post(loginUrl, data, { headers });
-    //     console.log(loginResponse.data);
-    //     const newHeaders = {
-    //       auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
-    //     };
-    //     const userUrl = `https://1e33-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
-    //     const userResponse = await axios.get(userUrl, {
-    //       headers: newHeaders,
-    //     });
-    //     console.log(userResponse.data);
-    //     setUser({
-    //       ...user,
-    //       username: userResponse.data.username,
-    //       email: userResponse.data.email,
-    //     });
-    //   } catch (error) {
-    //     console.error(error.response.data);
-    //   }
-    // }
+      try {
+        const loginResponse = await axios.post(loginUrl, data, { headers, withCredential: true });
+        console.log(loginResponse);
+        // const userUrl = `https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
+        // const userResponse = await axios.get(userUrl, {
+        //   headers: headers,
+        //   withCredentials: true
+        // });
+        // console.log(userResponse.data);
+        // setUser({
+        //   ...user,
+        //   username: userResponse.data.username,
+        //   email: userResponse.data.email,
+        // });
+        // router.push('/profile');
+      } catch (error) {
+        console.error(error.response);
+      }
+    }
   };
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   if (usernameOrEmailValid === "valid" && passwordValid === "valid") {
+  //     const loginUrl =
+  //       "https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/auth/login";
+  //     const headers = {
+  //       'auth_token': 'LASDLkoasnkdnawndkansjNKJFNKJANSKN',
+  //     };
+  //     const data = {
+  //       email: usernameOrEmail,
+  //       password: password,
+  //     };
+  
+  //     try {
+  //       const loginResponse = await fetch(loginUrl, {
+  //         method: 'POST',
+  //         headers: headers,
+  //         body: JSON.stringify(data),
+  //         credentials: 'include',
+  //       });
+  //       const loginData = await loginResponse.json();
+  //       console.log(loginData);
+  
+  //       const newHeaders = {
+  //         'auth_token': 'LASDLkoasnkdnawndkansjNKJFNKJANSKN',
+  //       };
+  //       const userUrl = `https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
+  //       const userResponse = await fetch(userUrl, {
+  //         method: 'GET',
+  //         headers: newHeaders,
+  //         credentials: 'include',
+  //       });
+  //       const userData = await userResponse.json();
+  //       console.log(userData);
+  
+  //       setUser({
+  //         ...user,
+  //         username: userData.username,
+  //         email: userData.email,
+  //       });
+  //       router.push('/profile');
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  // };
 
   const GoogleLoginButton = () => {
     const handleGoogleLogin = useGoogleLogin({

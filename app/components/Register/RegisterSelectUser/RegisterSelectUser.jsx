@@ -69,7 +69,7 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
         )}
         <div onClick={handleNextClick} className={styles.button}>
           <button>Next</button>
-          <i class="fa-solid fa-arrow-right"></i>
+          <i className="fa-solid fa-arrow-right"></i>
         </div>
       </div>
     </div>

@@ -1,6 +1,17 @@
-import Image from "next/image";
-import Navbar from "./components/Navbar/Navbar";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return <main className=""></main>;
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/register");
+  }, [router]);
+
+  return (
+    <main className="flex items-center justify-center min-h-screen">
+      <span className="loading loading-spinner loading-lg"></span>
+    </main>
+  );
 }
