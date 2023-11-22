@@ -4,29 +4,40 @@
 
 
 @font-face {
-  font-family: 'tripsans-bold'; /* you can choose any name */
-  src: url('../public/fonts/TripSans-Bold.ttf'); /* replace with your font file path */
+  font-family: 'tripsans-bold';
+  /* you can choose any name */
+  src: url('../public/fonts/TripSans-Bold.ttf');
+  /* replace with your font file path */
 }
 
 @font-face {
-  font-family: 'tripsans-medium'; /* you can choose any name */
-  src: url('../public/fonts/TripSans-Medium.ttf'); /* replace with your font file path */
+  font-family: 'tripsans-medium';
+  /* you can choose any name */
+  src: url('../public/fonts/TripSans-Medium.ttf');
+  /* replace with your font file path */
 }
 
 @font-face {
-  font-family: 'tripsans-regular'; /* you can choose any name */
-  src: url('../public/fonts/TripSans-Regular.ttf'); /* replace with your font file path */
+  font-family: 'tripsans-regular';
+  /* you can choose any name */
+  src: url('../public/fonts/TripSans-Regular.ttf');
+  /* replace with your font file path */
 }
 
 @font-face {
-  font-family: 'tripsans-ultra'; /* you can choose any name */
-  src: url('../public/fonts/TripSans-Ultra.ttf'); /* replace with your font file path */
+  font-family: 'tripsans-ultra';
+  /* you can choose any name */
+  src: url('../public/fonts/TripSans-Ultra.ttf');
+  /* replace with your font file path */
 }
 
 @font-face {
-  font-family: 'tripsansmono-regular'; /* you can choose any name */
-  src: url('../public/fonts/TripSansMono-Regular.ttf'); /* replace with your font file path */
+  font-family: 'tripsansmono-regular';
+  /* you can choose any name */
+  src: url('../public/fonts/TripSansMono-Regular.ttf');
+  /* replace with your font file path */
 }
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -36,4 +47,10 @@
 html,
 body {
   max-width: 100vw;
+}
+
+.loading {
+  height: 100px;
+  width: 100px;
+  color: #1DBF73;
 }

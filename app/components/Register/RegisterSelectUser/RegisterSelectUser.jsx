@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./RegisterSelectUser.module.css";
+import registerStyles from "../Register.module.css";
 
 const UserCard = ({ title, description, onClick, isSelected }) => {
   return (
@@ -32,9 +33,9 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.title}>Register</div>
-      <div className={styles.subtitle}>Please Enter Key Details</div>
-      <div className={styles.bodycontainer}>
+      <div className={registerStyles.title}>Register</div>
+      <div className={registerStyles.subtitle}>Please select user type</div>
+      <div className={`${registerStyles.bodycontainer} ${styles.bodycontainer}`}>
         <div className={styles.bodycontent}>
           <UserCard
             title="Freelancer"
@@ -50,7 +51,7 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
           />
         </div>
         {showError && (
-          <div role="alert" className="alert alert-error">
+          <div role="alert" className={`${styles.alertbox} alert alert-error`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="stroke-current shrink-0 h-6 w-6"
@@ -64,10 +65,10 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>Please select a user type before proceeding.</span>
+            <span>Please select a user type before proceeding</span>
           </div>
         )}
-        <div onClick={handleNextClick} className={styles.button}>
+        <div onClick={handleNextClick} className={registerStyles.button}>
           <button>Next</button>
           <i className="fa-solid fa-arrow-right"></i>
         </div>

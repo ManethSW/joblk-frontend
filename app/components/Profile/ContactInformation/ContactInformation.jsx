@@ -135,11 +135,9 @@ const ContactInformation = () => {
 
       setOtp(newOtp);
 
-      // If all 6 characters are entered, automatically submit and save
       if (newOtp.join("").length === 6) {
         onSubmit(newOtp.join(""));
       } else if (event.target.value.length === 1) {
-        // Focus on the next input field
         if (elementIndex < 5) {
           otpInputRefs[elementIndex + 1].current.focus();
         }
@@ -180,7 +178,7 @@ const ContactInformation = () => {
       </div>
     );
   };
-  
+
   return (
     <div className={styles.bodycontent}>
       {toastVisible && (

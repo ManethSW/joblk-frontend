@@ -11,3 +11,20 @@
   top: 25%;
   width: 15%;
 }
+
+/* media query for mobile responsive */
+@media only screen and (max-width: 1500px) { 
+  .characterone {
+    position: absolute;
+    bottom: -25px;
+    left: 0;
+    width: 20%;
+  }
+  
+  .codingicons {
+    position: absolute;
+    right: 5%;
+    top: 35%;
+    width: 15%;
+  }
+}

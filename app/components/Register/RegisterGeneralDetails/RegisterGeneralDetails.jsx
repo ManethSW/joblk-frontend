@@ -7,6 +7,7 @@ import useInputValidation from "../../../hooks/UserInputValidation";
 import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from 'next/navigation';
+import registerStyles from "../Register.module.css";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9]{3,15}$/;
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -113,8 +114,8 @@ const Register = ({ selectedUser }) => {
   return (
     <GoogleOAuthProvider clientId="286854776272-tij0a772behg9qnd0v0667bga8rqj0p2.apps.googleusercontent.com">
       <div>
-        <div className={styles.title}>Register</div>
-        <div className={styles.subtitle}>Enter your details below</div>
+        <div className={registerStyles.title}>Register</div>
+        <div className={registerStyles.subtitle}>Enter your details below</div>
         <div className={styles.bodycontainer}>
           <GoogleLoginButton />
           <div className={styles.dividercontainer}>
@@ -169,7 +170,7 @@ const Register = ({ selectedUser }) => {
                   Register
                 </button>
               ) : (
-                <button type="submit" className={styles.button}>
+                <button type="submit" className={registerStyles.button}>
                   Register
                 </button>
               )}
