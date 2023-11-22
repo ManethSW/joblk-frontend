@@ -114,23 +114,24 @@ const NavBar = () => {
               <Link href="/">Home</Link>
             </li>
             <li className={styles.link}>
-              <Link href="/jobs">Jobs</Link>
+              <Link href="/">Jobs</Link>
             </li>
             <li className={styles.link}>
-              <Link href="/freelancers">Freelancers</Link>
+              <Link href="/">Freelancers</Link>
             </li>
             <li className={styles.link}>
-              <Link href="/about">About Us</Link>
+              <Link href="/">About Us</Link>
             </li>
-            <li className={styles.link}>
+            <li className={`${styles.action} ${styles.link}`}>
               <Link href="/login">Login</Link>
             </li>
-            <li className={styles.link}>
+            <li className={`${styles.action} ${styles.link}`}>
               <Link href="/register">Sign Up</Link>
             </li>
           </ul>
         </div>
       </nav>
+      <div className={`${isOpen ? styles.overlay : ''}`}></div>
     </div>
   );
 };
