@@ -7,23 +7,27 @@ import RegisterInput from "../components/Input/Input";
 import useInputValidation from "../hooks/UserInputValidation";
 import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 // import { fetch } from 'node-fetch';
+import registerStyles from "../components/Register/Register.module.css";
+import registerGeneralStyles from "../components/Register/RegisterGeneralDetails/RegisterGeneralDetails.module.css";
+import LoginRegisterBackground from "../components/LogRegBackground/LogRegBackground";
 
-const USERNAME_OR_EMAIL_REGEX =
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9]{3,15}$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX =
   // /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Login = () => {
   const router = useRouter();
-  const [usernameOrEmail, usernameOrEmailValid, validateUsernameOrEmail] =
-    useInputValidation("", (value) => USERNAME_OR_EMAIL_REGEX.test(value));
+  const [email, emailValid, validateEmail] = useInputValidation("", (value) =>
+    EMAIL_REGEX.test(value)
+  );
   const [password, passwordValid, validatePassword] = useInputValidation(
     "",
     (value) => PASSWORD_REGEX.test(value)
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,12 +38,15 @@ const Login = () => {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
       const data = {
-        email: usernameOrEmail,
+        email: email,
         password: password,
       };
 
       try {
-        const loginResponse = await axios.post(loginUrl, data, { headers, withCredential: true });
+        const loginResponse = await axios.post(loginUrl, data, {
+          headers,
+          withCredential: true,
+        });
         console.log(loginResponse);
         // const userUrl = `https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
         // const userResponse = await axios.get(userUrl, {
@@ -87,8 +94,8 @@ const Login = () => {
     });
 
     return (
-      <div className={styles.google} onClick={handleGoogleLogin}>
-        <div className={styles.googleicon}>
+      <div className={registerGeneralStyles.google} onClick={handleGoogleLogin}>
+        <div className={registerGeneralStyles.googleicon}>
           <Image
             src="/google.svg"
             alt="Logo"
@@ -105,23 +112,29 @@ const Login = () => {
   return (
     <GoogleOAuthProvider clientId="286854776272-tij0a772behg9qnd0v0667bga8rqj0p2.apps.googleusercontent.com">
       <div>
-        <h1 className={styles.formtitle}>Log In</h1>
-        <div className={styles.registerform}>
+        <LoginRegisterBackground></LoginRegisterBackground>
+        <div className={registerStyles.title}>Login</div>
+        <div className={registerStyles.subtitle}>
+          Enter your credentials below
+        </div>
+        <div
+          className={`${styles.bodycontainer} ${registerGeneralStyles.bodycontainer} ${registerStyles.bodycontainer}`}
+        >
           <GoogleLoginButton />
-          <div className={styles.dividercontainer}>
+          <div className={registerGeneralStyles.dividercontainer}>
             <div></div>
             <p>or</p>
             <div></div>
           </div>
           <form onSubmit={handleLogin}>
-            <div className={styles.inputcontainer}>
+            <div className={`${styles.inputcontainer} ${registerGeneralStyles.inputcontainer}`}>
               <RegisterInput
-                id="usernameOrEmail"
-                type="text"
-                placeholder="Enter your username or email"
-                value={usernameOrEmail}
-                isValid={usernameOrEmailValid}
-                onChange={validateUsernameOrEmail}
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                isValid={emailValid}
+                onChange={validateEmail}
               />
               <RegisterInput
                 id="password"
@@ -132,10 +145,22 @@ const Login = () => {
                 onChange={validatePassword}
               />
             </div>
-            <div className={styles.register}>
+            {/* <div className={registerGeneralStyles.register}>
               <button type="submit" className={styles.actionButton}>
                 Log In
               </button>
+            </div> */}
+            <div>
+              {isLoading ? (
+                <button type="submit" className={`${styles.button} ${registerStyles.button}`}>
+                  <span className="loading loading-spinner loading-md"></span>
+                  Register
+                </button>
+              ) : (
+                <div onClick={handleLogin} className={`${styles.button} ${registerStyles.button}`}>
+                  <button type="submit">Login</button>
+                </div>
+              )}
             </div>
           </form>
         </div>

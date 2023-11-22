@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./Navbar.module.css";
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,7 +66,11 @@ const NavBar = () => {
           )}
         </div>
       </nav>
-      <nav className={`${isOpen ? styles.navbarmobileopen : styles.navbarmobileclose} ${styles.navbarmobile}`}>
+      <nav
+        className={`${
+          isOpen ? styles.navbarmobileopen : styles.navbarmobileclose
+        } ${styles.navbarmobile}`}
+      >
         <div className={styles.navbarmobileheader}>
           <div className={styles.logo}>
             <Image
@@ -80,7 +84,11 @@ const NavBar = () => {
           <div className={styles.menuToggle}>
             <label className="menu swap swap-rotate">
               {/* this hidden checkbox controls the state */}
-              <input type="checkbox" checked={isOpen} onChange={handleMenuToggle}/>
+              <input
+                type="checkbox"
+                checked={isOpen}
+                onChange={handleMenuToggle}
+              />
 
               {/* hamburger icon */}
               <svg
@@ -107,31 +115,45 @@ const NavBar = () => {
           </div>
         </div>
         <div
-          className={`${styles.linksContainer} ${isOpen ? styles.open : styles.close}`}
+          className={`${styles.linksContainer} ${
+            isOpen ? styles.open : styles.close
+          }`}
         >
           <ul>
             <li className={styles.link}>
-              <Link href="/">Home</Link>
+              <Link href="/" onClick={() => setIsOpen(false)}>
+                Home
+              </Link>
             </li>
             <li className={styles.link}>
-              <Link href="/">Jobs</Link>
+              <Link href="/" onClick={() => setIsOpen(false)}>
+                Jobs
+              </Link>
             </li>
             <li className={styles.link}>
-              <Link href="/">Freelancers</Link>
+              <Link href="/" onClick={() => setIsOpen(false)}>
+                Freelancers
+              </Link>
             </li>
             <li className={styles.link}>
-              <Link href="/">About Us</Link>
+              <Link href="/" onClick={() => setIsOpen(false)}>
+                About Us
+              </Link>
             </li>
             <li className={`${styles.action} ${styles.link}`}>
-              <Link href="/login">Login</Link>
+              <Link href="/login" onClick={() => setIsOpen(false)}>
+                Login
+              </Link>
             </li>
             <li className={`${styles.action} ${styles.link}`}>
-              <Link href="/register">Sign Up</Link>
+              <Link href="/register" onClick={() => setIsOpen(false)}>
+                Sign Up
+              </Link>
             </li>
           </ul>
         </div>
       </nav>
-      <div className={`${isOpen ? styles.overlay : ''}`}></div>
+      <div className={`${isOpen ? styles.overlay : ""}`}></div>
     </div>
   );
 };

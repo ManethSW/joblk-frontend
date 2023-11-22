@@ -175,7 +175,7 @@ const Register = ({ selectedUser }) => {
                 // <button type="submit" className={registerStyles.button}>
                 //   Register
                 // </button>
-                <div onClick={handleRegister} className={`${registerStyles.button} ${styles.button}`}>
+                <div onClick={handleRegister} className={registerStyles.button}>
                   <button type="submit">Register</button>
                 </div>
               )}

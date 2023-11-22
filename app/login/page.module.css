@@ -1,64 +1,5 @@
-.formtitle {
-    font-size: 30px;
-    font-family: 'tripsans-ultra';
-    color: #1DBF73;
-    text-align: center;
-    margin: 75px 0px 25px 0px;
-}
-
-.registerform {
-    overflow: visible!important;
+.bodycontainer {
     width: 500px;
-    height: auto;
-    margin: 0px auto;
-    padding: 50px;
-    border-radius: 34px;
-    background: #FFFDFA;
-    box-shadow: 0px 20px 43px 0px rgba(0, 0, 0, 0.10);
-    display: flex;
-    flex-direction: column;
-    row-gap: 35px;
-}
-
-.google {
-    height: auto;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    column-gap: 15px;
-    padding: 12.5px 0px;
-    width: 100%;
-    border: 2px solid rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-.googleicon {
-    width: 20px;
-}
-
-.google p {
-    font-family: 'tripsans-medium';
-    font-size: 16px;
-}
-
-.dividercontainer {
-    display: flex;
-    align-items: center;
-    column-gap: 5px;
-    padding: 0 25px;
-}
-
-.dividercontainer div {
-    width: 100%;
-    height: 2px;
-    background: rgba(0, 0, 0, 0.25);
-}
-
-.dividercontainer p {
-    color: rgba(0, 0, 0, 0.25);
-    font-family: 'tripsans-bold';
-    margin-bottom: 5px;
 }
 
 .inputcontainer {
@@ -68,62 +9,30 @@
     margin-bottom: 35px;
 }
 
-.agreeterms input[type="checkbox"] {
-    display: none;
-  }
-  
-  /* Create a new box to replace the checkbox */
-  .agreeterms input[type="checkbox"] + label {
-    position: relative;
-    padding-left: 35px;
-    cursor: pointer;
-    font-family: 'tripsans-bold';
-    color: rgba(0, 0, 0, 0.75);
-  }
-  
-  .agreeterms input[type="checkbox"] + label::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #000;
-    border-radius: 5px;
-  }
-
-  .agreeterms input[type="checkbox"]:checked + label::after {
-    content: '';
-    position: absolute;
-    left: 7px; /* Adjust as needed */
-    top: 3px; /* Adjust as needed */
-    width: 8px; /* Adjust as needed */
-    height: 12px; /* Adjust as needed */
-    border: solid rgba(0, 0, 0, 1);
-    border-width: 0 3px 3px 0;
-    border-radius: 3px; /* Add this line */
-    transform: rotate(45deg);
+.button {
+    width: fit-content !important;
 }
 
-  .actionButton {
-    font-family: 'tripsans-ultra';
-    border: none;
-    outline: none;
-    font-size: 20px;
-    color: black;
-    cursor: pointer;
-    background-color: #1DBF73;
-    padding: 10px 35px;
-    display: grid;
-    justify-content: center;
-    margin: 0px auto 5px auto;
-    border-radius: 50px;
-    box-shadow: 5px 5px 0px 0px black; 
-    overflow: auto;
-    transition: all 0.3s ease-in 0s;
+@media only screen and (max-width: 1440px) {
+    .bodycontainer {
+        gap: 25px;
+    }
+
+    .dividercontainer {
+        padding: 0 20px;
+    }
+    
+    .dividercontainer p {
+        font-size: 14px;
+    }
 }
 
+@media only screen and (max-width: 550px) {
+    .bodycontainer {
+        gap: 15px;
+    }
 
-.actionButton:hover {
-    box-shadow: 7.5px 5px 0px 0px black; 
+    .bodycontainer {
+        width: 90%;
+    }
 }
