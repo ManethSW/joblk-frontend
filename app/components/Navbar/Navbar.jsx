@@ -1,16 +1,46 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./Navbar.module.css";
+import UserContext from "../../context/UserContext";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, setUser } = useContext(UserContext);
+  const router = useRouter();
 
   const handleMenuToggle = () => {
     setIsOpen(!isOpen);
     console.log(isOpen);
+  };
+
+  useEffect(() => {
+    if (user) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [user]);
+
+  const handleLogout = async () => {
+    const logoutUrl = "http://localhost:3001/auth/logout";
+    const headers = {
+      auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+    };
+    try {
+      const logoutResponse = await axios.post(logoutUrl, {}, { headers, withCredentials:true });
+      if (logoutResponse.data.code === "SUCCESS") {
+        router.replace("/login");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoggedIn(false);
+    }
   };
 
   return (
@@ -44,9 +74,25 @@ const NavBar = () => {
         <div className={styles.actionButtonsContainer}>
           {isLoggedIn ? (
             <>
-              <div className={styles.userContainer}>
+              {/* <div className={styles.userContainer}>
                 <i className="fa-solid fa-user"></i>
                 <p>Thinal</p>
+              </div> */}
+              <div className="dropdown dropdown-bottom dropdown-end">
+                <label tabIndex={0} className="">
+                  <div className={styles.userContainer}>
+                    <i className="fa-solid fa-user"></i>
+                    <p>Thinal</p>
+                  </div>
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  <li onClick={handleLogout}>
+                    <a>logout</a>
+                  </li>
+                </ul>
               </div>
             </>
           ) : (

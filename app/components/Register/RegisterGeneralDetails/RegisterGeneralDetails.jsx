@@ -58,15 +58,15 @@ const Register = ({ selectedUser }) => {
         const response = await axios.post(url, data, { headers });
         console.log(response.data.code);
         if (response.data.code === "SUCCESS") {
-          router.push("/login");
+          router.replace("/login");
         }
       } catch (error) {
-        // console.error(error);
-        // setError(error.response.data.message);
-        // setShowError(true);
-        if (error.response.data.code.startsWith("ERR")) {
-          setError(error.response.data.message);
-          setShowError(true);
+        if (error.response && error.response.data) {
+          console.error(error.response.data["message"]);
+          if (error.response.data["code"].startsWith("ERR")) {
+            setError(error.response.data["message"]);
+            setShowError(true);
+          }
         }
       } finally {
         setIsLoading(false);
@@ -197,7 +197,7 @@ const Register = ({ selectedUser }) => {
                   Register
                 </button>
               ) : (
-                <div onClick={handleRegister} className={registerStyles.button}>
+                <div className={registerStyles.button}>
                   <button type="submit">Register</button>
                 </div>
               )}

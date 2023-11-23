@@ -13,6 +13,10 @@
     width: fit-content !important;
 }
 
+.alertbox {
+    margin-bottom: 35px;
+}
+
 @media only screen and (max-width: 1440px) {
     .bodycontainer {
         gap: 25px;

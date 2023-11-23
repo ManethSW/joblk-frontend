@@ -20,7 +20,7 @@ const Profile = () => {
   useEffect(() => {
     // If the user is not logged in, redirect to the login page
     if (!user) {
-      router.push("/login");
+      router.replace("/login");
     } else {
       setIsLoading(false);
     }

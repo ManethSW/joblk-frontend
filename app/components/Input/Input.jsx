@@ -11,6 +11,7 @@ const RegisterInput = ({ id, type, placeholder, value, isValid, onChange }) => (
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      required
     />
     <Image
       src={`/${isValid}.svg`}

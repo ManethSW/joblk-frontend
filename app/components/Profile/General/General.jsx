@@ -1,8 +1,9 @@
 import React, { useState, createRef, useEffect, useContext } from "react";
 import Image from "next/image";
 import styles from "../Profile.module.css";
-import UserContext from '../../../context/UserContext';
-import { useRouter } from 'next/navigation';
+import UserContext from "../../../context/UserContext";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const General = () => {
   const { user } = useContext(UserContext);
@@ -40,7 +41,7 @@ const General = () => {
   useEffect(() => {
     // If the user is not logged in, redirect to the login page
     if (!user) {
-      router.push("/login");
+      router.replace("/login");
     } else {
       setIsLoading(false);
       setUsername(user.username);
@@ -105,6 +106,32 @@ const General = () => {
     //     console.error("Error:", error);
     //   }
     // }
+    // if (avatar) {
+    //   const url = "http://localhost:3001/user";
+    //   const avatar = JSON.stringify({ avatar });
+    //   const headers = {
+    //     auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+    //   };
+    //   const data = {
+    //     username,
+    //   };
+    //   try {
+    //     await axios.put(url, data, {
+    //       headers,
+    //       withCredentials: true,
+    //     });
+    //     setUserNameValidationMessage("Username updated");
+    //   } catch (error) {
+    //     if (error.response && error.response.data) {
+    //       console.error(error.response.data["message"]);
+    //       if (error.response.data["code"].startsWith("ERR")) {
+    //         setUserNameValidationMessage(error.response.data["message"]);
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   setUserNameValidationMessage("Username is invalid");
+    // }
   };
 
   function isUserNameValidFunction(username) {
@@ -128,11 +155,31 @@ const General = () => {
     }
   };
 
-  const handleUsernameSave = () => {
+  const handleUsernameSave = async (e) => {
     if (isUsernameValid) {
-      console.log("Username saved:", username);
+      const url = "https://job-lk-backend.onrender.com/user";
+      const headers = {
+        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+      };
+      const data = {
+        username,
+      };
+      try {
+        await axios.put(url, data, {
+          headers,
+          withCredentials: true,
+        });
+        setUserNameValidationMessage("Username updated");
+      } catch (error) {
+        if (error.response && error.response.data) {
+          console.error(error.response.data["message"]);
+          if (error.response.data["code"].startsWith("ERR")) {
+            setUserNameValidationMessage(error.response.data["message"]);
+          }
+        }
+      }
     } else {
-      console.log("Invalid username");
+      setUserNameValidationMessage("Username is invalid");
     }
   };
 
@@ -163,12 +210,31 @@ const General = () => {
     }
   };
 
-  const handleFullnameSave = () => {
-    if (isFullnameValid) {
-      // Save the fullname
-      console.log("Fullname saved:", fullname);
+  const handleFullnameSave = async () => {
+    if (isUsernameValid) {
+      const url = "http://localhost:3001/user";
+      const headers = {
+        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+      };
+      const data = {
+        fullname,
+      };
+      try {
+        await axios.put(url, data, {
+          headers,
+          withCredentials: true,
+        });
+        setUserNameValidationMessage("fullname updated");
+      } catch (error) {
+        if (error.response && error.response.data) {
+          console.error(error.response.data["message"]);
+          if (error.response.data["code"].startsWith("ERR")) {
+            setUserNameValidationMessage(error.response.data["message"]);
+          }
+        }
+      }
     } else {
-      console.log("Invalid fullname");
+      setUserNameValidationMessage("fullname is invalid");
     }
   };
 

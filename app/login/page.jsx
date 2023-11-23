@@ -11,6 +11,7 @@ import LoginRegisterBackground from "../components/LogRegBackground/LogRegBackgr
 import registerStyles from "../components/Register/Register.module.css";
 import registerGeneralStyles from "../components/Register/RegisterGeneralDetails/RegisterGeneralDetails.module.css";
 import UserContext from "../context/UserContext";
+import alertStyles from "../components/Register/RegisterSelectUser/RegisterSelectUser";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX =
@@ -26,15 +27,15 @@ const Login = () => {
     "",
     (value) => PASSWORD_REGEX.test(value)
   );
-  const [isLoading, setIsLoading] = useState(false);
   const { setUser } = useContext(UserContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [showError, setShowError] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     if (emailValid === "valid" && passwordValid === "valid") {
+      setIsLoading(true);
       const loginUrl = "https://job-lk-backend.onrender.com/auth/login";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
@@ -48,15 +49,25 @@ const Login = () => {
           headers,
           withCredentials: true,
         });
-        const userUrl = `https://job-lk-backend.onrender.com/user?email=${email}`;
-        const userResponse = await axios.get(userUrl, {
-          headers: headers,
-          withCredentials: true,
-        });
-        setUser(userResponse.data);
-        router.push("/profile");
+        if (loginResponse.data.code === "SUCCESS") {
+          const userUrl = `https://job-lk-backend.onrender.com/user`;
+          const userResponse = await axios.get(userUrl, {
+            headers: headers,
+            withCredentials: true,
+          });
+          setUser(userResponse.data);
+          router.replace("/profile");
+        }
       } catch (error) {
-        console.error(error);
+        if (error.response && error.response.data) {
+          console.error(error.response.data["message"]);
+          if (error.response.data["code"].startsWith("ERR")) {
+            setError(error.response.data["message"]);
+            setShowError(true);
+          }
+        }
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -145,7 +156,7 @@ const Login = () => {
             {showError && (
               <div
                 role="alert"
-                className={`${styles.alertbox} alert alert-error`}
+                className={`${alertStyles.alertbox} ${styles.alertbox} alert alert-error`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,25 +171,17 @@ const Login = () => {
                     d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>Please select a user type before proceeding</span>
+                <span>{error}</span>
               </div>
             )}
             <div>
               {isLoading ? (
-                <div>
-                  <span className="loading-spinner loading-lg"></span>
-                  <button
-                    type="submit"
-                    className={`${styles.button} ${registerStyles.button}`}
-                  >
-                    Login
-                  </button>
-                </div>
+                <button type="submit" className={registerStyles.button}>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Login
+                </button>
               ) : (
-                <div
-                  onClick={handleLogin}
-                  className={`${styles.button} ${registerStyles.button}`}
-                >
+                <div className={`${styles.button} ${registerStyles.button}`}>
                   <button type="submit">Login</button>
                 </div>
               )}
