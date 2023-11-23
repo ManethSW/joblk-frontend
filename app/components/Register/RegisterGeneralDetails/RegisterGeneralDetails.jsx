@@ -37,7 +37,6 @@ const Register = ({ selectedUser }) => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     if (
       usernameValid === "valid" &&
       emailValid === "valid" &&
@@ -60,12 +59,15 @@ const Register = ({ selectedUser }) => {
         console.log(response.data.code);
         if (response.data.code === "SUCCESS") {
           router.push("/login");
-        } else {
-          setError(response.data.message);
-          setShowError(true);
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        // setError(error.response.data.message);
+        // setShowError(true);
+        if (error.response.data.code.startsWith("ERR")) {
+          setError(error.response.data.message);
+          setShowError(true);
+        }
       } finally {
         setIsLoading(false);
       }
