@@ -36,8 +36,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (emailValid === "valid" && passwordValid === "valid") {
-      const loginUrl =
-        "https://job-lk-backend.onrender.com/auth/login";
+      const loginUrl = "https://job-lk-backend.onrender.com/auth/login";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
@@ -55,7 +54,7 @@ const Login = () => {
         const newHeaders = {
           auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
         };
-        const userUrl = `https://job-lk-backend.onrender.com/user?email=${emailValid}`;
+        const userUrl = `https://job-lk-backend.onrender.com/user?email=${email}`;
         const userResponse = await axios.get(userUrl, {
           headers: newHeaders,
           withCredentials: true,

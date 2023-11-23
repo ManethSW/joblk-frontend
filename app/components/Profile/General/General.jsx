@@ -1,8 +1,14 @@
-import React, { useState, createRef } from "react";
-import styles from "../Profile.module.css";
+import React, { useState, createRef, useEffect, useContext } from "react";
 import Image from "next/image";
+import styles from "../Profile.module.css";
+import UserContext from '../context/UserContext';
+import { useRouter } from 'next/navigation';
 
 const General = () => {
+  const { user } = useContext(UserContext);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  
   const [username, setUsername] = useState("");
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [usernameValidationMessage, setUserNameValidationMessage] = useState(
@@ -30,6 +36,30 @@ const General = () => {
 
   const [avatar, setAvatar] = useState(null);
   const fileInputRef = createRef();
+
+  useEffect(() => {
+    // If the user is not logged in, redirect to the login page
+    if (!user) {
+      router.push("/login");
+    } else {
+      setIsLoading(false);
+      setUsername(user.username);
+      setFullname(user.fullname);
+      setAddress(user.address);
+      setCity(user.city);
+      setProvinceOrState(user.provinceOrState);
+      setCountry(user.country);
+      setAvatar(user.avatar);
+    }
+  }, [user, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg pb-24"></span>
+      </div>
+    ); // Replace this with your loading spinner or placeholder content
+  }
 
   const handleAvatarClick = () => {
     fileInputRef.current.click();

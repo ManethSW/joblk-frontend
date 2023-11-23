@@ -39,7 +39,7 @@ const Profile = () => {
       {/* access the user data */}
       <p></p>
       <div className={styles.header}>
-        <h2>Maneth Weerasinghe / {navigation}</h2>
+        <h2>{user.username} / {navigation}</h2>
         <p>Edit and setup your account as prefered</p>
       </div>
       <div className={styles.body}>
