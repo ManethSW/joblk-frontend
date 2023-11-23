@@ -57,19 +57,6 @@ const Login = () => {
         router.push("/profile");
       } catch (error) {
         console.error(error);
-        console.error("---------------------");
-        console.error(error.message);
-        console.error("---------------------");
-        console.error(error.code);
-        showError(true);
-        // // If the error response has a data property, it means the server responded with an error message
-        // // Check if the error code starts with 'ERR' and if so, set the error message in the state
-        // if (
-        //   error.response.data.code &&
-        //   error.response.data.code.startsWith("ERR")
-        // ) {
-        //   setError(error.response.data.message);
-        // }
       }
     }
   };

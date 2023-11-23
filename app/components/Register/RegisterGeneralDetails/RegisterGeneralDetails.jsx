@@ -36,33 +36,33 @@ const Register = ({ selectedUser }) => {
     e.preventDefault();
     await router.push("/profile");
 
-    // if (
-    //   usernameValid === "valid" &&
-    //   emailValid === "valid" &&
-    //   passwordValid === "valid" &&
-    //   confirmPasswordValid === "valid"
-    // ) {
-    //   setIsLoading(true);
-    //   const url =
-    //     "https://1d26-2402-4000-10c2-d542-d9b9-35db-2f62-1402.ngrok-free.app/auth/register";
-    //   const headers = {
-    //     auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
-    //   };
-    //   const data = {
-    //     username,
-    //     email,
-    //     password,
-    //   };
+    if (
+      usernameValid === "valid" &&
+      emailValid === "valid" &&
+      passwordValid === "valid" &&
+      confirmPasswordValid === "valid"
+    ) {
+      setIsLoading(true);
+      const url =
+        "https://job-lk-backend.onrender.com/auth/register";
+      const headers = {
+        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+      };
+      const data = {
+        username,
+        email,
+        password,
+      };
 
-    //   try {
-    //     const response = await axios.post(url, data, { headers });
-    //     console.log(response.data);
-    //   } catch (error) {
-    //     console.error(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
+      try {
+        const response = await axios.post(url, data, { headers });
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   const GoogleLoginButton = () => {
