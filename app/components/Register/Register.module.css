@@ -50,6 +50,7 @@
     box-shadow: 5px 5px 0px 0px black;
     overflow: auto;
     transition: all 0.3s ease-in 0s;
+    width: fit-content;
 }
 
 

@@ -8,6 +8,7 @@ import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
 import registerStyles from "../Register.module.css";
+import alertStyles from "../RegisterSelectUser/RegisterSelectUser.module.css";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9]{3,15}$/;
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -18,6 +19,8 @@ const PASSWORD_REGEX =
 const Register = ({ selectedUser }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showError, setShowError] = useState(false);
   const [username, usernameValid, validateUsername] = useInputValidation(
     "",
     (value) => USERNAME_REGEX.test(value)
@@ -34,8 +37,7 @@ const Register = ({ selectedUser }) => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    await router.push("/profile");
-
+    setIsLoading(true);
     if (
       usernameValid === "valid" &&
       emailValid === "valid" &&
@@ -43,8 +45,7 @@ const Register = ({ selectedUser }) => {
       confirmPasswordValid === "valid"
     ) {
       setIsLoading(true);
-      const url =
-        "https://job-lk-backend.onrender.com/auth/register";
+      const url = "https://job-lk-backend.onrender.com/auth/register";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
@@ -56,7 +57,13 @@ const Register = ({ selectedUser }) => {
 
       try {
         const response = await axios.post(url, data, { headers });
-        console.log(response.data);
+        console.log(response.data.code);
+        if (response.data.code === "SUCCESS") {
+          router.push("/login");
+        } else {
+          setError(response.data.message);
+          setShowError(true);
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -160,21 +167,32 @@ const Register = ({ selectedUser }) => {
                 onChange={validateConfirmPassword}
               />
             </div>
-            {/* <div className={styles.agreeterms}>
-            <input type="checkbox" id="agreeterms" name="agreeterms" />
-            <label for="agreeterms">I agree to the terms and conditions</label>
-          </div> */}
+            <div
+              role="alert"
+              className={`${alertStyles.alertbox} ${styles.alertbox} alert alert-error`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{error}</span>
+            </div>
             <div className={styles.register}>
-              {/* If the loading is set to true display with the loading */}
               {isLoading ? (
                 <button type="submit" className={registerStyles.button}>
-                  <span className="loading loading-spinner loading-md"></span>
+                  <span className="loading loading-spinner loading-sm"></span>
                   Register
                 </button>
               ) : (
-                // <button type="submit" className={registerStyles.button}>
-                //   Register
-                // </button>
                 <div onClick={handleRegister} className={registerStyles.button}>
                   <button type="submit">Register</button>
                 </div>

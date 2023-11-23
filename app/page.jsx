@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <main className="flex items-center justify-center min-h-screen">
-      <span className="loading loading-spinner loading-lg pb-24"></span>
+      <span className="mainpage loading loading-spinner loading-lg pb-24"></span>
     </main>
   );
 }
