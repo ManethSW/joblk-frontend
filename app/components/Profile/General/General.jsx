@@ -1,14 +1,14 @@
 import React, { useState, createRef, useEffect, useContext } from "react";
 import Image from "next/image";
 import styles from "../Profile.module.css";
-import UserContext from '../context/UserContext';
+import UserContext from '../../../context/UserContext';
 import { useRouter } from 'next/navigation';
 
 const General = () => {
   const { user } = useContext(UserContext);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [username, setUsername] = useState("");
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [usernameValidationMessage, setUserNameValidationMessage] = useState(
