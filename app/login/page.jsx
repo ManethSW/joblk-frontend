@@ -28,13 +28,12 @@ const Login = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const { setUser } = useContext(UserContext);
-  const testUserData = {
-    username: "testuser",
-    email: "testuser@example.com",
-  };
+  const [error, setError] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     if (emailValid === "valid" && passwordValid === "valid") {
       const loginUrl = "https://job-lk-backend.onrender.com/auth/login";
       const headers = {
@@ -44,45 +43,34 @@ const Login = () => {
         email: email,
         password: password,
       };
-
       try {
         const loginResponse = await axios.post(loginUrl, data, {
           headers,
           withCredentials: true,
         });
-        console.log("Login", loginResponse.data);
-        const newHeaders = {
-          auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
-        };
         const userUrl = `https://job-lk-backend.onrender.com/user?email=${email}`;
         const userResponse = await axios.get(userUrl, {
-          headers: newHeaders,
+          headers: headers,
           withCredentials: true,
         });
-        console.log(userResponse.data);
         setUser(userResponse.data);
         router.push("/profile");
       } catch (error) {
         console.error(error);
+        console.error("---------------------");
+        console.error(error.message);
+        console.error("---------------------");
+        console.error(error.code);
+        showError(true);
+        // // If the error response has a data property, it means the server responded with an error message
+        // // Check if the error code starts with 'ERR' and if so, set the error message in the state
+        // if (
+        //   error.response.data.code &&
+        //   error.response.data.code.startsWith("ERR")
+        // ) {
+        //   setError(error.response.data.message);
+        // }
       }
-
-      // try {
-      //   const loginResponse = await axios.post(loginUrl, data, {
-      //     headers,
-      //     withCredential: true,
-      //   });
-      //   console.log(loginResponse);
-      //   const userUrl = `https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
-      //   const userResponse = await axios.get(userUrl, {
-      //     headers: headers,
-      //     withCredentials: true
-      //   });
-      //   console.log(userResponse.data);
-      //   setUser(userData);
-      //   router.push('/profile');
-      // } catch (error) {
-      //   console.error(error.response);
-      // }
     }
   };
 
@@ -167,20 +155,38 @@ const Login = () => {
                 onChange={validatePassword}
               />
             </div>
-            {/* <div className={registerGeneralStyles.register}>
-              <button type="submit" className={styles.actionButton}>
-                Log In
-              </button>
-            </div> */}
+            {showError && (
+              <div
+                role="alert"
+                className={`${styles.alertbox} alert alert-error`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Please select a user type before proceeding</span>
+              </div>
+            )}
             <div>
               {isLoading ? (
-                <button
-                  type="submit"
-                  className={`${styles.button} ${registerStyles.button}`}
-                >
-                  <span className="loading loading-spinner loading-md"></span>
-                  Register
-                </button>
+                <div>
+                  <span className="loading-spinner loading-lg"></span>
+                  <button
+                    type="submit"
+                    className={`${styles.button} ${registerStyles.button}`}
+                  >
+                    Login
+                  </button>
+                </div>
               ) : (
                 <div
                   onClick={handleLogin}

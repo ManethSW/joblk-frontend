@@ -56,6 +56,10 @@ body {
   margin-top: -150px;
 }
 
+.loginload {
+  color: black;
+}
+
 @media only screen and (max-width: 780px) {
   .loading {
     height: 75px;
