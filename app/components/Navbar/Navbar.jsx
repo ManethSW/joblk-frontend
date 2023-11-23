@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./Navbar.module.css";
-import { motion } from "framer-motion";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,13 +31,13 @@ const NavBar = () => {
               <Link href="/">Home</Link>
             </li>
             <li className={styles.link}>
-              <Link href="/jobs">Jobs</Link>
+              <Link href="/">Jobs</Link>
             </li>
             <li className={styles.link}>
-              <Link href="/freelancers">Freelancers</Link>
+              <Link href="/">Freelancers</Link>
             </li>
             <li className={styles.link}>
-              <Link href="/about">About Us</Link>
+              <Link href="/">About Us</Link>
             </li>
           </ul>
         </div>

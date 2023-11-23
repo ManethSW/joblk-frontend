@@ -6,7 +6,6 @@
     margin: 0px auto;
     margin-bottom: 25px;
     margin: 75px auto 25px auto;
-
 }
 
 .container h1 {
@@ -199,4 +198,97 @@
 
 .invalid {
     color: red;
+}
+
+@media only screen and (max-width: 1600px) {
+    .container {
+        width: 65%;
+    }
+}
+
+@media only screen and (max-width: 1250px) {
+    .container {
+        width: 85%;
+    }
+}
+
+@media only screen and (max-width: 960px) {
+    .menu li {
+        font-size: 14px;
+        width: 150px;
+        padding: 10px;
+    }
+    
+    .bodycontent h2 {
+        font-size: 18px;
+    }
+    
+    .bodycontent p {
+        font-family: 'tripsans-medium';
+        font-size: 12px;
+    }
+    
+    .avatar {
+        width: 75px;
+        height: 75px;
+        transition: all 0.3s ease-in 0s;
+    }
+    
+    .avatar:hover {
+        transform: scale(1.005);
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+    
+    .bodycontentsection input[type="text"] {
+        font-family: 'tripsans-medium';
+    }
+    
+    .bodycontentsection input {
+        outline: none;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        border-radius: 5px;
+        padding: 5px;
+        width: 300px;
+        transition: all 0.3s ease-in 0s;
+        font-family: 'tripsans-medium';
+    }
+    
+    .bodycontentsection input:hover {
+        border: 1px solid rgba(0, 0, 0, 0.75);
+    }
+    
+    .name {
+        display: flex;
+        column-gap: 25px;
+    }
+    
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        column-gap: 20px;
+        padding: 15px 20px;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        border-top: none;
+        border-radius: 0px 0px 8px 8px;
+    }
+    
+    .footer p {
+        font-family: 'tripsans-medium';
+    }
+    
+    .buttons {
+        display: flex;
+        column-gap: 20px;
+    }
+    
+    .button {
+        cursor: pointer;
+        outline: none;
+        font-family: 'tripsans-medium';
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        padding: 5px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease-in 0s;
+    }
 }

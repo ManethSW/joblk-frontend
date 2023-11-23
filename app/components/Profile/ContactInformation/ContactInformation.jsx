@@ -222,7 +222,6 @@ const ContactInformation = () => {
           <div>
             <div className={styles.verification}>
               <h2>Phone Number</h2>
-              <p>verified</p>
             </div>
             <p>Your phone number will be used for account verification.</p>
           </div>
@@ -234,12 +233,7 @@ const ContactInformation = () => {
               value={phoneNumber}
               onChange={handlePhoneNumberChange}
             />
-            <div>
-              <OTPInput
-                onSubmit={(otp) => handleSubmitOTP("phone", otp)}
-                countdown={phoneCountdown}
-              />
-            </div>
+            
           </div>
         </div>
         <div className={styles.footer}>

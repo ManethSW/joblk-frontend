@@ -1,17 +1,16 @@
 "use client";
 import React, { useState, useCallback, useContext } from "react";
-import Image from "next/image";
-// import styles from "../RegisterForm/RegisterForm.module.css";
-import styles from "./page.module.css";
-import RegisterInput from "../components/Input/Input";
-import useInputValidation from "../hooks/UserInputValidation";
-import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-// import { fetch } from 'node-fetch';
+import axios from "axios";
+import Image from "next/image";
+import styles from "./page.module.css";
+import useInputValidation from "../hooks/UserInputValidation";
+import RegisterInput from "../components/Input/Input";
+import LoginRegisterBackground from "../components/LogRegBackground/LogRegBackground";
 import registerStyles from "../components/Register/Register.module.css";
 import registerGeneralStyles from "../components/Register/RegisterGeneralDetails/RegisterGeneralDetails.module.css";
-import LoginRegisterBackground from "../components/LogRegBackground/LogRegBackground";
+import UserContext from "../context/UserContext";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX =
@@ -28,12 +27,17 @@ const Login = () => {
     (value) => PASSWORD_REGEX.test(value)
   );
   const [isLoading, setIsLoading] = useState(false);
+  const { setUser } = useContext(UserContext);
+  const testUserData = {
+    username: "testuser",
+    email: "testuser@example.com",
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (usernameOrEmailValid === "valid" && passwordValid === "valid") {
       const loginUrl =
-        "https://9f1b-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/auth/login";
+        "https://job-lk-backend.onrender.com/auth/login";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
@@ -45,24 +49,41 @@ const Login = () => {
       try {
         const loginResponse = await axios.post(loginUrl, data, {
           headers,
-          withCredential: true,
+          withCredentials: true,
         });
-        console.log(loginResponse);
-        // const userUrl = `https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
-        // const userResponse = await axios.get(userUrl, {
-        //   headers: headers,
-        //   withCredentials: true
-        // });
-        // console.log(userResponse.data);
-        // setUser({
-        //   ...user,
-        //   username: userResponse.data.username,
-        //   email: userResponse.data.email,
-        // });
-        // router.push('/profile');
+        console.log("Login", loginResponse.data);
+        const newHeaders = {
+          auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        };
+        const userUrl = `https://job-lk-backend.onrender.com/user?email=${usernameOrEmail}`;
+        const userResponse = await axios.get(userUrl, {
+          headers: newHeaders,
+          withCredentials: true,
+        });
+        console.log(userResponse.data);
+        setUser(userResponse.data);
+        router.push("/profile");
       } catch (error) {
-        console.error(error.response);
+        console.error(error);
       }
+
+      // try {
+      //   const loginResponse = await axios.post(loginUrl, data, {
+      //     headers,
+      //     withCredential: true,
+      //   });
+      //   console.log(loginResponse);
+      //   const userUrl = `https://274a-2402-d000-813c-10e5-bd13-b092-4239-a7c9.ngrok-free.app/user?email=${usernameOrEmail}`;
+      //   const userResponse = await axios.get(userUrl, {
+      //     headers: headers,
+      //     withCredentials: true
+      //   });
+      //   console.log(userResponse.data);
+      //   setUser(userData);
+      //   router.push('/profile');
+      // } catch (error) {
+      //   console.error(error.response);
+      // }
     }
   };
 
@@ -127,7 +148,9 @@ const Login = () => {
             <div></div>
           </div>
           <form onSubmit={handleLogin}>
-            <div className={`${styles.inputcontainer} ${registerGeneralStyles.inputcontainer}`}>
+            <div
+              className={`${styles.inputcontainer} ${registerGeneralStyles.inputcontainer}`}
+            >
               <RegisterInput
                 id="email"
                 type="email"
@@ -152,12 +175,18 @@ const Login = () => {
             </div> */}
             <div>
               {isLoading ? (
-                <button type="submit" className={`${styles.button} ${registerStyles.button}`}>
+                <button
+                  type="submit"
+                  className={`${styles.button} ${registerStyles.button}`}
+                >
                   <span className="loading loading-spinner loading-md"></span>
                   Register
                 </button>
               ) : (
-                <div onClick={handleLogin} className={`${styles.button} ${registerStyles.button}`}>
+                <div
+                  onClick={handleLogin}
+                  className={`${styles.button} ${registerStyles.button}`}
+                >
                   <button type="submit">Login</button>
                 </div>
               )}
