@@ -7,8 +7,8 @@ import useInputValidation from "../../../hooks/UserInputValidation";
 import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-import registerStyles from "../Register.module.css";
 import alertStyles from "../RegisterSelectUser/RegisterSelectUser.module.css";
+import authStyles from "../../../styles/auth.module.css";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9]{3,15}$/;
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -44,7 +44,7 @@ const Register = ({ selectedUser }) => {
       confirmPasswordValid === "valid"
     ) {
       setIsLoading(true);
-      const url = "https://job-lk-backend.onrender.com/auth/register";
+      const url = "http://localhost:3001/auth/register";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
@@ -70,7 +70,10 @@ const Register = ({ selectedUser }) => {
         }
       } finally {
         setIsLoading(false);
-      }
+      } 
+    } else {
+      setError("Please enter valid credentials");
+      setShowError(true);
     }
   };
 
@@ -105,8 +108,8 @@ const Register = ({ selectedUser }) => {
     });
 
     return (
-      <div className={styles.google} onClick={handleGoogleLogin}>
-        <div className={styles.googleicon}>
+      <div className={authStyles.google} onClick={handleGoogleLogin}>
+        <div className={authStyles.googleicon}>
           <Image
             src="/google.svg"
             alt="Logo"
@@ -123,86 +126,86 @@ const Register = ({ selectedUser }) => {
   return (
     <GoogleOAuthProvider clientId="286854776272-tij0a772behg9qnd0v0667bga8rqj0p2.apps.googleusercontent.com">
       <div>
-        <div className={registerStyles.title}>Register</div>
-        <div className={registerStyles.subtitle}>Enter your details below</div>
-        <div
-          className={`${styles.bodycontainer} ${registerStyles.bodycontainer}`}
-        >
+        <div className={authStyles.title}>Register</div>
+        <div className={authStyles.subtitle}>Enter your details below</div>
+        <div className={`${styles.bodyContainer} ${authStyles.bodyContainer}`}>
           <GoogleLoginButton />
-          <div className={styles.dividercontainer}>
+          <div className={authStyles.dividerContainer}>
             <div></div>
             <p>or</p>
             <div></div>
           </div>
-          <form onSubmit={handleRegister}>
-            <div className={styles.inputcontainer}>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter a username"
-                value={username}
-                isValid={usernameValid}
-                onChange={validateUsername}
-              />
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                isValid={emailValid}
-                onChange={validateEmail}
-              />
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                isValid={passwordValid}
-                onChange={validatePassword}
-              />
-              <Input
-                id="verifypassword"
-                type="password"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                isValid={confirmPasswordValid}
-                onChange={validateConfirmPassword}
-              />
-            </div>
-            {showError && (
-              <div
-                role="alert"
-                className={`${alertStyles.alertbox} ${styles.alertbox} alert alert-error`}
+          <div className={styles.inputcontainer}>
+            <Input
+              id="username"
+              type="text"
+              placeholder="Enter a username"
+              value={username}
+              isValid={usernameValid}
+              onChange={validateUsername}
+            />
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              isValid={emailValid}
+              onChange={validateEmail}
+            />
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              isValid={passwordValid}
+              onChange={validatePassword}
+            />
+            <Input
+              id="verifypassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              isValid={confirmPasswordValid}
+              onChange={validateConfirmPassword}
+            />
+          </div>
+          {showError && (
+            <div
+              role="alert"
+              className={`${authStyles.alertbox} alert alert-error`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="stroke-current shrink-0 h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="stroke-current shrink-0 h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>{error}</span>
-              </div>
-            )}
-            <div className={styles.register}>
-              {isLoading ? (
-                <button type="submit" className={registerStyles.button}>
-                  <span className="loading loading-spinner loading-sm"></span>
-                  Register
-                </button>
-              ) : (
-                <div className={registerStyles.button}>
-                  <button type="submit">Register</button>
-                </div>
-              )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{error}</span>
             </div>
-          </form>
+          )}
+          <div className={authStyles.otherActions}>
+            <div>
+              <p>Already have an account?</p>
+              <p>Sign Up</p>
+            </div>
+          </div>
+          <div onClick={handleRegister}>
+            {isLoading ? (
+              <button className={authStyles.button}>
+                <span className="loading loading-spinner loading-sm"></span>
+                Register
+              </button>
+            ) : (
+              <button className={authStyles.button}>Register</button>
+            )}
+          </div>
         </div>
       </div>
     </GoogleOAuthProvider>

@@ -7,6 +7,7 @@ import ContactInformation from "../components/Profile/ContactInformation/Contact
 import ChangePassword from "../components/Profile/ChangePassword/ChangePassword";
 import Portfolio from "../components/Profile/Portfolio/Portfolio";
 import UserContext from "../context/UserContext";
+import withAuth from '../hooks/UserChecker';
 
 const Profile = () => {
   const [navigation, setNavigation] = useState("General");
@@ -39,7 +40,7 @@ const Profile = () => {
       {/* access the user data */}
       <p></p>
       <div className={styles.header}>
-        <h2>{user.username} / {navigation}</h2>
+        <h2>{user ? user.username : 'Guest'} / {navigation}</h2>
         <p>Edit and setup your account as prefered</p>
       </div>
       <div className={styles.body}>
@@ -79,4 +80,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default withAuth(Profile);

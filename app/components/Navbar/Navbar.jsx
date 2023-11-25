@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useContext, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import styles from "./Navbar.module.css";
-import UserContext from "../../context/UserContext";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import UserContext from "../../context/UserContext";
+import styles from "./Navbar.module.css";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +15,6 @@ const NavBar = () => {
 
   const handleMenuToggle = () => {
     setIsOpen(!isOpen);
-    console.log(isOpen);
   };
 
   useEffect(() => {
@@ -32,8 +31,14 @@ const NavBar = () => {
       auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
     };
     try {
-      const logoutResponse = await axios.post(logoutUrl, {}, { headers, withCredentials:true });
+      const logoutResponse = await axios.post(
+        logoutUrl,
+        {},
+        { headers, withCredentials: true }
+      );
       if (logoutResponse.data.code === "SUCCESS") {
+        localStorage.removeItem("user");
+        setUser(null);
         router.replace("/login");
       }
     } catch (error) {
@@ -60,6 +65,9 @@ const NavBar = () => {
             <li className={styles.link}>
               <Link href="/">Home</Link>
             </li>
+            {/* <Link className={`link ${pathname === '/' ? 'active' : ''}`} href="/">
+              Home
+            </Link> */}
             <li className={styles.link}>
               <Link href="/">Jobs</Link>
             </li>
@@ -74,10 +82,6 @@ const NavBar = () => {
         <div className={styles.actionButtonsContainer}>
           {isLoggedIn ? (
             <>
-              {/* <div className={styles.userContainer}>
-                <i className="fa-solid fa-user"></i>
-                <p>Thinal</p>
-              </div> */}
               <div className="dropdown dropdown-bottom dropdown-end">
                 <label tabIndex={0} className="">
                   <div className={styles.userContainer}>

@@ -1,0 +1,221 @@
+.title {
+    font-size: 25px;
+    font-family: 'tripsans-ultra';
+    color: var(--primary-color-100);
+    text-align: center;
+    margin: 75px 0px 0px 0px;
+}
+
+.subtitle {
+    font-size: 18px;
+    font-family: 'tripsans-bold';
+    color: var(--black-color-50);
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.bodyContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    height: fit-content;
+    margin: 0px auto 25px auto;
+    padding: 35px;
+    border-radius: 35px;
+    box-shadow: 0px 20px 43px 0px var(--black-color-10);
+    background: var(--white-color-100);
+    transition: all 0.3s ease-in 0s;
+}
+
+.bodyContainer:hover {
+    box-shadow: 0px 20px 43px 0px var(--black-color-25);
+}
+
+.google {
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 15px;
+    padding: 12.5px 0px;
+    width: 100%;
+    border: 2px solid var(--black-color-50);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease-in 0s;
+}
+
+.googleicon {
+    width: 20px;
+}
+
+.google p {
+    font-family: 'tripsans-medium';
+    font-size: 16px;
+    color: var(--black-color-75);
+}
+
+.google:hover {
+    border: 2px solid var(--black-color-100);
+}
+
+.google:hover > p{
+    color: var(--black-color-100);
+}
+
+.dividerContainer {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+    padding: 0 25px;
+}
+
+.dividerContainer div {
+    width: 100%;
+    height: 2px;
+    background: var(--black-color-25);
+}
+
+.dividerContainer p {
+    color: var(--black-color-25);
+    font-family: 'tripsans-bold';
+    margin-bottom: 5px;
+}
+
+.alertbox span {
+    font-family: 'tripsans-medium';
+}
+
+.otherActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.otherActions p{
+    font-size: 14px;
+    font-family: "tripsans-medium";
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--black-color-75);
+    transition: all 0.3s ease-in 0s;
+}
+
+.otherActions div {
+    display: flex;
+    column-gap: 2px;
+}
+
+.otherActions div:hover .otherActions div p {
+    background-color: yellow;
+}
+
+.otherActions div:hover > p:nth-of-type(2) {
+    color: var(--black-color-100);
+    text-decoration: underline;
+}
+
+.otherActions > p:hover {
+    text-decoration: underline;
+    color: var(--black-color-100);
+}
+
+.button {
+    font-family: 'tripsans-ultra';
+    border: none;
+    outline: none;
+    font-size: 20px;
+    color: black;
+    cursor: pointer;
+    background-color: var(--primary-color-100);
+    padding: 10px 35px;
+    display: flex;
+    column-gap: 20px;
+    align-items: center;
+    justify-content: center;
+    margin: 0px auto 5px auto;
+    border-radius: 50px;
+    box-shadow: 5px 5px 0px 0px var(--black-color-100);
+    overflow: auto;
+    transition: all 0.3s ease-in 0s;
+    width: fit-content;
+}
+
+.button:hover {
+    box-shadow: 7.5px 5px 0px 0px var(--black-color-100);
+}
+
+@media only screen and (max-width: 1440px) {
+    .title {
+        font-size: 20px;
+    }
+    
+    .subtitle {
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .bodyContainer {
+        gap: 25px;
+    }
+
+    .google {
+        padding: 10px 0px;
+        align-items: center;
+    }
+    
+    .googleicon {
+        width: 15px;
+    }
+    
+    .google p {
+        font-size: 14px;
+    }
+
+    .button {
+        font-size: 16px;
+        column-gap: 15px;
+    }
+
+    .dividerContainer {
+        padding: 0 20px;
+    }
+    
+    .dividerContainer p {
+        font-size: 14px;
+    }
+
+    .alertbox span {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 950px) {
+    .title {
+        margin: 25px 0px 0px 0px;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    .alertbox {
+        display: flex !important;
+        flex-direction: row;
+        row-gap: 10px;
+    }
+
+    .alertbox span{
+        text-align: left;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .alertbox span {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .bodyContainer {
+        gap: 15px;
+    }
+}

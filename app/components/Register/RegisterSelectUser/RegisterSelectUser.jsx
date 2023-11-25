@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./RegisterSelectUser.module.css";
-import registerStyles from "../Register.module.css";
+import authStyles from '../../../styles/auth.module.css'
 
 const UserCard = ({ title, description, onClick, isSelected }) => {
   return (
@@ -27,15 +27,17 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
     if (selectedUser) {
       onNext();
     } else {
-      setShowError(true); // show the error if no user type is selected
+      setShowError(true);
     }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={registerStyles.title}>Register</div>
-      <div className={registerStyles.subtitle}>Please select user type</div>
-      <div className={`${registerStyles.bodycontainer} ${styles.bodycontainer}`}>
+    <div>
+      <div className={authStyles.title}>Register</div>
+      <div className={authStyles.subtitle}>Please select user type</div>
+      <div
+        className={`${authStyles.bodyContainer} ${styles.bodyContainer}`}
+      >
         <div className={styles.bodycontent}>
           <UserCard
             title="Freelancer"
@@ -68,7 +70,7 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
             <span>Please select a user type before proceeding</span>
           </div>
         )}
-        <div onClick={handleNextClick} className={registerStyles.button}>
+        <div onClick={handleNextClick} className={authStyles.button}>
           <button>Next</button>
           <i className="fa-solid fa-arrow-right"></i>
         </div>

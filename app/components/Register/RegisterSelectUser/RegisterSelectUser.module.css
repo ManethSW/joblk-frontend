@@ -1,4 +1,4 @@
-.bodycontainer {
+.bodyContainer {
     width: 600px;
 }
 
@@ -13,7 +13,7 @@
     flex-direction: column;
     align-items: center;
     row-gap: 10px;
-    border: 2px solid rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--black-color-25);
     padding: 15px;
     border-radius: 20px;
     transition: all 0.3s ease-in 0s;
@@ -32,29 +32,22 @@
     padding: 0px 5px;
 }
 
-.divider {
-    height: 2px;
-    width: 25%;
-    background-color: rgba(28, 191, 115, 0.5);
-    transition: all 0.3s ease-in 0s;
-}
-
 .usercard:hover {
-    border: 2px solid rgba(0, 0, 0, 1);
+    border: 2px solid var(--black-color-100);
 }
 
 .usercard:hover>.divider {
     width: 50%;
-    background-color: rgba(28, 191, 115, 1);
+    background-color: var(--primary-color-100);
 }
 
 .selected {
-    border: 2px solid rgba(0, 0, 0, 1);
+    border: 2px solid var(--black-color-100);
 }
 
 .selected>.divider {
     width: 50%;
-    background-color: rgba(28, 191, 115, 1);
+    background-color: var(--primary-color-100);
 }
 
 .button i {
@@ -66,7 +59,7 @@
 }
 
 @media only screen and (max-width: 1440px) {
-    .bodycontainer {
+    .bodyContainer {
         width: 500px;
     }
 
@@ -108,7 +101,7 @@
 }
 
 @media only screen and (max-width: 600px) {
-    .bodycontainer {
+    .bodyContainer {
         width: 90%;
     }
 

@@ -7,12 +7,12 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "job.lk",
-  description: "One stop shop for all freelancers",
+  description: "One Stop Shop For All Freelancers",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" className={inter.className}>
       <head>
         <script
           src="https://kit.fontawesome.com/a498e45914.js"
@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
           defer
         ></script>
       </head>
-      <body className={inter.className}>
+      <body>
         <UserProvider>
           <NavBar></NavBar>
           {children}

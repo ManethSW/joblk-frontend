@@ -1,4 +1,4 @@
-.bodycontainer {
+.bodyContainer {
     width: 500px;
 }
 
@@ -6,37 +6,10 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 35px;
-    margin-bottom: 35px;
-}
-
-.button {
-    width: fit-content !important;
-}
-
-.alertbox {
-    margin-bottom: 35px;
-}
-
-@media only screen and (max-width: 1440px) {
-    .bodycontainer {
-        gap: 25px;
-    }
-
-    .dividercontainer {
-        padding: 0 20px;
-    }
-    
-    .dividercontainer p {
-        font-size: 14px;
-    }
 }
 
 @media only screen and (max-width: 550px) {
-    .bodycontainer {
-        gap: 15px;
-    }
-
-    .bodycontainer {
+    .bodyContainer {
         width: 90%;
     }
 }

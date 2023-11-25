@@ -3,7 +3,6 @@ import styles from "./Input.module.css";
 
 const RegisterInput = ({ id, type, placeholder, value, isValid, onChange }) => (
   <div className={styles.input}>
-    <label htmlFor={id}>{placeholder}</label>
     <input
       type={type}
       id={id}
@@ -13,6 +12,7 @@ const RegisterInput = ({ id, type, placeholder, value, isValid, onChange }) => (
       onChange={onChange}
       required
     />
+    <label htmlFor={id}>{placeholder}</label>
     <Image
       src={`/${isValid}.svg`}
       alt="Logo"

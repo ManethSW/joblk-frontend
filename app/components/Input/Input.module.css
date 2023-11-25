@@ -3,12 +3,15 @@
 }
 
 .input label {
+    cursor: pointer;
     position: absolute;
     left: 20px;
-    background-color: white;
+    background-color: var(--white-color-100);
     font-family: 'tripsans-bold';
     font-size: 18px;
     padding: 0px 10px;
+    color: var(--black-color-75);
+    transition: all 0.3s ease-in 0s;
 }
 
 .input input {
@@ -19,7 +22,36 @@
     font-size: 16px;
     border-radius: 15px;
     outline: none;
-    border: 2px solid rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--black-color-50);
+    transition: all 0.3s ease-in 0s;
+}
+
+.input input:hover {
+    border: 2px solid var(--black-color-75);
+}
+
+.input input:hover ~ label {
+    color: var(--black-color-100);
+}
+
+.input input:focus {
+    border: 2px solid var(--black-color-100);
+    box-shadow: 0 0 0 2px white, 0 0 0 3px var(--black-color-20);
+}
+
+.input input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    transition: all 0.3s ease-in 0s;
+}
+
+.input input:-webkit-autofill:focus {
+    border: 2px solid var(--black-color-100);
+    box-shadow: 0 0 0 2px white, 0 0 0 3px var(--black-color-20);
+    -webkit-text-fill-color: inherit;
+}
+
+.input input:focus ~ label {
+    color: var(--black-color-100);
 }
 
 .validcheck {

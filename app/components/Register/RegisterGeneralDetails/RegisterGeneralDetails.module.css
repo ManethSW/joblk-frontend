@@ -1,104 +1,26 @@
-.bodycontainer {
+.bodyContainer {
     width: 800px;
-}
-
-.google {
-    height: auto;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    column-gap: 15px;
-    padding: 12.5px 0px;
-    width: 100%;
-    border: 2px solid rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-.googleicon {
-    width: 20px;
-}
-
-.google p {
-    font-family: 'tripsans-medium';
-    font-size: 16px;
-}
-
-.dividercontainer {
-    display: flex;
-    align-items: center;
-    column-gap: 5px;
-    padding: 0 25px;
-}
-
-.dividercontainer div {
-    width: 100%;
-    height: 2px;
-    background: rgba(0, 0, 0, 0.25);
-}
-
-.dividercontainer p {
-    color: rgba(0, 0, 0, 0.25);
-    font-family: 'tripsans-bold';
-    margin-bottom: 5px;
 }
 
 .inputcontainer {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 35px;
-    margin-bottom: 35px;
-}
-
-.button {
-    width: fit-content;
-}
-
-.alertbox {
-    margin-bottom: 35px;
 }
 
 @media only screen and (max-width: 1440px) {
-    .bodycontainer {
+    .bodyContainer {
         width: 700px;
-        gap: 25px;
-    }
-    
-    .google {
-        padding: 10px 0px;
-        align-items: center;
-    }
-    
-    .googleicon {
-        width: 15px;
-    }
-    
-    .google p {
-        font-size: 14px;
-    }
-    
-    .dividercontainer {
-        padding: 0 20px;
-    }
-    
-    .dividercontainer p {
-        font-size: 14px;
     }
     
     .inputcontainer {
         gap: 30px;
-        margin-bottom: 30px;
-    }
-    
-    .button {
-        width: fit-content;
     }
 }
 
 @media only screen and (max-width: 780px) {
-    .bodycontainer {
+    .bodyContainer {
         width: 90%;
-        gap: 25px;
     }
     
     .inputcontainer {
