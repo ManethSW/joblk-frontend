@@ -2,8 +2,8 @@
 import React, { useState, useCallback, useContext } from "react";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
-import Image from "next/image";
 import styles from "./page.module.css";
 import authStyles from "../styles/auth.module.css";
 import UserContext from "../context/UserContext";
@@ -33,13 +33,11 @@ const Login = () => {
   const [showError, setShowError] = useState(false);
 
   const handleLogin = async (e) => {
-    console.log("handleLogin called");
-    e.preventDefault();
     if (emailValid === "valid" && passwordValid === "valid") {
       setIsLoading(true);
       const loginUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGIN}`;
       const headers = {
-        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+        auth_token: process.env.AUTH_TOKEN,
       };
       const data = {
         email: email,
@@ -76,10 +74,6 @@ const Login = () => {
     }
   };
 
-  const handleChecked = () => {
-    console.log("handleChecked called");
-  };
-
   return (
     <GoogleOAuthProvider clientId="286854776272-tij0a772behg9qnd0v0667bga8rqj0p2.apps.googleusercontent.com">
       <div>
@@ -93,7 +87,15 @@ const Login = () => {
             <p>or</p>
             <div></div>
           </div>
-          <div className={styles.inputcontainer}>
+          <form
+            className={styles.inputcontainer}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleLogin();
+              }
+            }}
+          >
             <RegisterInput
               id="email"
               type="email"
@@ -110,7 +112,7 @@ const Login = () => {
               isValid={passwordValid}
               onChange={validatePassword}
             />
-          </div>
+          </form>
           {showError && (
             <div
               role="alert"
@@ -135,18 +137,30 @@ const Login = () => {
           <div className={authStyles.otherActions}>
             <div>
               <p>Do not have an account?</p>
-              <p>Sign Up</p>
+              <p>
+                <Link href="/">Sign Up</Link>
+              </p>
             </div>
-            <p>Forgot Password?</p>
+            <p>
+              <Link href="/login/forgot-password">Forgot Password?</Link>
+            </p>
           </div>
-          <div onClick={handleLogin}>
+          <div>
             {isLoading ? (
-              <button className={authStyles.button}>
+              <button
+                type="button"
+                onClick={handleLogin}
+                className={authStyles.button}
+              >
                 <span className="loading loading-spinner loading-sm"></span>
                 Login
               </button>
             ) : (
-              <button className={authStyles.button}>
+              <button
+                type="button"
+                onClick={handleLogin}
+                className={authStyles.button}
+              >
                 Login
               </button>
             )}

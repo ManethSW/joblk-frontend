@@ -1,0 +1,104 @@
+.bodyContainer {
+    width: 500px;
+}
+
+.inputcontainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 35px;
+}
+
+.otpcontainer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    position: relative;
+    margin-top: 13px;
+    overflow: visible;
+}
+
+.otpheader {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background-color: var(--white-color-100);
+    padding: 0px 10px;
+    cursor: pointer;
+}
+
+.otpheader h3,
+.otpheader span {
+    font-family: 'tripsans-bold';
+    font-size: 18px;
+    color: var(--black-color-75);
+    transition: all 0.3s ease-in 0s;
+}
+
+.otpheader span {
+    margin-top: 1.5px;
+}
+
+.otpinputs {
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid var(--black-color-50);
+    padding: 15px 30px;
+    border-radius: 15px;
+}
+
+.otpinputs input {
+    font-family: 'tripsans-bold';
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid var(--black-color-50);
+    transition: all 0.3s ease-in 0s;
+}
+
+.otpinputs input:hover {
+    border-bottom: 2px solid var(--black-color-75);
+}
+
+.otpcontainer:hover>.otpheader h3 {
+    color: var(--black-color-100);
+}
+
+.otpcontainer:hover>.otpheader span {
+    color: var(--black-color-100);
+}
+
+.otpinputs input:focus {
+    border-bottom: 2px solid var(--black-color-100);
+}
+
+@media only screen and (max-width: 1440px) {
+    .otpheader h3,
+    .otpheader span {
+        font-size: 16px;
+    }
+
+    .otpheader span {
+        margin-top: 0.5px;
+    }
+
+    .otpinputs {
+        padding: 12.5px 29px 10px 29px;
+    }
+
+    .otpinputs input {
+        width: 25px;
+        height: 23.5px;
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .bodyContainer {
+        width: 90%;
+    }
+}

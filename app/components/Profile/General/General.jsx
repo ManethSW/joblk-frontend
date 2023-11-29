@@ -4,6 +4,7 @@ import styles from "../Profile.module.css";
 import UserContext from "../../../context/UserContext";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import UserNameInput from "../Input/Username/Username";
 
 const General = () => {
   const { user } = useContext(UserContext);
@@ -85,102 +86,6 @@ const General = () => {
 
   const handleAvatarSaveClick = async () => {
     console.log(JSON.stringify({ avatar }));
-    // if (avatar) {
-    //   try {
-    //     // Replace with your actual API endpoint
-    //     const response = await fetch("/api/save-avatar", {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify({ avatar }),
-    //     });
-
-    //     if (!response.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-
-    //     const data = await response.json();
-    //     console.log("Avatar saved:", data);
-    //   } catch (error) {
-    //     console.error("Error:", error);
-    //   }
-    // }
-    // if (avatar) {
-    //   const url = "http://localhost:3001/user";
-    //   const avatar = JSON.stringify({ avatar });
-    //   const headers = {
-    //     auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
-    //   };
-    //   const data = {
-    //     username,
-    //   };
-    //   try {
-    //     await axios.put(url, data, {
-    //       headers,
-    //       withCredentials: true,
-    //     });
-    //     setUserNameValidationMessage("Username updated");
-    //   } catch (error) {
-    //     if (error.response && error.response.data) {
-    //       console.error(error.response.data["message"]);
-    //       if (error.response.data["code"].startsWith("ERR")) {
-    //         setUserNameValidationMessage(error.response.data["message"]);
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   setUserNameValidationMessage("Username is invalid");
-    // }
-  };
-
-  function isUserNameValidFunction(username) {
-    if (username.length >= 3) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  const handleUsernameChange = (event) => {
-    const newUsername = event.target.value;
-    setUsername(newUsername);
-    setIsUsernameTouched(true);
-    if (isUserNameValidFunction(newUsername)) {
-      setIsUsernameValid(true);
-      setUserNameValidationMessage("Username is valid");
-    } else {
-      setIsUsernameValid(false);
-      setUserNameValidationMessage("Username is less than 3 characters");
-    }
-  };
-
-  const handleUsernameSave = async (e) => {
-    if (isUsernameValid) {
-      const url = "https://job-lk-backend.onrender.com/user";
-      const headers = {
-        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
-      };
-      const data = {
-        username,
-      };
-      try {
-        await axios.put(url, data, {
-          headers,
-          withCredentials: true,
-        });
-        setUserNameValidationMessage("Username updated");
-      } catch (error) {
-        if (error.response && error.response.data) {
-          console.error(error.response.data["message"]);
-          if (error.response.data["code"].startsWith("ERR")) {
-            setUserNameValidationMessage(error.response.data["message"]);
-          }
-        }
-      }
-    } else {
-      setUserNameValidationMessage("Username is invalid");
-    }
   };
 
   function isFullNameValidFunction(fullname) {
@@ -288,7 +193,47 @@ const General = () => {
 
   return (
     <div className={styles.bodycontent}>
+      <UserNameInput value={username} setValue={setUsername}></UserNameInput>
+
       <div className={styles.content}>
+        <div className={styles.bodycontentsection}>
+          <div>
+            <h2>Full Name</h2>
+            <p>
+              Your full name will be used to identify you in the application.
+            </p>
+          </div>
+          <input
+            type="text"
+            name="fullname"
+            placeholder="Full Name"
+            value={fullname}
+            onChange={handleFullnameChange}
+          />
+        </div>
+        <div className={styles.footer}>
+          <p
+            className={
+              isFullnameTouched
+                ? isFullnameValid
+                  ? styles.valid
+                  : styles.invalid
+                : styles.initial
+            }
+          >
+            {fullnameValidationMessage}
+          </p>
+          <div className={styles.buttons}>
+            <button
+              className={`${styles.save} ${styles.button}`}
+              onClick={handleFullnameSave}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* <div className={styles.content}>
         <div
           className={` ${styles.avatarsection} ${styles.bodycontentsection}`}
         >
@@ -459,7 +404,7 @@ const General = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -58,6 +58,12 @@
     background-color: var(--primary-color-50);
 }
 
+.bodycontent {
+    width: 100%;
+    display: grid;
+    row-gap: 25px;
+}
+
 .content {
     transition: all 0.3s ease-in 0s;
     border-radius: 8px;
@@ -65,12 +71,6 @@
 
 .content:hover {
     box-shadow: 4px 4px 4px var(--black-color-15);
-}
-
-.bodycontent {
-    width: 100%;
-    display: grid;
-    row-gap: 25px;
 }
 
 .bodycontentsection {
