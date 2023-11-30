@@ -46,12 +46,12 @@ export const InputField = ({ name, value, placeholder, onChange }) => (
   />
 );
 
-InputField.propTypes = {
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-};
+// InputField.propTypes = {
+//   name: PropTypes.string.isRequired,
+//   value: PropTypes.string.isRequired,
+//   placeholder: PropTypes.string,
+//   onChange: PropTypes.func.isRequired,
+// };
 
 export const ValidationMessage = ({ message, isTouched, isValid }) => (
   <p

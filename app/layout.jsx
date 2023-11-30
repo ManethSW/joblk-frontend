@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/Navbar/Navbar";
 import { UserProvider } from "./context/UserContext";
+require("dotenv").config();
 
 const inter = Inter({ subsets: ["latin"] });
 

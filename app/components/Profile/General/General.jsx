@@ -5,49 +5,29 @@ import UserContext from "../../../context/UserContext";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import UserNameInput from "../Input/Username/Username";
+import AddressInput from "../Input/Address/Address";
 
 const General = () => {
   const { user } = useContext(UserContext);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
+  const [avatar, setAvatar] = useState(null);
   const [username, setUsername] = useState("");
-  const [isUsernameValid, setIsUsernameValid] = useState(true);
-  const [usernameValidationMessage, setUserNameValidationMessage] = useState(
-    "Should be 3 or more characters long"
-  );
-  const [isUsernameTouched, setIsUsernameTouched] = useState(false);
-
   const [fullname, setFullname] = useState("");
-  const [isFullnameValid, setIsFullnameValid] = useState(true);
-  const [fullnameValidationMessage, setFullnameValidationMessage] = useState(
-    "Should contain at least 2 names"
-  );
-  const [isFullnameTouched, setIsFullnameTouched] = useState(false);
-
-  const [address, setAddress] = useState("");
-  const [isAddressValid, setIsAddressValid] = useState(true);
-  const [addressValidationMessage, setAddressValidationMessage] = useState(
-    "Address is optional but recommended"
-  );
-  const [isAddressTouched, setIsAddressTouched] = useState(false);
-
   const [city, setCity] = useState("");
   const [provinceOrState, setProvinceOrState] = useState("");
   const [country, setCountry] = useState("");
 
-  const [avatar, setAvatar] = useState(null);
   const fileInputRef = createRef();
 
   useEffect(() => {
-    // If the user is not logged in, redirect to the login page
     if (!user) {
       router.replace("/login");
     } else {
       setIsLoading(false);
       setUsername(user.username);
       setFullname(user.fullname);
-      setAddress(user.address);
       setCity(user.city);
       setProvinceOrState(user.provinceOrState);
       setCountry(user.country);
@@ -60,7 +40,7 @@ const General = () => {
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-spinner loading-lg pb-24"></span>
       </div>
-    ); // Replace this with your loading spinner or placeholder content
+    );
   }
 
   const handleAvatarClick = () => {
@@ -116,8 +96,8 @@ const General = () => {
   };
 
   const handleFullnameSave = async () => {
-    if (isUsernameValid) {
-      const url = "http://localhost:3001/user";
+    if (isFullnameValid) {
+      const url = "http: localhost:3001/user";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
@@ -129,110 +109,24 @@ const General = () => {
           headers,
           withCredentials: true,
         });
-        setUserNameValidationMessage("fullname updated");
+        setFullnameValidationMessage("fullname updated");
       } catch (error) {
         if (error.response && error.response.data) {
           console.error(error.response.data["message"]);
           if (error.response.data["code"].startsWith("ERR")) {
-            setUserNameValidationMessage(error.response.data["message"]);
+            setFullnameValidationMessage(error.response.data["message"]);
           }
         }
       }
     } else {
-      setUserNameValidationMessage("fullname is invalid");
-    }
-  };
-
-  function isAddressValidFunction(addresspart) {
-    const addressRegex = /^[a-zA-Z ]+$/;
-    return addresspart === "" || addressRegex.test(addresspart);
-  }
-
-  const handleCityChange = (event) => {
-    const newCity = event.target.value;
-    setCity(newCity);
-    setIsAddressTouched(true);
-    validateAddress(newCity, provinceOrState, country);
-  };
-
-  const handleProvinceOrStateChange = (event) => {
-    const newProvinceOrState = event.target.value;
-    setProvinceOrState(newProvinceOrState);
-    setIsAddressTouched(true);
-    validateAddress(city, newProvinceOrState, country);
-  };
-
-  const handleCountryChange = (event) => {
-    const newCountry = event.target.value;
-    setCountry(newCountry);
-    setIsAddressTouched(true);
-    validateAddress(city, provinceOrState, newCountry);
-  };
-
-  const validateAddress = (city, provinceOrState, country) => {
-    const isCityValid = isAddressValidFunction(city);
-    const isProvinceOrStateValid = isAddressValidFunction(provinceOrState);
-    const isCountryValid = isAddressValidFunction(country);
-
-    if (isCityValid && isProvinceOrStateValid && isCountryValid) {
-      setIsAddressValid(true);
-      setAddressValidationMessage("Valid");
-    } else {
-      setIsAddressValid(false);
-      setAddressValidationMessage("Should only contain letters");
-    }
-  };
-
-  const handleAddressSave = () => {
-    if (isAddressValid) {
-      console.log("Address saved:", address);
-    } else {
-      console.log("Invalid address");
+      setFullnameValidationMessage("fullname is invalid");
     }
   };
 
   return (
     <div className={styles.bodycontent}>
       <UserNameInput value={username} setValue={setUsername}></UserNameInput>
-
-      <div className={styles.content}>
-        <div className={styles.bodycontentsection}>
-          <div>
-            <h2>Full Name</h2>
-            <p>
-              Your full name will be used to identify you in the application.
-            </p>
-          </div>
-          <input
-            type="text"
-            name="fullname"
-            placeholder="Full Name"
-            value={fullname}
-            onChange={handleFullnameChange}
-          />
-        </div>
-        <div className={styles.footer}>
-          <p
-            className={
-              isFullnameTouched
-                ? isFullnameValid
-                  ? styles.valid
-                  : styles.invalid
-                : styles.initial
-            }
-          >
-            {fullnameValidationMessage}
-          </p>
-          <div className={styles.buttons}>
-            <button
-              className={`${styles.save} ${styles.button}`}
-              onClick={handleFullnameSave}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
+      <AddressInput city={city} setCity={setCity} provinceOrState={provinceOrState} setProvinceOrState={setProvinceOrState} country={country} setCountry={setCountry}/>
       {/* <div className={styles.content}>
         <div
           className={` ${styles.avatarsection} ${styles.bodycontentsection}`}
@@ -282,42 +176,6 @@ const General = () => {
         </div>
       </div>
       <div className={styles.content}>
-        <div className={`${styles.bodycontentsection}`}>
-          <div>
-            <h2>Username</h2>
-            <p>Your username will be used to identify you on the platform.</p>
-          </div>
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={username}
-            onChange={handleUsernameChange}
-          />
-        </div>
-        <div className={styles.footer}>
-          <p
-            className={
-              isUsernameTouched
-                ? isUsernameValid
-                  ? styles.valid
-                  : styles.invalid
-                : styles.initial
-            }
-          >
-            {usernameValidationMessage}
-          </p>
-          <div className={styles.buttons}>
-            <button
-              className={`${styles.save} ${styles.button}`}
-              onClick={handleUsernameSave}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className={styles.content}>
         <div className={styles.bodycontentsection}>
           <div>
             <h2>Full Name</h2>
@@ -349,56 +207,6 @@ const General = () => {
             <button
               className={`${styles.save} ${styles.button}`}
               onClick={handleFullnameSave}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-      <div className={styles.content}>
-        <div className={styles.bodycontentsection}>
-          <div>
-            <h2>Address</h2>
-            <p>This will help clients identify where you come from</p>
-          </div>
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            value={city}
-            onChange={handleCityChange}
-          />
-          <input
-            type="text"
-            name="provinceorstate"
-            placeholder="Province/State"
-            value={provinceOrState}
-            onChange={handleProvinceOrStateChange}
-          />
-          <input
-            type="text"
-            name="country"
-            placeholder="Country"
-            value={country}
-            onChange={handleCountryChange}
-          />
-        </div>
-        <div className={styles.footer}>
-          <p
-            className={
-              isAddressTouched
-                ? isAddressValid
-                  ? styles.valid
-                  : styles.invalid
-                : styles.initial
-            }
-          >
-            {addressValidationMessage}
-          </p>
-          <div className={styles.buttons}>
-            <button
-              className={`${styles.save} ${styles.button}`}
-              onClick={handleAddressSave}
             >
               Save
             </button>
