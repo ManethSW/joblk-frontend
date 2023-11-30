@@ -38,7 +38,7 @@ const Login = () => {
       // const loginUrl = `http://localhost:3001/auth/login`;
       const loginUrl = `https://job-lk-backend.onrender.com/auth/login`;
       const headers = {
-        auth_token: process.env.AUTH_TOKEN,
+        'Auth_token': process.env.AUTH_TOKEN,
         // auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
       const data = {
