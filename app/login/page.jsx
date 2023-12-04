@@ -36,11 +36,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     if (emailValid === "valid" && passwordValid === "valid") {
       setIsLoading(true);
-      const loginUrl = `http://localhost:3001/auth/login`;
-      // const loginUrl = `https://job-lk-backend.onrender.com/auth/login`;
+      // const loginUrl = `http://localhost:3001/auth/login`;
+      const loginUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGIN}`;
       const headers = {
-        // 'Auth_token': process.env.AUTH_TOKEN,
-        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        auth_token: process.env.NEXT_PUBLIC_AUTH_TOKEN,
+        // auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
       const data = {
         email: email,
@@ -52,8 +52,8 @@ const Login = () => {
           withCredentials: true,
         });
         if (loginResponse.data.code === "SUCCESS") {
-          const userUrl = `http://localhost:3001/user`;
-          // const userUrl = `https://job-lk-backend.onrender.com/user`;
+          // const userUrl = `http://localhost:3001/user`;
+          const userUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}`;
           const userResponse = await axios.get(userUrl, {
             headers: headers,
             withCredentials: true,
