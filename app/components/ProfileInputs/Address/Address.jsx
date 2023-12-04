@@ -71,8 +71,6 @@ const AddressInput = ({
 
   const handleAddressSave = async (e) => {
     e.preventDefault();
-    console.log("clicked");
-
     let data = {};
 
     if (isCityChanged) {

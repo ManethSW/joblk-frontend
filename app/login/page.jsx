@@ -19,6 +19,7 @@ const PASSWORD_REGEX =
   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Login = () => {
+  console.log("Login page rendered")
   const router = useRouter();
   const [email, emailValid, validateEmail] = useInputValidation("", (value) =>
     EMAIL_REGEX.test(value)
@@ -35,11 +36,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     if (emailValid === "valid" && passwordValid === "valid") {
       setIsLoading(true);
-      // const loginUrl = `http://localhost:3001/auth/login`;
-      const loginUrl = `https://job-lk-backend.onrender.com/auth/login`;
+      const loginUrl = `http://localhost:3001/auth/login`;
+      // const loginUrl = `https://job-lk-backend.onrender.com/auth/login`;
       const headers = {
-        'Auth_token': process.env.AUTH_TOKEN,
-        // auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        // 'Auth_token': process.env.AUTH_TOKEN,
+        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
       const data = {
         email: email,
@@ -51,8 +52,8 @@ const Login = () => {
           withCredentials: true,
         });
         if (loginResponse.data.code === "SUCCESS") {
-          // const userUrl = `http://localhost:3001/user`;
-          const userUrl = `https://job-lk-backend.onrender.com/user`;
+          const userUrl = `http://localhost:3001/user`;
+          // const userUrl = `https://job-lk-backend.onrender.com/user`;
           const userResponse = await axios.get(userUrl, {
             headers: headers,
             withCredentials: true,
@@ -62,6 +63,7 @@ const Login = () => {
         }
       } catch (error) {
         if (error.response && error.response.data) {
+          console.log(error);
           console.error(error.response.data["message"]);
           if (error.response.data["code"].startsWith("ERR")) {
             setError(error.response.data["message"]);

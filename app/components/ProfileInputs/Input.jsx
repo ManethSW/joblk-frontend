@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./Input.module.css";
-import axios from "axios";
 import PropTypes from "prop-types";
 
 export const FormContainer = ({
   inputSectionChildren,
   validationAndActionSectionChildren,
+  isAvatarInput,
 }) => {
   return (
     <div className={styles.formContainer}>
-      <div className={styles.inputSection}>{inputSectionChildren}</div>
+      <div
+        className={`${isAvatarInput ? styles.inputAvatarSection : ""} ${
+          styles.inputSection
+        }`}
+      >
+        {inputSectionChildren}
+      </div>
       <div className={styles.validationAndActionSection}>
         {validationAndActionSectionChildren}
       </div>
@@ -36,6 +42,18 @@ Header.propTypes = {
   description: PropTypes.string.isRequired,
 };
 
+export const VerificationHeader = ({ title, description, verification }) => {
+  return (
+    <div className={styles.inputSectionHeader}>
+      <div className={styles.verification}>
+        <h2>{title}</h2>
+        {verification}
+      </div>
+      <p>{description}</p>
+    </div>
+  );
+};
+
 export const InputField = ({ name, value, placeholder, onChange }) => (
   <input
     type="text"
@@ -46,12 +64,12 @@ export const InputField = ({ name, value, placeholder, onChange }) => (
   />
 );
 
-// InputField.propTypes = {
-//   name: PropTypes.string.isRequired,
-//   value: PropTypes.string.isRequired,
-//   placeholder: PropTypes.string,
-//   onChange: PropTypes.func.isRequired,
-// };
+InputField.propTypes = {
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
 
 export const ValidationMessage = ({ message, isTouched, isValid }) => (
   <p
@@ -95,4 +113,19 @@ export const ActionButtonsDeleteAndSave = ({ onDelete, onSave }) => (
 ActionButtonsDeleteAndSave.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
+};
+
+export const ActionButtonsSendOtp = ({ handleSendOtp }) => (
+  <div className={styles.buttons}>
+    <button
+      className={`${styles.otp} ${styles.button}`}
+      onClick={handleSendOtp}
+    >
+      Send OTP
+    </button>
+  </div>
+);
+
+ActionButtonsSendOtp.propTypes = {
+  handleSendOtp: PropTypes.func.isRequired,
 };

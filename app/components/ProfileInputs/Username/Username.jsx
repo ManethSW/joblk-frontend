@@ -1,68 +1,12 @@
 import React, { useState } from "react";
-import styles from "./ProfileInput.module.css";
 import axios from "axios";
-
-const FormContainer = ({
-  inputSectionChildren,
-  validationAndActionSectionChildren,
-}) => {
-  return (
-    <div className={styles.formContainer}>
-      <div className={styles.inputSection}>{inputSectionChildren}</div>
-      <div className={styles.validationAndActionSection}>
-        {validationAndActionSectionChildren}
-      </div>
-    </div>
-  );
-};
-
-const Header = ({ title, description }) => {
-  return (
-    <div className={styles.inputSectionHeader}>
-      <h2>{title}</h2>
-      <p>{description}</p>
-    </div>
-  );
-};
-
-const InputField = ({ name, value, placeholder, onChange }) => (
-  <input
-    type="text"
-    name={name}
-    placeholder={placeholder}
-    value={value}
-    onChange={onChange}
-  />
-);
-
-const ValidationMessage = ({ message, isTouched, isValid }) => (
-  <p
-    className={
-      isTouched ? (isValid ? styles.valid : styles.invalid) : styles.initial
-    }
-  >
-    {message}
-  </p>
-);
-
-const ActionButtonsSave = ({ onSave }) => (
-  <div className={styles.buttons}>
-    <button className={`${styles.save} ${styles.button}`} onClick={onSave}>
-      Save
-    </button>
-  </div>
-);
-
-const ActionButtonsDeleteAndSave = ({ onDelete, onSave }) => (
-  <div className={styles.buttons}>
-    <button className={`${styles.delete} ${styles.button}`} onClick={onDelete}>
-      Delete
-    </button>
-    <button className={`${styles.save} ${styles.button}`} onClick={onSave}>
-      Save
-    </button>
-  </div>
-);
+import {
+  FormContainer,
+  Header,
+  InputField,
+  ValidationMessage,
+  ActionButtonsSave,
+} from "../Input";
 
 const UserNameInput = ({ value, setValue }) => {
   const [isUsernameValid, setIsUsernameValid] = useState(true);

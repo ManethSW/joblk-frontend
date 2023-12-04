@@ -12,6 +12,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  console.log("Root");
   return (
     <html lang="en" data-theme="light" className={inter.className}>
       <head>

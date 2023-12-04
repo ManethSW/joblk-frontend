@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   FormContainer,
   Header,
@@ -8,13 +9,13 @@ import {
 } from "../Input";
 
 const FullnameInput = ({ fullname, setFullname }) => {
-    const [isFullnameValid, setIsFullnameValid] = useState(true);
-    const [fullnameValidationMessage, setFullnameValidationMessage] = useState(
-      "Should contain at least 2 names"
-    );
-    const [isFullnameTouched, setIsFullnameTouched] = useState(false);
+  const [isFullnameValid, setIsFullnameValid] = useState(true);
+  const [fullnameValidationMessage, setFullnameValidationMessage] = useState(
+    "Should contain at least 2 names"
+  );
+  const [isFullnameTouched, setIsFullnameTouched] = useState(false);
 
-  function validateUserName( fullname) {
+  function validateFullname(fullname) {
     const fullnameRegex = /^[a-zA-Z ]+$/;
     if (
       fullname.trim().split(" ").length >= 2 &&
@@ -26,46 +27,49 @@ const FullnameInput = ({ fullname, setFullname }) => {
     }
   }
 
-  const handleUsernameChange = (event) => {
-    const newUsername = event.target. fullname;
-    setFullname(newUsername);
-    setIsUsernameTouched(true);
-    if (validateUserName(newUsername)) {
-      setIsUsernameValid(true);
-      setUserNameValidationMessage("Username is valid");
+  const handleFullnameChange = (event) => {
+    const newFullname = event.target.value;
+    setFullname(newFullname);
+    setIsFullnameTouched(true);
+    if (validateFullname(newFullname)) {
+      setIsFullnameValid(true);
+      setFullnameValidationMessage("Fullname is valid");
     } else {
-      setIsUsernameValid(false);
-      setUserNameValidationMessage("Username is less than 3 characters");
+      setIsFullnameValid(false);
+      setFullnameValidationMessage(
+        "Should contain at least 2 names and only letters"
+      );
     }
   };
 
-  const handleUsernameSave = async (e) => {
+  const handleFullnameSave = async (e) => {
     e.preventDefault();
-    const username =  fullname;
-    if (isUsernameValid) {
+    const full_name = fullname;
+    console.log(full_name);
+    if (isFullnameValid) {
       const url = "http://localhost:3001/user";
       const headers = {
         auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
       const data = {
-        username,
+        full_name,
       };
       try {
         await axios.put(url, data, {
           headers,
           withCredentials: true,
         });
-        setUserNameValidationMessage("Username updated");
+        setFullnameValidationMessage("Username updated");
       } catch (error) {
         if (error.response && error.response.data) {
           console.error(error.response.data["message"]);
           if (error.response.data["code"].startsWith("ERR")) {
-            setUserNameValidationMessage(error.response.data["message"]);
+            setFullnameValidationMessage(error.response.data["message"]);
           }
         }
       }
     } else {
-      setUserNameValidationMessage("Username is invalid");
+      setFullnameValidationMessage("Username is invalid");
     }
   };
 
@@ -74,25 +78,25 @@ const FullnameInput = ({ fullname, setFullname }) => {
       inputSectionChildren={
         <>
           <Header
-            title="Username"
+            title="Fullname"
             description="Your username will be used to identify you on the platform."
           />
           <InputField
             name={" fullname"}
-            onChange={handleUsernameChange}
+            onChange={handleFullnameChange}
             placeholder={"Enter a valid  fullname"}
-             fullname={ fullname}
+            value={fullname}
           ></InputField>
         </>
       }
       validationAndActionSectionChildren={
         <>
           <ValidationMessage
-            message={usernameValidationMessage}
-            isTouched={isUsernameTouched}
-            isValid={isUsernameValid}
+            message={fullnameValidationMessage}
+            isTouched={isFullnameTouched}
+            isValid={isFullnameValid}
           />
-          <ActionButtonsSave onSave={handleUsernameSave} />
+          <ActionButtonsSave onSave={handleFullnameSave} />
         </>
       }
     />

@@ -7,6 +7,30 @@
     box-shadow: 4px 4px 4px var(--black-color-15);
 }
 
+.avatarsection {
+    flex-direction: row;
+    column-gap: 20px;
+}
+
+.avatar {
+    width: 75px;
+    height: 75px;
+    background-image: url("/characterone.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 50%;
+    overflow: hidden;
+    box-sizing: content-box;
+    border: 1px solid var(--black-color-50);
+    cursor: pointer;
+    transition: all 0.3s ease-in 0s;
+}
+
+.avatar:hover {
+    transform: scale(1.005);
+    box-shadow: 0px 4px 4px var(--black-color-25);
+}
+
 .inputSection {
     display: flex;
     flex-direction: column;
@@ -15,6 +39,10 @@
     border: 1px solid var(--black-color-50);
     border-radius: 8px 8px 0px 0px;
     padding: 20px;
+}
+
+.inputAvatarSection {
+    flex-direction: row;
 }
 
 .avatarsection {
@@ -126,4 +154,59 @@
 
 .invalid {
     color: red;
+}
+
+.otpcontainer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    margin-top: 25px;
+}
+
+.otpheader {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.otpheader h3,
+.otpheader span {
+    font-family: 'tripsans-medium';
+    font-size: 16px;
+}
+
+.otpinputs {
+    width: 300px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.otpinputs input {
+    width: 40px!important;
+    text-align: center;
+}
+
+.otpinputs input:focus {
+    border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.otp {
+    background-color: var(--black-color-10)
+}
+
+.otp:hover {
+    background-color: var(--black-color-30)
+}
+
+.verification {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.verification h3 {
+    font-family: 'tripsans-bold';
+    font-size: 14px;
+    padding: 0px 10px;
+    border-radius: 100px;
 }
