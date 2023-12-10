@@ -36,11 +36,9 @@ const Login = () => {
   const handleLogin = async (e) => {
     if (emailValid === "valid" && passwordValid === "valid") {
       setIsLoading(true);
-      // const loginUrl = `http://localhost:3001/auth/login`;
       const loginUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGIN}`;
       const headers = {
-        // auth_token: process.env.NEXT_PUBLIC_AUTH_TOKEN,
-        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
       };
       const data = {
         email: email,

@@ -28,7 +28,7 @@ const NavBar = () => {
   const handleLogout = async () => {
     const logoutUrl = "http://localhost:3001/auth/logout";
     const headers = {
-      auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
     try {
       const logoutResponse = await axios.post(
@@ -85,7 +85,7 @@ const NavBar = () => {
                 <label tabIndex={0} className="">
                   <div className={styles.userContainer}>
                     <i className="fa-solid fa-user"></i>
-                    <p>Thinal</p>
+                    <p>{user.username}</p>
                   </div>
                 </label>
                 <ul

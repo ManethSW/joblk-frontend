@@ -46,7 +46,7 @@ const ForgotPassword = () => {
         setIsLoading(true);
         const sendOtpUrl = `http://localhost:3001/auth/verify?email=${email}`;
         const headers = {
-          auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+          auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
         };
         try {
           const sendOtpResponse = await axios.get(sendOtpUrl, {

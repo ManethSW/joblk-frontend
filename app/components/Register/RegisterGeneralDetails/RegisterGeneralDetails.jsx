@@ -46,7 +46,7 @@ const Register = ({ selectedUser }) => {
       setIsLoading(true);
       const url = "http://localhost:3001/auth/register";
       const headers = {
-        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
       };
       const data = {
         username,
