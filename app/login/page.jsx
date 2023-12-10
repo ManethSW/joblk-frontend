@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useCallback, useContext } from "react";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import { useRouter } from "next/navigation";
+import { useRouter, router } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
 import styles from "./page.module.css";
@@ -39,8 +39,8 @@ const Login = () => {
       // const loginUrl = `http://localhost:3001/auth/login`;
       const loginUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGIN}`;
       const headers = {
-        auth_token: process.env.NEXT_PUBLIC_AUTH_TOKEN,
-        // auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        // auth_token: process.env.NEXT_PUBLIC_AUTH_TOKEN,
+        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
       };
       const data = {
         email: email,
@@ -80,7 +80,7 @@ const Login = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="286854776272-tij0a772behg9qnd0v0667bga8rqj0p2.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="313142226606-s0ckkqp44583t9kicgphf902polhi1p7.apps.googleusercontent.com">
       <div>
         <LoginRegisterBackground></LoginRegisterBackground>
         <div className={authStyles.title}>Login</div>

@@ -8,31 +8,28 @@ import {
   ActionButtonsSave,
 } from "../Input";
 
-const UserNameInput = ({ value, setValue }) => {
+const UsernameInput = ({ value, setValue }) => {
   const [isUsernameValid, setIsUsernameValid] = useState(true);
-  const [usernameValidationMessage, setUserNameValidationMessage] = useState(
+  const [usernameValidationMessage, setUsernameValidationMessage] = useState(
     "Should be 3 or more characters long"
   );
   const [isUsernameTouched, setIsUsernameTouched] = useState(false);
 
-  function validateUserName(value) {
-    if (value.length >= 3) {
-      return true;
-    } else {
-      return false;
-    }
+  function validateUsername(username) {
+    const re = /^[a-zA-Z0-9_]{3,15}$/;
+    return re.test(username);
   }
 
   const handleUsernameChange = (event) => {
     const newUsername = event.target.value;
     setValue(newUsername);
     setIsUsernameTouched(true);
-    if (validateUserName(newUsername)) {
+    if (validateUsername(newUsername)) {
       setIsUsernameValid(true);
-      setUserNameValidationMessage("Username is valid");
+      setUsernameValidationMessage("Username is valid");
     } else {
       setIsUsernameValid(false);
-      setUserNameValidationMessage("Username is less than 3 characters");
+      setUsernameValidationMessage("Username is less than 3 characters");
     }
   };
 
@@ -52,17 +49,17 @@ const UserNameInput = ({ value, setValue }) => {
           headers,
           withCredentials: true,
         });
-        setUserNameValidationMessage("Username updated");
+        setUsernameValidationMessage("Username updated");
       } catch (error) {
         if (error.response && error.response.data) {
           console.error(error.response.data["message"]);
           if (error.response.data["code"].startsWith("ERR")) {
-            setUserNameValidationMessage(error.response.data["message"]);
+            setUsernameValidationMessage(error.response.data["message"]);
           }
         }
       }
     } else {
-      setUserNameValidationMessage("Username is invalid");
+      setUsernameValidationMessage("Username is invalid");
     }
   };
 
@@ -96,4 +93,4 @@ const UserNameInput = ({ value, setValue }) => {
   );
 };
 
-export default UserNameInput;
+export default UsernameInput;

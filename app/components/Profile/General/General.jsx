@@ -2,7 +2,7 @@ import React, { useState, createRef, useEffect, useContext } from "react";
 import styles from "../Profile.module.css";
 import UserContext from "../../../context/UserContext";
 import { useRouter } from "next/navigation";
-import UserNameInput from "../../ProfileInputs/Username/Username";
+import UsernameInput from "../../ProfileInputs/Username/Username";
 import AddressInput from "../../ProfileInputs/Address/Address";
 import FullnameInput from "../../ProfileInputs/Fullname/Fullname";
 import AvtarInput from "../../ProfileInputs/Avatar/Avatar";
@@ -47,7 +47,7 @@ const General = () => {
   return (
     <div className={styles.bodycontent}>
       <AvtarInput avatar={avatar} setAvatar={setAvatar}></AvtarInput>
-      <UserNameInput value={username} setValue={setUsername} />
+      <UsernameInput value={username} setValue={setUsername} />
       <FullnameInput fullname={fullname} setFullname={setFullname} />
       <AddressInput
         city={city}

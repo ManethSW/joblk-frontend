@@ -37,14 +37,13 @@ const NavBar = () => {
         { headers, withCredentials: true }
       );
       if (logoutResponse.data.code === "SUCCESS") {
-        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
         setUser(null);
+        setIsLoggedIn(false);
         router.replace("/login");
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsLoggedIn(false);
     }
   };
 

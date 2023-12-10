@@ -15,9 +15,7 @@ const ContactInformation = () => {
   const { user } = useContext(UserContext);
 
   useEffect(() => {
-    if (!user) {
-      router.replace("/login");
-    } else {
+    if (user) {
       setEmail(user.email);
       setEmailVerified(user.email_verified);
     }

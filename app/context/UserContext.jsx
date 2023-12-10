@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     if (typeof window !== 'undefined') {
       // Try to get the user from local storage
-      const storedUser = localStorage.getItem('user');
+      const storedUser = sessionStorage.getItem('user');
       return storedUser ? JSON.parse(storedUser) : null;
     }
     return null;
@@ -19,7 +19,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('user');
     }
     setUser(null);
   };
@@ -27,9 +27,9 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     // Whenever the user state changes, update local storage
     if (user && typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(user));
     } else if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('user');
     }
   }, [user]);
 
