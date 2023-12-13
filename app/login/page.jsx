@@ -50,7 +50,6 @@ const Login = () => {
           withCredentials: true,
         });
         if (loginResponse.data.code === "SUCCESS") {
-          // const userUrl = `http://localhost:3001/user`;
           const userUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}`;
           const userResponse = await axios.get(userUrl, {
             headers: headers,

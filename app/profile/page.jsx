@@ -7,6 +7,7 @@ import ContactInformation from "../components/Profile/ContactInformation/Contact
 import ChangePassword from "../components/Profile/ChangePassword/ChangePassword";
 import Portfolio from "../components/Profile/Portfolio/Portfolio";
 import UserContext from "../context/UserContext";
+import SessionContext from "../context/SessionContext";
 import withAuth from '../hooks/UserChecker';
 
 const Profile = () => {
@@ -15,6 +16,7 @@ const Profile = () => {
     setNavigation(menu);
   };
   const { user } = useContext(UserContext);
+  const { session, setSession } = useContext(SessionContext);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,7 +27,11 @@ const Profile = () => {
     } else {
       setIsLoading(false);
     }
-  }, [user, router]);
+
+    if (!session) {
+      setSession({ user_mode: "client"});
+    }
+  }, [user, router, session]);
 
   if (isLoading) {
     return (

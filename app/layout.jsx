@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "./components/Navbar/Navbar";
 import { UserProvider } from "./context/UserContext";
+import { SessionProvider } from "./context/SessionContext";
 require("dotenv").config();
 
 const inter = Inter({ subsets: ["latin"] });
@@ -12,7 +13,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  console.log("Root");
   return (
     <html lang="en" data-theme="light" className={inter.className}>
       <head>
@@ -22,12 +22,18 @@ export default function RootLayout({ children }) {
           defer
         ></script>
       </head>
-      <body>
+      <body style={bodyStyle}>
         <UserProvider>
-          <NavBar></NavBar>
-          {children}
+          <SessionProvider>
+            <NavBar></NavBar>
+            {children}
+          </SessionProvider>
         </UserProvider>
       </body>
     </html>
   );
 }
+
+const bodyStyle = {
+  backgroundColor: "#f5f5f5",
+};
