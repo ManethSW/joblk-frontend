@@ -78,7 +78,7 @@ const NavBar = () => {
             />
           </div>
           <ul className={`${styles.linksContainer}`}>
-            { !user ? (
+            { !isLoggedIn ? (
               <>
                 <li className={styles.link}>
                   <Link href="/">Home</Link>
@@ -175,6 +175,7 @@ const NavBar = () => {
                 type="checkbox"
                 checked={isOpen}
                 onChange={handleMenuToggle}
+                className="hidden"
               />
 
               {/* hamburger icon */}
