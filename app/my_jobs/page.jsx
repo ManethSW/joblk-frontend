@@ -12,11 +12,12 @@ const MyJobs = () => {
     const { session, setSession } = useContext(SessionContext);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-
     const [show, setShow] = useState(false);
+
     const handleChange = (selectedDate) => {
       console.log(selectedDate)
     }
+
     const handleClose = (state) => {
       setShow(state)
     }
@@ -234,7 +235,7 @@ const MyJobs = () => {
                           <input type="text" id="skill-search" class="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
                         </div>
                       </div>
-                      <div className="col-span-2">                      
+                      {/* <div className="col-span-2">                      
                         <div class="flex items-center justify-center w-full">
                           <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                             <div class="flex flex-col items-center justify-center pt-5 pb-6">
@@ -242,12 +243,12 @@ const MyJobs = () => {
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                               </svg>
                               <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                              <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                              <p class="text-xs text-gray-500 dark:text-gray-400">PNG or JPG (MAX. 800x400px)</p>
                             </div>
-                            <input id="dropzone-file" type="file" class="hidden" />
+                            <input id="dropzone-file" type="file" accept="image/png, image/jpeg, image/jpg" multiple="multiple" class="hidden"/>
                           </label>
                         </div> 
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -270,29 +271,38 @@ const TableEntry = ({
   bids,
 }) => {
   return (
-    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-      <td className="w-4 p-4">
-        <div className="flex items-center">
-          <input id={`checkbox-${id}`} type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-          <label htmlFor={`checkbox-${id}`} className="sr-only">checkbox</label>
-        </div>
-      </td>
-      <th scope="row" className="px-6 py-4 font-medium text-gray-900 dark:text-white">
-        {name}
-      </th>
-      <td className="px-6 py-4 md:px-3">
-        {views}
-      </td>
-      <td className="px-6 py-4 md:px-3">
-        {clicks}
-      </td>
-      <td className="px-6 py-4 md:px-3">
-        {bids}
-      </td>
-      <td className="px-6 py-4 md:px-3">
-        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-      </td>
-  </tr>
+    <>
+      <ViewJob id={id}/>
+      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <td className="w-4 p-4">
+          <div className="flex items-center">
+            <input id={`checkbox-${id}`} type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+            <label htmlFor={`checkbox-${id}`} className="sr-only">checkbox</label>
+          </div>
+        </td>
+        <th scope="row" className="px-6 py-4 md:px-3 font-medium text-gray-900 dark:text-white">
+          {name}
+        </th>
+        <td className="px-6 py-4 md:px-3">
+          {views}
+        </td>
+        <td className="px-6 py-4 md:px-3">
+          {clicks}
+        </td>
+        <td className="px-6 py-4 md:px-3">
+          {bids}
+        </td>
+        <td className="px-6 py-4 md:px-3">
+          <div className="flex items-center space-x-4 text-sm">
+            <button data-modal-target={`view-job-modal-${id}`} data-modal-toggle={`view-job-modal-${id}`}>
+              <img src="/icons/view.svg" className="w-4 h-4"/>
+            </button>
+            <img src="/icons/edit.svg" className="w-4 h-4"/>
+            <img src="/icons/delete.svg" className="w-4 h-4"/>
+          </div>
+        </td>
+      </tr>
+    </>
   );
 }
 
@@ -305,12 +315,9 @@ const JobCard = ({
 }) => {
   return (
     <div className="container max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-        <a href="#">
-            <img className="rounded-t-lg" src="/docs/images/blog/image-1.jpg" alt="" />
-        </a>
         <div className="p-5">
             <a href="#">
-                <h5 className="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{name}</h5>
+              <h5 className="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{name}</h5>
             </a>
             <div className="flex items-center mb-2 space-x-3 text-sm font-medium">
               <div className="flex items-center flex-col">
@@ -334,22 +341,104 @@ const JobCard = ({
 
               {/* <!-- Dropdown menu --> */}
               <div id={`dropdownDotsHorizontal-${id}`} className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600">
-                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
-                    <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View</a>
-                    </li>
-                    <li>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
-                    </li>
-                    <li>
-                      <a href="#" className="block px-4 py-2 text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
-                    </li>
-                  </ul>
+                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
+                  <li>
+                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View</a>
+                  </li>
+                  <li>
+                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
+                  </li>
+                  <li>
+                    <a href="#" className="block px-4 py-2 text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
+                  </li>
+                </ul>
               </div>
             </div>
         </div>
     </div>
   );
+}
+
+const ViewJob = ({id}) => {
+  return (
+    <div id={`view-job-modal-${id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
+          <div className="relative p-4 w-full max-w-4xl max-h-full">
+            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+              <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Add New Job
+                </h3>
+                <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${id}`}>
+                  <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+                  <span className="sr-only">Close modal</span>
+                </button>
+              </div>  
+              <form id="add-job" className="p-4 md:p-5">
+                <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
+                  <div className="inline">
+                    <div className="grid gap-4 mb-4 grid-cols-2">
+                      <div className="col-span-2">
+                        <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
+                        <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">Name</div>
+                      </div>
+                      <div className="col-span-2">
+                        <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
+                        <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">Give us the gist of it</div>                    
+                      </div>
+                      <div className="col-span-2 sm:col-span-1">
+                        <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
+                        <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Development</div>
+                      </div>
+                      <div className="col-span-2 sm:col-span-1">
+                        <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
+                        <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Frontend</div>
+                      </div>
+                      <div className="col-span-2 sm:col-span-1">
+                        <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
+                        <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR 100,000</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="inline">
+                    <div className="grid gap-4 mb-4 grid-cols-2">
+                      <div className="col-span-2 sm:col-span-1">
+                        <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
+                        <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Entry</div>
+                      </div>
+                      <div className="col-span-2 sm:col-span-1">
+                        <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
+                        <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Text / Messages</div>
+                      </div>
+                      <div className="col-span-2">
+                        <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
+                        <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                          <span class="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span>
+                        </div>
+                      </div>
+                      <div className="col-span-2">
+                        <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
+                        <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                          <span class="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between w-full">
+                  <button type="button" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    View Bids
+                  </button>
+                  <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${id}`}>
+                    Close
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+  )
 }
 
 const checkAll = () => {
