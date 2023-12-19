@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./RegisterSelectUser.module.css";
-import authStyles from '../../../styles/auth.module.css'
+import authStyles from "../../../styles/auth.module.css";
 
-const UserCard = ({ title, description, onClick, isSelected }) => {
+const UserCard = ({ id, title, description, onClick, isSelected }) => {
   return (
     <div
+      id={id}
       className={`${styles.usercard} ${isSelected ? styles.selected : ""}`}
       onClick={onClick}
     >
@@ -35,17 +36,17 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
     <div>
       <div className={authStyles.title}>Register</div>
       <div className={authStyles.subtitle}>Please select user type</div>
-      <div
-        className={`${authStyles.bodyContainer} ${styles.bodyContainer}`}
-      >
+      <div className={`${authStyles.bodyContainer} ${styles.bodyContainer}`}>
         <div className={styles.bodycontent}>
           <UserCard
+            id="freelancer"
             title="Freelancer"
             description="As a Freelancer, you can showcase your skills, find projects that match your expertise, and collaborate with clients to deliver exceptional results."
             onClick={() => handleUserSelect("Freelancer")}
             isSelected={selectedUser === "Freelancer"}
           />
           <UserCard
+            id="client"
             title="Individual"
             description="As an Individual, you can explore talented freelancers, delegate tasks efficiently, and manage projects seamlessly to achieve your goals."
             onClick={() => handleUserSelect("Individual")}
@@ -67,10 +68,12 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>Please select a user type before proceeding</span>
+            <span id="errorDisplay">
+              Please select a user type before proceeding
+            </span>
           </div>
         )}
-        <div onClick={handleNextClick} className={authStyles.button}>
+        <div id="next" onClick={handleNextClick} className={authStyles.button}>
           <button>Next</button>
           <i className="fa-solid fa-arrow-right"></i>
         </div>

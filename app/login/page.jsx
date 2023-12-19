@@ -19,7 +19,7 @@ const PASSWORD_REGEX =
   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Login = () => {
-  console.log("Login page rendered")
+  console.log("Login page rendered");
   const router = useRouter();
   const [email, emailValid, validateEmail] = useInputValidation("", (value) =>
     EMAIL_REGEX.test(value)
@@ -133,7 +133,7 @@ const Login = () => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>{error}</span>
+              <span id="errorDisplay">{error}</span>
             </div>
           )}
           <div className={authStyles.otherActions}>
@@ -150,6 +150,7 @@ const Login = () => {
           <div>
             {isLoading ? (
               <button
+                id="loginButton"
                 type="button"
                 onClick={handleLogin}
                 className={authStyles.button}
@@ -159,6 +160,7 @@ const Login = () => {
               </button>
             ) : (
               <button
+                id="loginButton"
                 type="button"
                 onClick={handleLogin}
                 className={authStyles.button}

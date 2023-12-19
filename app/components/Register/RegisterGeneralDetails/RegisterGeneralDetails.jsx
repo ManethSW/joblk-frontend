@@ -187,7 +187,7 @@ const Register = ({ selectedUser }) => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>{error}</span>
+              <span id="errorDisplay">{error}</span>
             </div>
           )}
           <div className={authStyles.otherActions}>
@@ -196,7 +196,7 @@ const Register = ({ selectedUser }) => {
               <p>Sign Up</p>
             </div>
           </div>
-          <div onClick={handleRegister}>
+          <div onClick={handleRegister} id="registerButton">
             {isLoading ? (
               <button className={authStyles.button}>
                 <span className="loading loading-spinner loading-sm"></span>

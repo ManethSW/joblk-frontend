@@ -140,12 +140,12 @@ const NavBar = () => {
           ) : (
             <>
               <Link href="/login">
-                <button className={`${styles.actionButton} ${styles.login}`}>
+                <button id="loginButton" className={`${styles.actionButton} ${styles.login}`}>
                   Login
                 </button>
               </Link>
               <Link href="/register">
-                <button className={`${styles.actionButton} ${styles.register}`}>
+                <button id="registerButton" className={`${styles.actionButton} ${styles.register}`}>
                   Sign Up
                 </button>
               </Link>
