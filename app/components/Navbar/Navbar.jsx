@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,7 @@ const NavBar = () => {
   const [userMode, setUserMode] = useState("client"); // ["freelancer", "employer"]
   const { user, setUser } = useContext(UserContext);
   const { session, setSession } = useContext(SessionContext);
+  const [isActive, setActive] = useState("dashboard");
 
   const router = useRouter();
 
@@ -33,6 +34,10 @@ const NavBar = () => {
     }
       
   }, [user, session]);
+
+  useEffect(() => {
+    router.replace(`/${userMode}/dashboard`);
+  }, [userMode])
 
   const handleLogout = async () => {
     const logoutUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGOUT}`;
@@ -80,29 +85,42 @@ const NavBar = () => {
           <ul className={`${styles.linksContainer}`}>
             { !isLoggedIn ? (
               <>
-                <li className={styles.link}>
+                <li>
                   <Link href="/">Home</Link>
                 </li>
-                <li className={styles.link}>
+                <li>
                   <Link href="/">Jobs</Link>
                 </li>
-                <li className={styles.link}>
+                <li>
                   <Link href="/">Freelancers</Link>
                 </li>
-                <li className={styles.link}>
+                <li>
                   <Link href="/">About Us</Link>
                 </li>
               </>
             ) : (
               <>
-                <li className={styles.link}>
-                  <Link href="/dashboard">Dashboard</Link>
-                </li>
-                <li className={styles.link}>
-                  <Link href="/my_jobs">My Jobs</Link>
-                </li>
-                <li className={styles.link}>
-                  <Link href="/">Settings</Link>
+              { userMode === "client" ? (
+                <>
+                  <li className={isActive == "client/dashboard" ? styles.active : ""}>
+                    <Link href="/client/dashboard">Dashboard</Link>
+                  </li>
+                  <li className={isActive == "client/my_jobs" ? styles.active : ""}>
+                    <Link href="/client/my_jobs">My Jobs</Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className={isActive == "freelancer/dashboard" ? styles.active : ""}>
+                    <Link href="/freelancer/dashboard">Dashboard</Link>
+                  </li>
+                  <li className={isActive == "freelancer/jobs" ? styles.active : ""}>
+                    <Link href="/freelancer/jobs">Jobs</Link>
+                  </li>
+                </>
+              )}
+                <li className={isActive == "users" ? styles.active : ""}>
+                  <Link href="/users">Users</Link>
                 </li>
               </>
             )}
@@ -120,7 +138,7 @@ const NavBar = () => {
                 </label>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                  className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-3"
                 >
                   {userMode === "freelancer" ? (
                     <li onClick={switchMode}>
@@ -131,6 +149,9 @@ const NavBar = () => {
                       <a>Switch to Freelancer</a>
                     </li>
                   )}
+                  <li>
+                    <Link href="/profile">Profile</Link>
+                  </li>
                   <li onClick={handleLogout}>
                     <a>Logout</a>
                   </li>

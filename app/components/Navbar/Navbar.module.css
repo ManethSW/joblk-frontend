@@ -61,7 +61,11 @@
     color: var(--primary-color-100);
 }
 
-.linksContainer a:hover::before {
+.linksContainer .active a {
+    color: var(--primary-color-100);
+}
+
+.linksContainer a:hover::before, .linksContainer .active a::before  {
     left: 0;
 }
 
