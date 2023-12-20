@@ -41,8 +41,7 @@ const Jobs = () => {
           withCredentials: true,
         }).then(
           (response) => {
-            console.log(response.data)
-            // setJobsProvider(response.data);
+            setJobsProvider(response.data);
           }
         ).catch(
           (error) => {
