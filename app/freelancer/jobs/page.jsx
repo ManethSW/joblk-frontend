@@ -41,6 +41,7 @@ const Jobs = () => {
           withCredentials: true,
         }).then(
           (response) => {
+            console.log("res", response.data)
             setJobsProvider(response.data);
           }
         ).catch(
@@ -107,7 +108,7 @@ const Jobs = () => {
                 </div>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                { jobsProvider.map((job) => { if (job.id) return <JobCard data={job} />}) }
+                { jobsProvider.map((job) => { console.log(job); if (job.id) return <JobCard data={job} />}) }
               </div>
             </div>
           </div>
@@ -120,24 +121,46 @@ const JobCard = ({
   data,
 }) => {
   console.log(data)
+
+  const catergorySelector = (value) => {
+    console.log("cat",value)
+    if (value == 1) {
+      return "Development";
+    } else if (value == 2) {
+      return "Engineering";
+    } else if (value == 3) {
+      return "Designing";
+    }
+  }
+
+  const subCatergorySelector = (value) => {
+    if (value == 1) {
+      return "Frontend";
+    } else if (value == 2) {
+      return "Backend";
+    } else if (value == 3) {
+      return "FullStack";
+    }
+  }
+
   return (
     <>
       <ViewJobModal data={data}/>
       <div className="container max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         <div className="p-5">
           <a href="#">
-            <h5 className="inline mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{data.name}</h5>
+            <h5 className="inline mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{data.title}</h5>
           </a>
           <div className="flex flex-wrap justify-between">
             <div className="flex justify-between w-100 mb-2 space-x-3 text-sm font-medium">
               <div className="flex flex-col">
-                <p className="font-normal text-sm text-gray-700 dark:text-gray-400">Developer</p>
+                <p className="font-normal text-sm text-gray-700 dark:text-gray-400">{catergorySelector(data.category)}</p>
               </div>
               <div className="flex flex-col">
-                <p className="font-normal text-sm text-gray-700 dark:text-gray-400">Frontend</p>
+                <p className="font-normal text-sm text-gray-700 dark:text-gray-400">{subCatergorySelector(data.sub_category)}</p>
               </div>
               <div className="flex flex-col">
-                <p className="font-normal text-sm text-gray-700 dark:text-gray-400">LKR 100,000</p>
+                <p className="font-normal text-sm text-gray-700 dark:text-gray-400">LKR {Number(data.budget).toLocaleString()}</p>
               </div>
             </div>
             <div>
@@ -167,6 +190,47 @@ const ViewJobModal = ({
     }
   }
 
+  const catergorySelector = (value) => {
+    console.log("cat",value)
+    if (value == 1) {
+      return "Development";
+    } else if (value == 2) {
+      return "Engineering";
+    } else if (value == 3) {
+      return "Designing";
+    }
+  }
+
+  const subCatergorySelector = (value) => {
+    if (value == 1) {
+      return "Frontend";
+    } else if (value == 2) {
+      return "Backend";
+    } else if (value == 3) {
+      return "FullStack";
+    }
+  }
+
+  const expLvlSelector = (value) => {
+    if (value == 1) {
+      return "Entry Level";
+    } else if (value == 2) {
+      return "Intermediate";
+    } else if (value == 3) {
+      return "Expert";
+    }
+  }
+
+  const commMethodSelector = (value) => {
+    if (value == 1) {
+      return "Text / Messages";
+    } else if (value == 2) {
+      return "Phone Call";
+    } else if (value == 3) {
+      return "Online Meeting";
+    }
+  }
+
   return (
     <div id={`view-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-10 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative p-4 w-full max-w-4xl max-h-full">
@@ -191,7 +255,7 @@ const ViewJobModal = ({
                       <div className="grid gap-4 mb-4 grid-cols-2">
                         <div className="col-span-2">
                           <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
-                          <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.name}</div>
+                          <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.title}</div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
@@ -199,11 +263,11 @@ const ViewJobModal = ({
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.catergory}</div>
+                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{catergorySelector(data.category)}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.subCatergory}</div>
+                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{subCatergorySelector(data.sub_category)}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
@@ -215,23 +279,23 @@ const ViewJobModal = ({
                       <div className="grid gap-4 mb-4 grid-cols-2">
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.experienceLevel}</div>
+                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{expLvlSelector(data.experience_level)}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.communicationMethod}</div>
+                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{commMethodSelector(data.communication_method)}</div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
-                          <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            {data.tags.map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{tag}</span> }) }
+                          <div id="tags" className="flex flex-wrap border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {data.job_tags.split(",").map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{tag}</span> }) }
                             {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span> */}
                           </div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
                           <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            {data.skills.map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{skill}</span> })}
+                            {data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{skill}</span> })}
                             {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span> */}
                           </div>
                         </div>
