@@ -41,7 +41,6 @@ const Jobs = () => {
           withCredentials: true,
         }).then(
           (response) => {
-            console.log("res", response.data)
             setJobsProvider(response.data);
           }
         ).catch(
@@ -77,7 +76,7 @@ const Jobs = () => {
                     <div class="flex jutify-center items-center block w-full p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       <div class="flex items-center ps-3 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                         </svg>
                       </div>
                       <input type="text" id="default-search" class="border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search Jobs..." required/>
@@ -108,7 +107,7 @@ const Jobs = () => {
                 </div>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                { jobsProvider.map((job) => { console.log(job); if (job.id) return <JobCard data={job} />}) }
+                { jobsProvider.map((job) => { if (job.id) return <JobCard data={job} />}) }
               </div>
             </div>
           </div>
@@ -120,10 +119,7 @@ const Jobs = () => {
 const JobCard = ({
   data,
 }) => {
-  console.log(data)
-
   const catergorySelector = (value) => {
-    console.log("cat",value)
     if (value == 1) {
       return "Development";
     } else if (value == 2) {
@@ -190,8 +186,7 @@ const ViewJobModal = ({
     }
   }
 
-  const catergorySelector = (value) => {
-    console.log("cat",value)
+  const categorySelector = (value) => {
     if (value == 1) {
       return "Development";
     } else if (value == 2) {
@@ -201,7 +196,7 @@ const ViewJobModal = ({
     }
   }
 
-  const subCatergorySelector = (value) => {
+  const subCategorySelector = (value) => {
     if (value == 1) {
       return "Frontend";
     } else if (value == 2) {
@@ -263,11 +258,11 @@ const ViewJobModal = ({
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{catergorySelector(data.category)}</div>
+                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{categorySelector(data.category)}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{subCatergorySelector(data.sub_category)}</div>
+                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{subCategorySelector(data.sub_category)}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>

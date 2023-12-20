@@ -2,6 +2,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import Datepicker from "tailwind-datepicker-react";
 import { initFlowbite } from "flowbite";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
@@ -12,15 +13,7 @@ const MyJobs = () => {
     const { session, setSession } = useContext(SessionContext);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [show, setShow] = useState(false);
-
-    const handleChange = (selectedDate) => {
-      console.log(selectedDate)
-    }
-
-    const handleClose = (state) => {
-      setShow(state)
-    }
+    const [jobsProvider, setJobsProvider] = useState([]);
 
     useEffect(() => {
       initFlowbite();
@@ -37,7 +30,26 @@ const MyJobs = () => {
         if (!session) {
           setSession({ user_mode: "client" });
         }
-    }, [user, session]);
+
+        getAllJobs();
+    }, [user, session, router]);
+
+    const getAllJobs = async () => {
+      const getAllJobs = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job`,  
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }).then(
+          (response) => {
+            setJobsProvider(response.data);
+          }
+        ).catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+    };
 
     if (isLoading) {
       return (
@@ -135,319 +147,26 @@ const MyJobs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <TableEntry id="1" name="Revamp of DOC990" views="100" clicks="50" bids="10"/>
-                    <TableEntry id="2" name="Updating 2017 attendance system" views="60" clicks="20" bids="2"/>
+                    { jobsProvider.map((job) => { console.log(job); if (job.id) return <TableEntry data={job} />}) }
                   </tbody>
                 </table>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                <JobCard id="1" name="Revamp of DOC990" views="100" clicks="50" bids="10"/>
-                <JobCard id="2" name="Updating 2017 attendance system" views="60" clicks="20" bids="2"/>
+                { jobsProvider.map((job) => { console.log(job); if (job.id) return <JobCard data={job} />}) }
+
+                {/* <JobCard id="1" name="Revamp of DOC990" views="100" clicks="50" bids="10"/>
+                <JobCard id="2" name="Updating 2017 attendance system" views="60" clicks="20" bids="2"/> */}
               </div>
             </div>
           </div>
         </div>
         {/* Add Job Modal */}
-        <div id="add-job-modal" tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
-          <div className="relative p-4 w-full max-w-4xl max-h-full">
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-              <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Add New Job
-                </h3>
-                <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="add-job-modal">
-                  <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                  </svg>
-                  <span className="sr-only">Close modal</span>
-                </button>
-              </div>  
-              <form id="add-job" className="p-4 md:p-5">
-                <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
-                  <div className="inline">
-                    <div className="grid gap-4 mb-4 grid-cols-2">
-                      <div className="col-span-2">
-                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                        <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required=""/>
-                      </div>
-                      <div className="col-span-2">
-                        <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                        <textarea id="description" rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it"></textarea>                    
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                        <select id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                          <option defaultChecked value="development">Development</option>
-                          <option value="engineering">Engineering</option>
-                          <option value="designing">Designing</option>
-                        </select>
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                        <select id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                          <option defaultChecked value="frontend">Frontend</option>
-                          <option value="backend">Backend</option>
-                          <option value="fullstack">FullStack</option>
-                        </select>
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
-                        <Datepicker onChange={handleChange} show={show} setShow={handleClose} />
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
-                        <div id="budget" className="flex flex-row items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                          LKR
-                          <input type="text" id="budget-input" onInput={(event) => {event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" required/>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="inline">
-                    <div className="grid gap-4 mb-4 grid-cols-2">
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                        <select id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                          <option defaultChecked value="entry">Entry</option>
-                          <option value="intermediate">Intermediate</option>
-                          <option value="expert">Expert</option>
-                        </select>
-                      </div>
-                      <div className="col-span-2 sm:col-span-1">
-                        <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                        <select id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                          <option defaultChecked value="text">Text / Messages</option>
-                          <option value="phone-call">Phone Call</option>
-                          <option value="online-meet">Online Meeting</option>
-                        </select>
-                      </div>
-                      <div className="col-span-2">
-                        <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
-                        <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                          <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span>
-                          <input type="text" id="tag-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required/>
-                        </div>
-                      </div>
-                      <div className="col-span-2">
-                        <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
-                        <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                          <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span>
-                          <input type="text" id="skill-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
-                        </div>
-                      </div>
-                      {/* <div className="col-span-2">                      
-                        <div className="flex items-center justify-center w-full">
-                          <label for="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                              <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                              </svg>
-                              <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">PNG or JPG (MAX. 800x400px)</p>
-                            </div>
-                            <input id="dropzone-file" type="file" accept="image/png, image/jpeg, image/jpg" multiple="multiple" className="hidden"/>
-                          </label>
-                        </div> 
-                      </div> */}
-                    </div>
-                  </div>
-                </div>
-                <button type="button" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  Add Job
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+        <AddJobModal/>
       </div>
     );
 };
 
-const TableEntry = ({
-  id,
-  name,
-  views,
-  clicks,
-  bids,
-}) => {
-  return (
-    <>
-      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-        <td className="w-4 p-4">
-          <ViewJobModal id={id}/>
-          <EditJobModal id={id}/>
-          <DeleteJobModal id={id}/>
-          <div className="flex items-center">
-            <input id={`checkbox-${id}`} type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-            <label htmlFor={`checkbox-${id}`} className="sr-only">checkbox</label>
-          </div>
-        </td>
-        <th scope="row" className="px-6 py-4 md:px-3 font-medium text-gray-900 dark:text-white">
-          {name}
-        </th>
-        <td className="px-6 py-4 md:px-3">
-          {views}
-        </td>
-        <td className="px-6 py-4 md:px-3">
-          {clicks}
-        </td>
-        <td className="px-6 py-4 md:px-3">
-          {bids}
-        </td>
-        <td className="px-6 py-4 md:px-3">
-          <div className="flex items-center space-x-4 text-sm">
-            <button data-modal-target={`view-job-modal-${id}`} data-modal-toggle={`view-job-modal-${id}`}>
-              <img src="/icons/view.svg" className="w-4 h-4"/>
-            </button>
-            <button data-modal-target={`edit-job-modal-${id}`} data-modal-toggle={`edit-job-modal-${id}`}>
-              <img src="/icons/edit.svg" className="w-4 h-4"/>
-            </button>
-            <button data-modal-target={`delete-job-modal-${id}`} data-modal-toggle={`delete-job-modal-${id}`}>
-              <img src="/icons/delete.svg" className="w-4 h-4"/>
-            </button>
-          </div>
-        </td>
-      </tr>
-    </>
-  );
-}
-
-const JobCard = ({
-  id,
-  name,
-  views,
-  clicks,
-  bids,
-}) => {
-  return (
-    <div className="container max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-        <div className="p-5">
-            <a href="#">
-              <h5 className="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{name}</h5>
-            </a>
-            <div className="flex items-center mb-2 space-x-3 text-sm font-medium">
-              <div className="flex items-center flex-col">
-                <p className="font-bold text-xs text-gray-700 dark:text-gray-400">Views</p>
-                <p className="font-normal">{views}</p>
-              </div>
-              <div className="flex items-center flex-col">
-                <p className="font-bold text-xs text-gray-700 dark:text-gray-400">Click</p>
-                <p className="font-normal">{clicks}</p>
-              </div>
-              <div className="flex items-center flex-col">
-                <p className="font-bold text-xs text-gray-700 dark:text-gray-400">Bids</p>
-                <p className="font-normal">{bids}</p>
-              </div>
-              <button id="dropdownMenuIconHorizontalButton" data-dropdown-toggle={`dropdownDotsHorizontal-${id}`} className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600" type="button"> 
-              <svg className="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 10">
-                <path d="M15.434 1.235A2 2 0 0 0 13.586 0H2.414A2 2 0 0 0 1 3.414L6.586 9a2 2 0 0 0 2.828 0L15 3.414a2 2 0 0 0 .434-2.179Z"/>
-              </svg>
-              <span className="sr-only">Options</span>
-              </button>
-
-              {/* <!-- Dropdown menu --> */}
-              <div id={`dropdownDotsHorizontal-${id}`} className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600">
-                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
-                  <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View</a>
-                  </li>
-                  <li>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</a>
-                  </li>
-                  <li>
-                    <a href="#" className="block px-4 py-2 text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-        </div>
-    </div>
-  );
-}
-
-const ViewJobModal = ({id}) => {
-  return (
-    <div id={`view-job-modal-${id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
-      <div className="relative p-4 w-full max-w-4xl max-h-full">
-        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Add New Job
-            </h3>
-            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${id}`}>
-              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-              </svg>
-              <span className="sr-only">Close modal</span>
-            </button>
-          </div>  
-          <form id="add-job" className="p-4 md:p-5">
-            <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
-              <div className="inline">
-                <div className="grid gap-4 mb-4 grid-cols-2">
-                  <div className="col-span-2">
-                    <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
-                    <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">Name</div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
-                    <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">Give us the gist of it</div>                    
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                    <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Development</div>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                    <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Frontend</div>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
-                    <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR 100,000</div>
-                  </div>
-                </div>
-              </div>
-              <div className="inline">
-                <div className="grid gap-4 mb-4 grid-cols-2">
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                    <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Entry</div>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                    <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Text / Messages</div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
-                    <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                      <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
-                    <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                      <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row justify-between w-full">
-              <button type="button" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                View Bids
-              </button>
-              <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${id}`}>
-                Close
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const EditJobModal = ({id}) => {
+const AddJobModal = () => {
   const [show, setShow] = useState(false);
 
   const handleChange = (selectedDate) => {
@@ -458,15 +177,15 @@ const EditJobModal = ({id}) => {
     setShow(state)
   }
 
-  return (
-    <div id={`edit-job-modal-${id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
+  return(
+    <div id="add-job-modal" tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative p-4 w-full max-w-4xl max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Edit Job
+              Add New Job
             </h3>
-            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`edit-job-modal-${id}`}>
+            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="add-job-modal">
               <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
               </svg>
@@ -546,6 +265,20 @@ const EditJobModal = ({id}) => {
                       <input type="text" id="skill-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
                     </div>
                   </div>
+                  {/* <div className="col-span-2">                      
+                    <div className="flex items-center justify-center w-full">
+                      <label for="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                          </svg>
+                          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">PNG or JPG (MAX. 800x400px)</p>
+                        </div>
+                        <input id="dropzone-file" type="file" accept="image/png, image/jpeg, image/jpg" multiple="multiple" className="hidden"/>
+                      </label>
+                    </div> 
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -559,12 +292,352 @@ const EditJobModal = ({id}) => {
   )
 }
 
-const DeleteJobModal = ({id}) => {
+const TableEntry = ({
+  data,
+}) => {
+  return (
+    <>
+      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <td className="w-4 p-4">
+          <ViewJobModal data={data}/>
+          <EditJobModal data={data}/>
+          <DeleteJobModal data={data}/>
+          <div className="flex items-center">
+            <input id={`checkbox-${data.id}`} type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-500 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+            <label htmlFor={`checkbox-${data.id}`} className="sr-only">checkbox</label>
+          </div>
+        </td>
+        <th scope="row" className="px-6 py-4 md:px-3 font-medium text-gray-900 dark:text-white">
+          {data.title}
+        </th>
+        <td className="px-6 py-4 md:px-3">
+          {data.views}
+        </td>
+        <td className="px-6 py-4 md:px-3">
+          {data.clicks}
+        </td>
+        <td className="px-6 py-4 md:px-3">
+          {/* {bids} */}0
+        </td>
+        <td className="px-6 py-4 md:px-3">
+          <div className="flex items-center space-x-4 text-sm">
+            <button data-modal-target={`view-job-modal-${data.id}`} data-modal-toggle={`view-job-modal-${data.id}`}>
+              <img src="/icons/view.svg" className="w-4 h-4"/>
+            </button>
+            <button data-modal-target={`edit-job-modal-${data.id}`} data-modal-toggle={`edit-job-modal-${data.id}`}>
+              <img src="/icons/edit.svg" className="w-4 h-4"/>
+            </button>
+            <button data-modal-target={`delete-job-modal-${data.id}`} data-modal-toggle={`delete-job-modal-${data.id}`}>
+              <img src="/icons/delete.svg" className="w-4 h-4"/>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </>
+  );
+}
+
+const JobCard = ({
+  data,
+}) => {
+  return (
+    <div className="container max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <ViewJobModal data={data}/>
+        <EditJobModal data={data}/>
+        <DeleteJobModal data={data}/>
+        <div className="p-5">
+            <a href="#">
+              <h5 className="mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{data.title}</h5>
+            </a>
+            <div className="flex items-center mb-2 space-x-3 text-sm font-medium">
+              <div className="flex items-center flex-col">
+                <p className="font-bold text-xs text-gray-700 dark:text-gray-400">Views</p>
+                <p className="font-normal">{data.views}</p>
+              </div>
+              <div className="flex items-center flex-col">
+                <p className="font-bold text-xs text-gray-700 dark:text-gray-400">Click</p>
+                <p className="font-normal">{data.clicks}</p>
+              </div>
+              <div className="flex items-center flex-col">
+                <p className="font-bold text-xs text-gray-700 dark:text-gray-400">Bids</p>
+                <p className="font-normal">0</p>
+              </div>
+              <button id="dropdownMenuIconHorizontalButton" data-dropdown-toggle={`dropdownDotsHorizontal-${data.id}`} className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:outline-none dark:text-white focus:ring-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-600" type="button"> 
+              <svg className="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 10">
+                <path d="M15.434 1.235A2 2 0 0 0 13.586 0H2.414A2 2 0 0 0 1 3.414L6.586 9a2 2 0 0 0 2.828 0L15 3.414a2 2 0 0 0 .434-2.179Z"/>
+              </svg>
+              <span className="sr-only">Options</span>
+              </button>
+
+              {/* <!-- Dropdown menu --> */}
+              <div id={`dropdownDotsHorizontal-${data.id}`} className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600">
+                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconHorizontalButton">
+                  <li>
+                    <button type="button" data-modal-target={`view-job-modal-${data.id}`} data-modal-toggle={`view-job-modal-${data.id}`}  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">View</button>
+                  </li>
+                  <li>
+                    <button type="button" data-modal-target={`edit-job-modal-${data.id}`} data-modal-toggle={`edit-job-modal-${data.id}`} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</button>
+                  </li>
+                  <li>
+                    <button type="button" data-modal-target={`delete-job-modal-${data.id}`} data-modal-toggle={`delete-job-modal-${data.id}`} className="block px-4 py-2 text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Delete</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+        </div>
+    </div>
+  );
+}
+
+const ViewJobModal = ({
+  data,
+}) => {
+
+  const categorySelector = (value) => {
+    if (value == 1) {
+      return "Development";
+    } else if (value == 2) {
+      return "Engineering";
+    } else if (value == 3) {
+      return "Designing";
+    }
+  }
+
+  const subCategorySelector = (value) => {
+    if (value == 1) {
+      return "Frontend";
+    } else if (value == 2) {
+      return "Backend";
+    } else if (value == 3) {
+      return "FullStack";
+    }
+  }
+
+  const expLvlSelector = (value) => {
+    if (value == 1) {
+      return "Entry Level";
+    } else if (value == 2) {
+      return "Intermediate";
+    } else if (value == 3) {
+      return "Expert";
+    }
+  }
+
+  const commMethodSelector = (value) => {
+    if (value == 1) {
+      return "Text / Messages";
+    } else if (value == 2) {
+      return "Phone Call";
+    } else if (value == 3) {
+      return "Online Meeting";
+    }
+  }
+
+  return (
+    <div id={`view-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
+      <div className="relative p-4 w-full max-w-4xl max-h-full">
+        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Add New Job
+            </h3>
+            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${data.id}`}>
+              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+              <span className="sr-only">Close modal</span>
+            </button>
+          </div>  
+          <form id="add-job" className="p-4 md:p-5">
+            <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
+              <div className="inline">
+                <div className="grid gap-4 mb-4 grid-cols-2">
+                  <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
+                    <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.title}</div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
+                    <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.description}</div>                    
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
+                    <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{categorySelector(data.category)}</div>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
+                    <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{subCategorySelector(data.sub_category)}</div>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
+                    <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR {Number(data.budget).toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
+              <div className="inline">
+                <div className="grid gap-4 mb-4 grid-cols-2">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
+                    <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{expLvlSelector(data.experience_level)}</div>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
+                    <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{commMethodSelector(data.communication_method)}</div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
+                    <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                      {data.job_tags.split(",").map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{tag}</span> }) }
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
+                    <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                      {data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{skill}</span> })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-row justify-between w-full">
+              <button type="button" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                View Bids
+              </button>
+              <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
+                Close
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const EditJobModal = ({
+  data,
+}) => {
+  const [show, setShow] = useState(false);
+
+  const handleChange = (selectedDate) => {
+    console.log(event.target.parentNode)
+  }
+
+  const handleClose = (state) => {
+    setShow(state)
+  }
+
+  const handleJobSave = (event) => {
+    console.log(document.getElementById("name").value)
+  }
+
+  return (
+    <div id={`edit-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
+      <div className="relative p-4 w-full max-w-4xl max-h-full">
+        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Edit Job
+            </h3>
+            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`edit-job-modal-${data.id}`}>
+              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+              </svg>
+              <span className="sr-only">Close modal</span>
+            </button>
+          </div>  
+          <form id="add-job" className="p-4 md:p-5">
+            <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
+              <div className="inline">
+                <div className="grid gap-4 mb-4 grid-cols-2">
+                  <div className="col-span-2">
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                    <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required="" defaultValue={data.title}/>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                    <textarea id="description" name="description" rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={data.description}></textarea>                    
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
+                    <select id="catergory" defaultValue={data.category} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option value="1">Development</option>
+                      <option value="2">Engineering</option>
+                      <option value="3">Designing</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
+                    <select id="sub-catergory" defaultValue={data.sub_category} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option value="frontend">Frontend</option>
+                      <option value="backend">Backend</option>
+                      <option value="fullstack">FullStack</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
+                    <Datepicker onChange={handleChange} show={show} setShow={handleClose} />
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
+                    <div id="budget" className="flex flex-row items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                      LKR
+                      <input type="text" id="budget-input" onInput={(event) => {event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" value={Number(data.budget).toLocaleString()} required/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="inline">
+                <div className="grid gap-4 mb-4 grid-cols-2">
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
+                    <select id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option defaultChecked value="entry">Entry</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="expert">Expert</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <label htmlFor="communication" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
+                    <select id="communication" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option defaultChecked value="text">Text / Messages</option>
+                      <option value="phone-call">Phone Call</option>
+                      <option value="online-meet">Online Meeting</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
+                    <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                      <input type="text" id="tag-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required defaultValue={data.job_tags.split(",").join(", ")}/>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
+                    <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                      <input type="text" id="skill-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required defaultValue={data.required_skills.split(",").join(", ")}/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" onClick={handleJobSave} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              Save Job
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const DeleteJobModal = ({
+  data,
+}) => {
   return(
-    <div id={`delete-job-modal-${id}`} tabIndex="-1" className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id={`delete-job-modal-${data.id}`} tabIndex="-1" className="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div className="relative p-4 w-full max-w-md max-h-full">
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                <button type="button" className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide={`delete-job-modal-${id}`}>
+                <button type="button" className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide={`delete-job-modal-${data.id}`}>
                     <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
@@ -575,8 +648,8 @@ const DeleteJobModal = ({id}) => {
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                     </svg>
                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this product?</h3>
-                    <button data-modal-hide={`delete-job-modal-${id}`} type="button" className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">Yes, I'm sure</button>
-                    <button data-modal-hide={`delete-job-modal-${id}`} type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-400 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
+                    <button data-modal-hide={`delete-job-modal-${data.id}`} type="button" className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">Yes, I'm sure</button>
+                    <button data-modal-hide={`delete-job-modal-${data.id}`} type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-400 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
                 </div>
             </div>
         </div>
