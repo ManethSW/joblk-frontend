@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useContext, useEffect } from "react";
-import Datepicker from "tailwind-datepicker-react";
 import { initFlowbite } from "flowbite";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
@@ -12,7 +12,7 @@ const Jobs = () => {
     const { session, setSession } = useContext(SessionContext);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [show, setShow] = useState(false);
+    const [jobsProvider, setJobsProvider] = useState([]);
 
     useEffect(() => {
       initFlowbite();
@@ -29,7 +29,27 @@ const Jobs = () => {
         if (!session) {
           setSession({ user_mode: "client" });
         }
-    }, [user, session]);
+
+        getAllJobs();
+    }, [user, session, router]);
+
+    const getAllJobs = async () => {
+      const getAllJobs = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job`,  
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }).then(
+          (response) => {
+            console.log(response.data)
+            // setJobsProvider(response.data);
+          }
+        ).catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+    };
 
     if (isLoading) {
       return (
@@ -88,11 +108,7 @@ const Jobs = () => {
                 </div>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                <JobCard id="1" name="Revamp of DOC990"/>
-                <JobCard id="2" name="Updating 2017 attendance system"/>
-                <JobCard id="3" name="Updating 2017 attendance system"/>
-                <JobCard id="4" name="Updating 2017 attendance system"/>
-                <JobCard id="5" name="Updating 2017 attendance system"/>
+                { jobsProvider.map((job) => { if (job.id) return <JobCard data={job} />}) }
               </div>
             </div>
           </div>
@@ -102,19 +118,16 @@ const Jobs = () => {
 };
 
 const JobCard = ({
-  id,
-  name,
-  views,
-  clicks,
-  bids,
+  data,
 }) => {
+  console.log(data)
   return (
     <>
-      <ViewJobModal id={id}/>
+      <ViewJobModal data={data}/>
       <div className="container max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         <div className="p-5">
           <a href="#">
-            <h5 className="inline mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{name}</h5>
+            <h5 className="inline mb-2 text-base font-bold tracking-tight text-gray-900 dark:text-white">{data.name}</h5>
           </a>
           <div className="flex flex-wrap justify-between">
             <div className="flex justify-between w-100 mb-2 space-x-3 text-sm font-medium">
@@ -130,7 +143,7 @@ const JobCard = ({
             </div>
             <div>
               <div className="flex items-center space-x-4 text-sm">
-                <button data-modal-target={`view-job-modal-${id}`} data-modal-toggle={`view-job-modal-${id}`}>
+                <button data-modal-target={`view-job-modal-${data.id}`} data-modal-toggle={`view-job-modal-${data.id}`}>
                   <img src="/icons/view.svg" className="w-4 h-4"/>
                 </button>
               </div>
@@ -142,7 +155,9 @@ const JobCard = ({
   );
 }
 
-const ViewJobModal = ({id}) => {
+const ViewJobModal = ({
+  data,
+}) => {
   const [viewModalCurrent, setViewModalCurrent] = useState(0);
 
   const switchModalView = () => {
@@ -154,14 +169,14 @@ const ViewJobModal = ({id}) => {
   }
 
   return (
-    <div id={`view-job-modal-${id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-10 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div id={`view-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-10 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative p-4 w-full max-w-4xl max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               View Job
             </h3>
-            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${id}`}>
+            <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${data.id}`}>
               <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
               </svg>
@@ -177,23 +192,23 @@ const ViewJobModal = ({id}) => {
                       <div className="grid gap-4 mb-4 grid-cols-2">
                         <div className="col-span-2">
                           <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
-                          <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">Name</div>
+                          <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.name}</div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
-                          <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">Give us the gist of it</div>                    
+                          <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.description}</div>                    
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Development</div>
+                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.catergory}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Frontend</div>
+                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.subCatergory}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
-                          <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR 100,000</div>
+                          <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR {Number(data.budget).toLocaleString()}</div>
                         </div>
                       </div>
                     </div>
@@ -201,22 +216,24 @@ const ViewJobModal = ({id}) => {
                       <div className="grid gap-4 mb-4 grid-cols-2">
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Entry</div>
+                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.experienceLevel}</div>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">Text / Messages</div>
+                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{data.communicationMethod}</div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
                           <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span>
+                            {data.tags.map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{tag}</span> }) }
+                            {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span> */}
                           </div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
                           <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span>
+                            {data.skills.map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">{skill}</span> })}
+                            {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span> */}
                           </div>
                         </div>
                       </div>
@@ -245,7 +262,7 @@ const ViewJobModal = ({id}) => {
                 <button type="button" class="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
               </div>
               <div className="flex flex-row justify-between w-full pt-4">
-                <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${id}`}>
+                <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
                   Close
                 </button>
                 <button type="button" data-carousel-next onClick={switchModalView} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
