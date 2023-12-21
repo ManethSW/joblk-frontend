@@ -13,6 +13,8 @@ const Jobs = () => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [jobsProvider, setJobsProvider] = useState([]);
+    const [filteredJobs, setFilteredJobs] = useState([]);
+    const [filter, setFilter] = useState(0);
 
     useEffect(() => {
       initFlowbite();
@@ -42,6 +44,7 @@ const Jobs = () => {
         }).then(
           (response) => {
             setJobsProvider(response.data);
+            setFilteredJobs(response.data);
           }
         ).catch(
           (error) => {
@@ -49,6 +52,37 @@ const Jobs = () => {
           }
         );
     };
+
+    const handleSearch = (e) => {
+      const searchQuery = e.target.value;
+      const filteredJobs = jobsProvider.filter((job) => {
+        return job.title.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+      setFilteredJobs(filteredJobs);
+    }
+
+    const handleFilter = (e) => {
+      const filterQuery = e.target.value;
+      setFilter(filterQuery);
+      if (filterQuery == 0) {
+        setFilteredJobs(jobsProvider);
+      } else if (filterQuery == 1) {
+        const filteredJobs = jobsProvider.filter((job) => {
+          return job.job_status == 1;
+        });
+        setFilteredJobs(filteredJobs);
+      } else if (filterQuery == 2) {
+        const filteredJobs = jobsProvider.filter((job) => {
+          return job.job_status == 2;
+        });
+        setFilteredJobs(filteredJobs);
+      } else if (filterQuery == 3) {
+        const filteredJobs = jobsProvider.filter((job) => {
+          return job.job_status == 3;
+        });
+        setFilteredJobs(filteredJobs);
+      }
+    }
 
     if (isLoading) {
       return (
@@ -79,7 +113,7 @@ const Jobs = () => {
                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                         </svg>
                       </div>
-                      <input type="text" id="default-search" class="border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search Jobs..." required/>
+                      <input type="text" id="default-search" onChange={handleSearch} class="border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search Jobs..." required/>
                       <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                   </div>
@@ -89,25 +123,25 @@ const Jobs = () => {
               <div className={styles.filters}>
                 <div className="flex flex-row flex-wrap mt-2 max-sm:gap-1 gap-2">
                   <label className={styles.option} htmlFor="all">
-                    <input type="radio" id="all" name="filter" value="0" defaultChecked/>
+                    <input type="radio" id="all" name="filter" value="0" onChange={handleFilter} defaultChecked/>
                     All
                   </label>
                   <label className={styles.option} htmlFor="pending">
-                    <input type="radio" id="pending" name="filter" value="1"/>
+                    <input type="radio" id="pending" name="filter" onChange={handleFilter} value="1"/>
                     Pending
                   </label>
                   <label className={styles.option} htmlFor="ongoing">
-                    <input type="radio" id="ongoing" name="filter" value="2"/>
+                    <input type="radio" id="ongoing" name="filter" onChange={handleFilter} value="2"/>
                     Ongoing
                   </label>
                   <label className={styles.option} htmlFor="completed">
-                    <input type="radio" id="completed" name="filter" value="3"/>
+                    <input type="radio" id="completed" name="filter" onChange={handleFilter} value="3"/>
                     Completed
                   </label>
                 </div>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                { jobsProvider.map((job) => { if (job.id) return <JobCard data={job} />}) }
+                { filteredJobs.map((job) => { if (job.id) return <><JobCard data={job}/><ViewJobModal data={job}/></>}) }
               </div>
             </div>
           </div>
@@ -141,7 +175,6 @@ const JobCard = ({
 
   return (
     <>
-      <ViewJobModal data={data}/>
       <div className="container max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         <div className="p-5">
           <a href="#">
