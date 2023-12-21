@@ -14,7 +14,9 @@ const MyJobs = () => {
     const { session, setSession } = useContext(SessionContext);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState({});
     const [jobsProvider, setJobsProvider] = useState([]);
+    const [filteredJobs, setFilteredJobs] = useState([]);
 
     useEffect(() => {
       initFlowbite();
@@ -26,6 +28,7 @@ const MyJobs = () => {
           router.replace("/login");
         } else {
           setIsLoading(false);
+          setCurrentUser(user);
         }
 
         if (!session) {
@@ -44,6 +47,7 @@ const MyJobs = () => {
         }).then(
           (response) => {
             setJobsProvider(response.data);
+            setFilteredJobs(response.data);
           }
         ).catch(
           (error) => {
@@ -51,6 +55,33 @@ const MyJobs = () => {
           }
         );
     };
+
+    // const searchFilteredJobs = filteredJobs.filter((job) => {
+    //   return job.client_id == currentUser.id;
+    // });
+    // setFilteredJobs(searchFilteredJobs);
+
+    const handleFilter = (e) => {
+      const filterQuery = e.target.value;
+      if (filterQuery == 0) {
+        setFilteredJobs(jobsProvider);
+      } else if (filterQuery == 1) {
+        const filteredJobs = jobsProvider.filter((job) => {
+          return job.job_status == 1;
+        });
+        setFilteredJobs(filteredJobs);
+      } else if (filterQuery == 2) {
+        const filteredJobs = jobsProvider.filter((job) => {
+          return job.job_status == 2;
+        });
+        setFilteredJobs(filteredJobs);
+      } else if (filterQuery == 3) {
+        const filteredJobs = jobsProvider.filter((job) => {
+          return job.job_status == 3;
+        });
+        setFilteredJobs(filteredJobs);
+      }
+    }
 
     if (isLoading) {
       return (
@@ -103,19 +134,19 @@ const MyJobs = () => {
               <div className={styles.filters}>
                 <div className="flex flex-row flex-wrap mt-2 max-sm:gap-1 gap-2">
                 <label className={styles.option} htmlFor="all">
-                    <input type="radio" id="all" name="filter" value="0" defaultChecked/>
+                    <input type="radio" id="all" name="filter" value="0" defaultChecked onClick={handleFilter}/>
                     All
                   </label>
                   <label className={styles.option} htmlFor="pending">
-                    <input type="radio" id="pending" name="filter" value="1"/>
+                    <input type="radio" id="pending" name="filter" value="1" onClick={handleFilter}/>
                     Pending
                   </label>
                   <label className={styles.option} htmlFor="ongoing">
-                    <input type="radio" id="ongoing" name="filter" value="2"/>
+                    <input type="radio" id="ongoing" name="filter" value="2" onClick={handleFilter}/>
                     Ongoing
                   </label>
                   <label className={styles.option} htmlFor="completed">
-                    <input type="radio" id="completed" name="filter" value="3"/>
+                    <input type="radio" id="completed" name="filter" value="3" onClick={handleFilter}/>
                     Completed
                   </label>
                 </div>
@@ -148,12 +179,12 @@ const MyJobs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    { jobsProvider.map((job) => { if (job.id) return <TableEntry data={job} />}) }
+                    { filteredJobs.map((job) => { if (job.id) return <TableEntry data={job} />}) }
                   </tbody>
                 </table>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                { jobsProvider.map((job) => { if (job.id) return <JobCard data={job} key={job.id}/>}) }
+                { filteredJobs.map((job) => { if (job.id) return <JobCard data={job} key={job.id}/>}) }
 
                 {/* <JobCard id="1" name="Revamp of DOC990" views="100" clicks="50" bids="10"/>
                 <JobCard id="2" name="Updating 2017 attendance system" views="60" clicks="20" bids="2"/> */}
@@ -199,6 +230,7 @@ const AddJobModal = () => {
           'communication_method':communicationMethod,
           'job_tags':jobTags,
           'required_skills':requiredSkills,
+          'job_status':1,
         }, 
         {
           headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
@@ -289,16 +321,16 @@ const AddJobModal = () => {
                     </select>
                   </div>
                   <div className="col-span-2">
-                    <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
+                  <label htmlFor="tags" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Tags</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the tags by a comma)</p></label>
                     <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span>
+                      {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span> */}
                       <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required/>
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
+                  <label htmlFor="skills" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Required Skills</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the skills by a comma)</p></label>
                     <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span>
+                      {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span> */}
                       <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
                     </div>
                   </div>
