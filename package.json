@@ -14,14 +14,17 @@
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
     "flowbite": "^2.2.0",
+    "flowbite-datepicker": "^1.2.6",
     "framer-motion": "^10.16.5",
     "js-cookie": "^3.0.5",
+    "moment": "^2.29.4",
     "next": "14.0.3",
     "node-fetch": "^3.3.2",
     "prop-types": "^15.8.1",
     "react": "^18",
     "react-cookie": "^6.1.1",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwind-datepicker-react": "^1.4.3"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

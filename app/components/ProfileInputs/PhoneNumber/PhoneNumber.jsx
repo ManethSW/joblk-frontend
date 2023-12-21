@@ -36,9 +36,9 @@ const PhoneNumberInput = ({ phoneNumber, setPhoneNumber }) => {
     e.preventDefault();
     const username = value;
     if (isUsernameValid) {
-      const url = "http://localhost:3001/user";
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}`;
       const headers = {
-        auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
       };
       const data = {
         username,

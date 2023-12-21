@@ -1,16 +1,21 @@
 "use client";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 import UserContext from "../../context/UserContext";
+import SessionContext from "@/app/context/SessionContext";
 import styles from "./Navbar.module.css";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userMode, setUserMode] = useState("client"); // ["freelancer", "employer"]
   const { user, setUser } = useContext(UserContext);
+  const { session, setSession } = useContext(SessionContext);
+  const [isActive, setActive] = useState("dashboard");
+
   const router = useRouter();
 
   const handleMenuToggle = () => {
@@ -23,12 +28,21 @@ const NavBar = () => {
     } else {
       setIsLoggedIn(false);
     }
-  }, [user]);
+
+    if (session && session.user_mode != userMode) {
+      setUserMode(session.user_mode);
+    }
+      
+  }, [user, session]);
+
+  useEffect(() => {
+    router.replace(`/${userMode}/dashboard`);
+  }, [userMode])
 
   const handleLogout = async () => {
-    const logoutUrl = "http://localhost:3001/auth/logout";
+    const logoutUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGOUT}`;
     const headers = {
-      auth_token: "LASDLkoasnkdnawndkansjNKJFNKJANSKN",
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
     try {
       const logoutResponse = await axios.post(
@@ -47,6 +61,14 @@ const NavBar = () => {
     }
   };
 
+  const switchMode = async () => {
+    if (userMode === "freelancer") {
+      setSession({ user_mode: "client" });
+    } else {
+      setSession({ user_mode: "freelancer" });
+    }
+  }
+
   return (
     <div>
       <nav className={styles.navbar}>
@@ -61,21 +83,47 @@ const NavBar = () => {
             />
           </div>
           <ul className={`${styles.linksContainer}`}>
-            <li className={styles.link}>
-              <Link href="/">Home</Link>
-            </li>
-            {/* <Link className={`link ${pathname === '/' ? 'active' : ''}`} href="/">
-              Home
-            </Link> */}
-            <li className={styles.link}>
-              <Link href="/">Jobs</Link>
-            </li>
-            <li className={styles.link}>
-              <Link href="/">Freelancers</Link>
-            </li>
-            <li className={styles.link}>
-              <Link href="/">About Us</Link>
-            </li>
+            { !isLoggedIn ? (
+              <>
+                <li>
+                  <Link href="/">Home</Link>
+                </li>
+                <li>
+                  <Link href="/">Jobs</Link>
+                </li>
+                <li>
+                  <Link href="/">Freelancers</Link>
+                </li>
+                <li>
+                  <Link href="/">About Us</Link>
+                </li>
+              </>
+            ) : (
+              <>
+              { userMode === "client" ? (
+                <>
+                  <li className={isActive == "client/dashboard" ? styles.active : ""}>
+                    <Link href="/client/dashboard">Dashboard</Link>
+                  </li>
+                  <li className={isActive == "client/my_jobs" ? styles.active : ""}>
+                    <Link href="/client/my_jobs">My Jobs</Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className={isActive == "freelancer/dashboard" ? styles.active : ""}>
+                    <Link href="/freelancer/dashboard">Dashboard</Link>
+                  </li>
+                  <li className={isActive == "freelancer/jobs" ? styles.active : ""}>
+                    <Link href="/freelancer/jobs">Jobs</Link>
+                  </li>
+                </>
+              )}
+                <li className={isActive == "users" ? styles.active : ""}>
+                  <Link href="/users">Users</Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
         <div className={styles.actionButtonsContainer}>
@@ -85,15 +133,27 @@ const NavBar = () => {
                 <label tabIndex={0} className="">
                   <div className={styles.userContainer}>
                     <i className="fa-solid fa-user"></i>
-                    <p>Thinal</p>
+                    <p>{user.username}</p>
                   </div>
                 </label>
                 <ul
                   tabIndex={0}
-                  className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                  className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-3"
                 >
+                  {userMode === "freelancer" ? (
+                    <li onClick={switchMode}>
+                      <a>Switch to Client</a>
+                    </li>
+                  ) : (
+                    <li onClick={switchMode}>
+                      <a>Switch to Freelancer</a>
+                    </li>
+                  )}
+                  <li>
+                    <Link href="/profile">Profile</Link>
+                  </li>
                   <li onClick={handleLogout}>
-                    <a>logout</a>
+                    <a>Logout</a>
                   </li>
                 </ul>
               </div>
@@ -136,6 +196,7 @@ const NavBar = () => {
                 type="checkbox"
                 checked={isOpen}
                 onChange={handleMenuToggle}
+                className="hidden"
               />
 
               {/* hamburger icon */}
