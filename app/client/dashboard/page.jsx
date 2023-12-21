@@ -22,7 +22,7 @@ const Dashboard = () => {
       if (!session) {
         setSession({ user_mode: "client" });
       }
-  }, [user, session]);
+  }, [user, session, router, setSession]);
 
   if (isLoading) {
     return (
