@@ -29,7 +29,7 @@ const NavBar = () => {
       setIsLoggedIn(false);
     }
 
-    if (session) {
+    if (session && session.user_mode != userMode) {
       setUserMode(session.user_mode);
     }
       
