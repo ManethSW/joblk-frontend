@@ -2,6 +2,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import Datepicker from "tailwind-datepicker-react";
 import { initFlowbite } from "flowbite";
+import moment from "moment";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
@@ -147,12 +148,12 @@ const MyJobs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    { jobsProvider.map((job) => { console.log(job); if (job.id) return <TableEntry data={job} />}) }
+                    { jobsProvider.map((job) => { if (job.id) return <TableEntry data={job} />}) }
                   </tbody>
                 </table>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                { jobsProvider.map((job) => { console.log(job); if (job.id) return <JobCard data={job} />}) }
+                { jobsProvider.map((job) => { if (job.id) return <JobCard data={job} />}) }
 
                 {/* <JobCard id="1" name="Revamp of DOC990" views="100" clicks="50" bids="10"/>
                 <JobCard id="2" name="Updating 2017 attendance system" views="60" clicks="20" bids="2"/> */}
@@ -168,13 +169,49 @@ const MyJobs = () => {
 
 const AddJobModal = () => {
   const [show, setShow] = useState(false);
-
-  const handleChange = (selectedDate) => {
-    console.log(selectedDate)
-  }
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(1);
+  const [subCategory, setSubCategory] = useState(1);
+  const [deadline, setDeadline] = useState(moment(Date.now()).format("YYYY-MM-DD 00:00:00"));
+  const [budget, setBudget] = useState(0);
+  const [experienceLevel, setExperienceLevel] = useState(1);
+  const [communicationMethod, setCommunicationMethod] = useState(1);
+  const [jobTags, setJobTags] = useState("");
+  const [requiredSkills, setRequiredSkills] = useState("");
 
   const handleClose = (state) => {
     setShow(state)
+  }
+
+  const handleJobAdd = async () => {
+    try{
+      const updateJob = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job`, 
+        {
+          'title':name,
+          'description':description,
+          'category':category,
+          'sub_category':subCategory,
+          'deadline':deadline,
+          'budget':budget,
+          'experience_level':experienceLevel,
+          'communication_method':communicationMethod,
+          'job_tags':jobTags,
+          'required_skills':requiredSkills,
+        }, 
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }
+      );
+      if (updateJob.status == 200) {
+        console.log("Job Added");
+        window.location.reload(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return(
@@ -198,37 +235,37 @@ const AddJobModal = () => {
                 <div className="grid gap-4 mb-4 grid-cols-2">
                   <div className="col-span-2">
                     <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                    <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required=""/>
+                    <input type="text" name="name" id="name" onChange={(e)=>{setName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required=""/>
                   </div>
                   <div className="col-span-2">
                     <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    <textarea id="description" rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it"></textarea>                    
+                    <textarea id="description" onChange={(e)=>{setDescription(e.target.value)}} rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it"></textarea>                    
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                    <select id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option defaultChecked value="development">Development</option>
-                      <option value="engineering">Engineering</option>
-                      <option value="designing">Designing</option>
+                    <select id="catergory" onChange={(e)=>{setCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option defaultChecked value="1">Development</option>
+                      <option value="2">Engineering</option>
+                      <option value="3">Designing</option>
                     </select>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                    <select id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option defaultChecked value="frontend">Frontend</option>
-                      <option value="backend">Backend</option>
-                      <option value="fullstack">FullStack</option>
+                    <select id="sub-catergory" onChange={(e)=>{setSubCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option defaultChecked value="1">Frontend</option>
+                      <option value="2">Backend</option>
+                      <option value="3">FullStack</option>
                     </select>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
-                    <Datepicker onChange={handleChange} show={show} setShow={handleClose} />
+                    <Datepicker onChange={(selectedDate) => {setDeadline(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose} />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
                     <div id="budget" className="flex flex-row items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       LKR
-                      <input type="text" id="budget-input" onInput={(event) => {event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" required/>
+                      <input type="text" id="budget-input" onInput={(event) => {setBudget(Number.parseInt(event.target.value.split(",").join(""))); event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" required/>
                     </div>
                   </div>
                 </div>
@@ -237,32 +274,32 @@ const AddJobModal = () => {
                 <div className="grid gap-4 mb-4 grid-cols-2">
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                    <select id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option defaultChecked value="entry">Entry</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="expert">Expert</option>
+                    <select id="experience" onChange={(e)=>{setExperienceLevel(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option defaultChecked value="1">Entry</option>
+                      <option value="2">Intermediate</option>
+                      <option value="3">Expert</option>
                     </select>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                    <select id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option defaultChecked value="text">Text / Messages</option>
-                      <option value="phone-call">Phone Call</option>
-                      <option value="online-meet">Online Meeting</option>
+                    <label htmlFor="communication" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
+                    <select id="communication" onChange={(e)=>{setCommunicationMethod(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option defaultChecked value="1">Text / Messages</option>
+                      <option value="2">Phone Call</option>
+                      <option value="3">Online Meeting</option>
                     </select>
                   </div>
                   <div className="col-span-2">
                     <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
                     <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">React</span>
-                      <input type="text" id="tag-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required/>
+                      <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required/>
                     </div>
                   </div>
                   <div className="col-span-2">
                     <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
                     <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span>
-                      <input type="text" id="skill-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
+                      <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
                     </div>
                   </div>
                   {/* <div className="col-span-2">                      
@@ -282,7 +319,7 @@ const AddJobModal = () => {
                 </div>
               </div>
             </div>
-            <button type="button" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <button type="button" data-modal-toggle={`add-job-modal`} onClick={handleJobAdd} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
               Add Job
             </button>
           </form>
@@ -518,17 +555,48 @@ const EditJobModal = ({
   data,
 }) => {
   const [show, setShow] = useState(false);
-
-  const handleChange = (selectedDate) => {
-    console.log(event.target.parentNode)
-  }
+  const [name, setName] = useState(data.title);
+  const [description, setDescription] = useState(data.description);
+  const [category, setCategory] = useState(data.category);
+  const [subCategory, setSubCategory] = useState(data.sub_category);
+  const [deadline, setDeadline] = useState(moment(data.deadline).format("YYYY-MM-DD 00:00:00"));
+  const [budget, setBudget] = useState(data.budget);
+  const [experienceLevel, setExperienceLevel] = useState(data.experience_level);
+  const [communicationMethod, setCommunicationMethod] = useState(data.communication_method);
+  const [jobTags, setJobTags] = useState(data.job_tags);
+  const [requiredSkills, setRequiredSkills] = useState(data.required_skills);
 
   const handleClose = (state) => {
     setShow(state)
   }
 
-  const handleJobSave = (event) => {
-    console.log(document.getElementById("name").value)
+  const handleJobSave = async () => {
+    try{
+      const updateJob = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/${data.id}`, 
+        {
+          'title':name,
+          'description':description,
+          'category':category,
+          'sub_category':subCategory,
+          'deadline':deadline,
+          'budget':budget,
+          'experience_level':experienceLevel,
+          'communication_method':communicationMethod,
+          'job_tags':jobTags,
+          'required_skills':requiredSkills,
+        }, 
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }
+      );
+      if (updateJob.status == 200) {
+        console.log("Job Updated")
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -552,15 +620,15 @@ const EditJobModal = ({
                 <div className="grid gap-4 mb-4 grid-cols-2">
                   <div className="col-span-2">
                     <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                    <input type="text" name="name" id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required="" defaultValue={data.title}/>
+                    <input type="text" name="name" id="name" onChange={(e)=>{setName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required="" defaultValue={data.title}/>
                   </div>
                   <div className="col-span-2">
                     <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    <textarea id="description" name="description" rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={data.description}></textarea>                    
+                    <textarea id="description" name="description" onChange={(e)=>{setDescription(e.target.value)}} rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={data.description}></textarea>                    
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                    <select id="catergory" defaultValue={data.category} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                    <select id="catergory" defaultValue={data.category} onChange={(e)=>{setCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                       <option value="1">Development</option>
                       <option value="2">Engineering</option>
                       <option value="3">Designing</option>
@@ -568,21 +636,21 @@ const EditJobModal = ({
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                    <select id="sub-catergory" defaultValue={data.sub_category} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option value="frontend">Frontend</option>
-                      <option value="backend">Backend</option>
-                      <option value="fullstack">FullStack</option>
+                    <select id="sub-catergory" defaultValue={data.sub_category} onChange={(e)=>{setSubCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option value="1">Frontend</option>
+                      <option value="2">Backend</option>
+                      <option value="3">FullStack</option>
                     </select>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
-                    <Datepicker onChange={handleChange} show={show} setShow={handleClose} />
+                    <Datepicker onChange={(selectedDate) => {setDeadline(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose} />
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
                     <div id="budget" className="flex flex-row items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                       LKR
-                      <input type="text" id="budget-input" onInput={(event) => {event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" value={Number(data.budget).toLocaleString()} required/>
+                      <input type="text" id="budget-input" onInput={(event) => {setBudget(Number.parseInt(event.target.value.split(",").join(""))); event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" defaultValue={Number(data.budget).toLocaleString()} required/>
                     </div>
                   </div>
                 </div>
@@ -591,36 +659,36 @@ const EditJobModal = ({
                 <div className="grid gap-4 mb-4 grid-cols-2">
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                    <select id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option defaultChecked value="entry">Entry</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="expert">Expert</option>
+                    <select id="experience" defaultValue={data.experience_level} onChange={(e) => {setExperienceLevel(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option value="1">Entry</option>
+                      <option value="2">Intermediate</option>
+                      <option value="3">Expert</option>
                     </select>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
                     <label htmlFor="communication" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                    <select id="communication" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option defaultChecked value="text">Text / Messages</option>
-                      <option value="phone-call">Phone Call</option>
-                      <option value="online-meet">Online Meeting</option>
+                    <select id="communication" defaultValue={data.communication_method} onChange={(e) => {setCommunicationMethod(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                      <option value="1">Text / Messages</option>
+                      <option value="2">Phone Call</option>
+                      <option value="3">Online Meeting</option>
                     </select>
                   </div>
                   <div className="col-span-2">
-                    <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
+                    <label htmlFor="tags" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Tags</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the tags by a comma)</p></label>
                     <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <input type="text" id="tag-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required defaultValue={data.job_tags.split(",").join(", ")}/>
+                      <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required defaultValue={data.job_tags.split(",").join(", ")}/>
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
+                    <label htmlFor="skills" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Required Skills</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the skills by a comma)</p></label>
                     <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <input type="text" id="skill-search" className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required defaultValue={data.required_skills.split(",").join(", ")}/>
+                      <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required defaultValue={data.required_skills.split(",").join(", ")}/>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <button type="button" onClick={handleJobSave} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            <button type="button" data-modal-toggle={`edit-job-modal-${data.id}`} onClick={handleJobSave} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
               Save Job
             </button>
           </form>
