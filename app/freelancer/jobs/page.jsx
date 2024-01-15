@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
 import styles from "./page.module.css";
+import BidForm from "../../components/BidForm";
 
 const Jobs = () => {
     const { user } = useContext(UserContext);
@@ -106,15 +107,15 @@ const Jobs = () => {
                     <span className={styles.titleUnderline}></span>
                   </div>
                   <div className="">
-                    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                    <div class="flex jutify-center items-center block w-full p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <div class="flex items-center ps-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                    <div className="flex jutify-center items-center block w-full p-1.5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                      <div className="flex items-center ps-3 pointer-events-none">
+                        <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                         </svg>
                       </div>
-                      <input type="text" id="default-search" onChange={handleSearch} class="border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search Jobs..." required/>
-                      <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                      <input type="text" id="default-search" onChange={handleSearch} className="border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search Jobs..." required/>
+                      <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
                   </div>
                 </div>
@@ -210,13 +211,13 @@ const ViewJobModal = ({
   data,
 }) => {
   const [viewModalCurrent, setViewModalCurrent] = useState(0);
+  const [isBidModalOpen, setIsBidModalOpen] = useState(false);
+
+  const openBidModal = () => setIsBidModalOpen(true);
+  const closeBidModal = () => setIsBidModalOpen(false);
 
   const switchModalView = () => {
-    if (viewModalCurrent == 0) {
-      setViewModalCurrent(1);
-    } else {
-      setViewModalCurrent(0);
-    }
+    setViewModalCurrent(viewModalCurrent === 0 ? 1 : 0);
   }
 
   const categorySelector = (value) => {
@@ -265,7 +266,7 @@ const ViewJobModal = ({
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              View Job
+              {viewModalCurrent == 0 ? `View Job` : `Place Bid`}
             </h3>
             <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${data.id}`}>
               <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -275,8 +276,8 @@ const ViewJobModal = ({
             </button>
           </div>  
           <form id="add-job" className="p-4 md:p-5">
-            <div id="carousel" class="relative w-full" data-carousel="static">
-              <div class="relative overflow-y-auto overflow-x-hidden rounded-lg h-96">
+            <div id="carousel" className="relative w-full" data-carousel="static">
+              <div className="relative overflow-y-auto overflow-x-hidden rounded-lg h-96">
                 <div className="hidden duration-200 ease-linear" data-carousel-item="active">
                   <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
                     <div className="inline">
@@ -332,7 +333,7 @@ const ViewJobModal = ({
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-lg md:text-2xl font-semibold md:font-bold text-gray-900 dark:text-white">Coming Soon</p>
+                    <BidForm jobId={data.id}  closeModal={closeBidModal} />
                   </div>
                   {/* <div className="mb-4">
                     <h4 className="text-md font-semibold text-gray-900 dark:text-white">Bids</h4>
@@ -347,16 +348,16 @@ const ViewJobModal = ({
                   </div> */}
                 </div>
               </div>
-              <div class="absolute z-50 flex -translate-x-1/2 space-x-1 rtl:space-x-reverse bottom-5 left-1/2">
-                <button type="button" class="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-                <button type="button" class="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+              <div className="absolute z-50 flex -translate-x-1/2 space-x-1 rtl:space-x-reverse bottom-5 left-1/2">
+                <button type="button" className="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+                <button type="button" className="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
               </div>
               <div className="flex flex-row justify-between w-full pt-4">
                 <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
                   Close
                 </button>
                 <button type="button" data-carousel-next onClick={switchModalView} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  {viewModalCurrent == 0 ? `View Bids` : `Go Back`}
+                  {viewModalCurrent == 0 ? `Place Bids` : `Go Back`}
                 </button>
               </div>
             </div>
