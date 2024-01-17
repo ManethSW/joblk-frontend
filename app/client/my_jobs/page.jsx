@@ -41,7 +41,7 @@ const MyJobs = () => {
 
     const getAllJobs = async () => {
       const getAllJobs = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job`,  
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/job/userJobs/${user.id}`,  
         {
           headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
           withCredentials: true,

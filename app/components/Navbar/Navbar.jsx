@@ -108,6 +108,10 @@ const NavBar = () => {
                   <li className={isActive == "client/my_jobs" ? styles.active : ""}>
                     <Link href="/client/my_jobs">My Jobs</Link>
                   </li>
+                  <li className={isActive == "client/my_jobs" ? styles.active : ""}>
+                    <Link href="/client/projects">My Projects</Link>
+                  </li>
+
                 </>
               ) : (
                 <>
