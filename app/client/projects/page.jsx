@@ -10,6 +10,10 @@ const Projects = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedMilestone, setSelectedMilestone] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+
 
   const openModal = (projectId) => {
     setSelectedProjectId(projectId);
@@ -18,6 +22,12 @@ const Projects = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const openEditMilestoneModal = (milestone) => {
+    setSelectedMilestone(milestone);
+    setIsModalOpen(false); 
+    setIsEditModalOpen(true); 
   };
 
   useEffect(() => {
@@ -124,13 +134,107 @@ const Projects = () => {
         </div>
       </div>
       {isModalOpen && (
-        <ViewMilestonesModal projectId={selectedProjectId} closeModal={closeModal} />
+        <ViewMilestonesModal
+          projectId={selectedProjectId}
+          closeModal={closeModal}
+          openEditMilestoneModal={openEditMilestoneModal}
+        />
+      )}
+      {isEditModalOpen && selectedMilestone && (
+        <EditMilestoneModal
+          milestone={selectedMilestone}
+          closeModal={() => setIsEditModalOpen(false)}
+        />
       )}
     </div>
   );
 };
 
-const ViewMilestonesModal = ({ projectId, closeModal }) => {
+const EditMilestoneModal = ({ milestone, closeModal }) => {
+    const [name, setName] = useState(milestone.name);
+    const [description, setDescription] = useState(milestone.description);
+    const [dueDate, setDueDate] = useState(new Date(milestone.due_date).toISOString().split('T')[0]);
+    const [status, setStatus] = useState(milestone.status);
+  
+    const handleUpdateMilestone = async () => {
+      // Implement the API call to update the milestone
+      // Close the edit milestone modal after updating
+      closeModal();
+    };
+  
+    return (
+          <div className={styles.modalOverlay} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+          <div className={styles.frame}>
+            <div className={styles.div}>
+              <div className={styles.header}>
+                <div className="flex flex-row justify-between">
+                  <div className={styles.cont}>
+                    <h1 className={styles.title}>Edit Milestone</h1>
+                    <span className={styles.titleUnderline}></span>
+                  </div>
+                </div>
+              </div>
+              <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
+                <form className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  <div className="px-6 py-3">
+                    <label htmlFor="name" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div className="px-6 py-3">
+                    <label htmlFor="description" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Description</label>
+                    <textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div className="px-6 py-3">
+                    <label htmlFor="dueDate" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Due Date</label>
+                    <input
+                      type="date"
+                      id="dueDate"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div className="px-6 py-3">
+                    <label htmlFor="status" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Status</label>
+                    <select
+                      id="status"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    >
+                      <option value="1">Incomplete</option>
+                      <option value="2">Complete</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-end px-6 py-3">
+                    <button
+                      onClick={handleUpdateMilestone}
+                      className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+  };
+
+const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
   
@@ -243,11 +347,11 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
               Complete
             </button>
             <button
-              onClick={() => handleEditMilestone(milestone.id)}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-            >
-              Edit
-            </button>
+                    onClick={() => openEditMilestoneModal(milestone)} 
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                  >
+                    Edit
+                  </button>
             <button
               onClick={() => handleDeleteMilestone(milestone.id)}
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
