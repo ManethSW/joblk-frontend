@@ -90,10 +90,10 @@ const Projects = () => {
                         {project.id}
                       </td>
                       <td className="px-6 py-4 md:px-3 font-medium text-gray-900 dark:text-white">
-                        {/* {project.title} */} Project
+                        {project.title} 
                       </td>
                       <td className="px-6 py-4 md:px-3">
-                        {/* {project.description} */} Project Description
+                        {project.description} 
                       </td>
                       <td className="px-6 py-4 md:px-3">
                         {project.status === 1 ? "Active" : "Completed"}
