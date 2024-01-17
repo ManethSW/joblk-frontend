@@ -124,6 +124,9 @@ const NavBar = () => {
                   <li className={isActive == "freelancer/bids" ? styles.active : ""}>
                     <Link href="/freelancer/bids">My Bids</Link>
                   </li>
+                  <li className={isActive == "freelancer/my_projects" ? styles.active : ""}>
+                    <Link href="/freelancer/my_projects">My Projects</Link>
+                  </li>
                 </>
               )}
                 <li className={isActive == "users" ? styles.active : ""}>

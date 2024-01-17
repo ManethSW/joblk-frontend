@@ -155,6 +155,17 @@
   color: #ffffff;
 }
 
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Adjust the color and opacity to your liking */
+  z-index: 40; /* Ensure this is below the modal z-index */
+}
+
 @media only screen and (max-width: 1440px) {
   .container {
     margin: 50px 50px 0;

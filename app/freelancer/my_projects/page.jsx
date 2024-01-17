@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import UserContext from "../../context/UserContext";
-import styles from '../../freelancer/jobs/page.module.css';
+import SessionContext from '../../context/SessionContext';
+import styles from '../jobs/page.module.css';
 
 const Projects = () => {
   const { user } = useContext(UserContext);
@@ -107,12 +108,6 @@ const Projects = () => {
                           >
                             View Milestones
                           </button>
-                          <button
-                            // onClick={() => openModal(project.id)}
-                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                          >
-                            Make Payment
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -139,7 +134,7 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
         setIsLoading(true);
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${projectId}`, // Adjust the endpoint as needed
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${projectId}`, 
             {
               headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
               withCredentials: true,
@@ -186,13 +181,7 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
                 </div>
               ) : (
                 <div>
-                    <div className="flex justify-end items-center space-x-2 ml-auto">
-                        <button
-                            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none mb-5"
-                        >
-                            Add Milestone
-                        </button>
-                    </div>
+                    
                     
                     <table className="min-w-full leading-normal">
                   <thead>
@@ -240,20 +229,9 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
             //   onClick={() => handleDeleteMilestone(milestone.id)}
               className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
             >
-              Complete
+              Upload content
             </button>
-            <button
-              onClick={() => handleEditMilestone(milestone.id)}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDeleteMilestone(milestone.id)}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-            >
-              Delete
-            </button>
+            
           </div>
                         </td>
                         
