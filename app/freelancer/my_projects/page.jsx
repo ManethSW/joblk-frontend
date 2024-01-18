@@ -25,10 +25,11 @@ const Projects = () => {
     const fetchProjects = async () => {
       setIsLoading(true);
       try {
+        const user_type = `"freelancer"`;
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/project`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${user_type}`,
           {
-            headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+            headers: { auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
             withCredentials: true,
           }
         );
@@ -86,32 +87,37 @@ const Projects = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {projects.map((project) => (
-                    <tr key={project.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                      {/* <td className="px-6 py-4 md:px-3">
-                        {project.id}
-                      </td> */}
-                      <td className="px-6 py-4 md:px-3 font-medium text-gray-900 dark:text-white">
-                        {project.title} 
-                      </td>
-                      <td className="px-6 py-4 md:px-3">
-                        {project.description} 
-                      </td>
-                      <td className="px-6 py-4 md:px-3">
-                        {project.status === 1 ? "Active" : "Completed"}
-                      </td>
-                      <td className="px-6 py-4 md:px-3">
-                        <div className="flex items-center space-x-4 text-sm">
-                          <button
-                            onClick={() => openModal(project.id)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                          >
-                            View Milestones
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                {projects
+                    .filter((project) => project.status !== 1)
+                    .map((project) => (
+                        <tr key={project.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            {/* <td className="px-6 py-4 md:px-3">
+                                {project.id}
+                            </td> */}
+                            <td className="px-6 py-4 md:px-3 font-medium text-gray-900 dark:text-white">
+                                {project.title} 
+                            </td>
+                            <td className="px-6 py-4 md:px-3">
+                                {project.description} 
+                            </td>
+                            <td className="px-6 py-4 md:px-3">
+                                {project.status === 2 ? "Milestone Approval" :
+                                 project.status === 3 ? "Payment" :
+                                 project.status === 4 ? "Active" :
+                                 project.status === 5 ? "Completed" : ""}
+                            </td>
+                            <td className="px-6 py-4 md:px-3">
+                                <div className="flex items-center space-x-4 text-sm">
+                                    <button
+                                        onClick={() => openModal(project.id)}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                                    >
+                                        View Milestones
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -134,7 +140,7 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
         setIsLoading(true);
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${projectId}`, 
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/milestones/${projectId}`, 
             {
               headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
               withCredentials: true,
