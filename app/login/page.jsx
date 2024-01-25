@@ -56,7 +56,7 @@ const Login = () => {
             withCredentials: true,
           });
           setUser(userResponse.data);
-          router.replace("/profile");
+          router.replace("/freelancer/profile");
         }
       } catch (error) {
         if (error.response && error.response.data) {

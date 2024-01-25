@@ -32,12 +32,11 @@ const NavBar = () => {
     if (session && session.user_mode != userMode) {
       setUserMode(session.user_mode);
     }
-      
   }, [user, session]);
 
-  useEffect(() => {
-    router.replace(`/${userMode}/dashboard`);
-  }, [userMode])
+  // useEffect(() => {
+  //   router.replace(`/${userMode}/dashboard`);
+  // }, [userMode]);
 
   const handleLogout = async () => {
     const logoutUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGOUT}`;
@@ -67,7 +66,7 @@ const NavBar = () => {
     } else {
       setSession({ user_mode: "freelancer" });
     }
-  }
+  };
 
   return (
     <div>
@@ -83,7 +82,7 @@ const NavBar = () => {
             />
           </div>
           <ul className={`${styles.linksContainer}`}>
-            { !isLoggedIn ? (
+            {!isLoggedIn ? (
               <>
                 <li>
                   <Link href="/">Home</Link>
@@ -100,25 +99,64 @@ const NavBar = () => {
               </>
             ) : (
               <>
-              { userMode === "client" ? (
-                <>
-                  <li className={isActive == "client/dashboard" ? styles.active : ""}>
-                    <Link href="/client/dashboard">Dashboard</Link>
-                  </li>
-                  <li className={isActive == "client/my_jobs" ? styles.active : ""}>
-                    <Link href="/client/my_jobs">My Jobs</Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li className={isActive == "freelancer/dashboard" ? styles.active : ""}>
-                    <Link href="/freelancer/dashboard">Dashboard</Link>
-                  </li>
-                  <li className={isActive == "freelancer/jobs" ? styles.active : ""}>
-                    <Link href="/freelancer/jobs">Jobs</Link>
-                  </li>
-                </>
-              )}
+                {userMode === "client" ? (
+                  <>
+                    <li
+                      className={
+                        isActive == "client/dashboard" ? styles.active : ""
+                      }
+                    >
+                      <Link href="/client/dashboard">Dashboard</Link>
+                    </li>
+                    <li
+                      className={
+                        isActive == "client/my_jobs" ? styles.active : ""
+                      }
+                    >
+                      <Link href="/client/my_jobs">My Jobs</Link>
+                    </li>
+                    <li
+                      className={
+                        isActive == "client/my_jobs" ? styles.active : ""
+                      }
+                    >
+                      <Link href="/client/projects">My Projects</Link>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li
+                      className={
+                        isActive == "freelancer/dashboard" ? styles.active : ""
+                      }
+                    >
+                      <Link href="/freelancer/dashboard">Dashboard</Link>
+                    </li>
+                    <li
+                      className={
+                        isActive == "freelancer/jobs" ? styles.active : ""
+                      }
+                    >
+                      <Link href="/freelancer/jobs">Jobs</Link>
+                    </li>
+                    <li
+                      className={
+                        isActive == "freelancer/bids" ? styles.active : ""
+                      }
+                    >
+                      <Link href="/freelancer/bids">My Bids</Link>
+                    </li>
+                    <li
+                      className={
+                        isActive == "freelancer/my_projects"
+                          ? styles.active
+                          : ""
+                      }
+                    >
+                      <Link href="/freelancer/my_projects">My Projects</Link>
+                    </li>
+                  </>
+                )}
                 <li className={isActive == "users" ? styles.active : ""}>
                   <Link href="/users">Users</Link>
                 </li>
@@ -141,17 +179,35 @@ const NavBar = () => {
                   className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 mt-3"
                 >
                   {userMode === "freelancer" ? (
-                    <li onClick={switchMode}>
-                      <a>Switch to Client</a>
-                    </li>
+                    <div>
+                      <li onClick={switchMode}>
+                        <a>Switch to Client</a>
+                      </li>
+                      <li
+                        className={
+                          isActive == "freelancer/profile" ? styles.active : ""
+                        }
+                      >
+                        <Link href="/freelancer/profile">Profile</Link>
+                      </li>
+                    </div>
                   ) : (
-                    <li onClick={switchMode}>
-                      <a>Switch to Freelancer</a>
-                    </li>
+                    <div>
+                      <li onClick={switchMode}>
+                        <a>Switch to Freelancer</a>
+                      </li>
+                      <li
+                        className={
+                          isActive == "client/profile" ? styles.active : ""
+                        }
+                      >
+                        <Link href="/client/profile">Profile</Link>
+                      </li>
+                    </div>
                   )}
-                  <li>
+                  {/* <li>
                     <Link href="/profile">Profile</Link>
-                  </li>
+                  </li> */}
                   <li onClick={handleLogout}>
                     <a>Logout</a>
                   </li>
