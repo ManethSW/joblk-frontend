@@ -6,6 +6,7 @@ import UsernameInput from "../../ProfileInputs/Username/Username";
 import AddressInput from "../../ProfileInputs/Address/Address";
 import FullnameInput from "../../ProfileInputs/Fullname/Fullname";
 import AvtarInput from "../../ProfileInputs/Avatar/Avatar";
+import PreferenceInput from "../../ProfileInputs/Preference/preference";
 
 const General = () => {
   //variables used for when loading the page
@@ -14,6 +15,7 @@ const General = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   //variables for the input fields
+  const [userPreference, setUserPreference] = useState("");
   const [avatar, setAvatar] = useState(null);
   const [username, setUsername] = useState("");
   const [fullname, setFullname] = useState("");
@@ -27,6 +29,7 @@ const General = () => {
       router.replace("/login");
     } else {
       setIsLoading(false);
+      setUserPreference(user.userPreference);
       setUsername(user.username);
       setFullname(user.full_name);
       setCity(user.city);
@@ -46,6 +49,7 @@ const General = () => {
 
   return (
     <div className={styles.bodycontent}>
+      <PreferenceInput value={userPreference} setValue={setUserPreference}></PreferenceInput>
       <AvtarInput avatar={avatar} setAvatar={setAvatar}></AvtarInput>
       <UsernameInput value={username} setValue={setUsername} />
       <FullnameInput fullname={fullname} setFullname={setFullname} />

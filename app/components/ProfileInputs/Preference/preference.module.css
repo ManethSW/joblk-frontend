@@ -1,0 +1,16 @@
+.buttonContainer {
+    display: flex;
+    gap: 20px;
+}
+
+.buttonContainer button {
+    width: 125px;
+    padding: 5px 0px;
+    border-radius: 10px;
+    border: 1.5px solid black;
+}
+
+.activeButton {
+    background-color: #00A96E;
+    color: white;
+}
