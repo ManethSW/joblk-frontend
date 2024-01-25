@@ -51,6 +51,7 @@ const Register = ({ selectedUser }) => {
         username,
         email,
         password,
+        mode_preference: selectedUser,
       };
 
       try {
@@ -81,7 +82,6 @@ const Register = ({ selectedUser }) => {
       onSuccess: async (response) => {
         const { access_token } = response;
 
-        // Get the user's information from Google's APIs
         const res = await fetch(
           "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
           {
@@ -92,11 +92,9 @@ const Register = ({ selectedUser }) => {
         );
         const googleUser = await res.json();
 
-        // Send the user's information to your server to create a new user
         const { email, name } = googleUser;
-        const newUser = { username: name, email }; // Adjust this according to your server's requirements
+        const newUser = { username: name, email };
         console.log(newUser.email + " " + newUser.username);
-        // const response = await axios.post("/api/users", newUser); // Replace '/api/users' with your server's endpoint
 
         console.log(response.data);
       },

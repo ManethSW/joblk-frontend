@@ -7,10 +7,17 @@
     width: 125px;
     padding: 5px 0px;
     border-radius: 10px;
-    border: 1.5px solid black;
+    border: 1.5px solid var(--black-color-25);
+    font-family: 'tripsans-medium';
+    transition: all 0.3s ease-in 0s;
 }
 
 .activeButton {
-    background-color: #00A96E;
-    color: white;
+    background-color: rgba(0, 255, 0, 0.5);
+    border: 1.5px solid var(--black-color-75)!important;
+    color: black;
+}
+
+.buttonContainer button:hover {
+    border: 1.5px solid var(--black-color-75);
 }

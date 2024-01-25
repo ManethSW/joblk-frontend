@@ -41,15 +41,15 @@ const RegisterSelectUser = ({ onNext, selectedUser, setSelectedUser }) => {
         <div className={styles.bodycontent}>
           <UserCard
             title="Freelancer"
-            description="As a Freelancer, you can showcase your skills, find projects that match your expertise, and collaborate with clients to deliver exceptional results."
-            onClick={() => handleUserSelect("Freelancer")}
-            isSelected={selectedUser === "Freelancer"}
+            description="As an Freelancer, you can showcase your skills, find projects that match your expertise, and collaborate with clients to deliver exceptional results."
+            onClick={() => handleUserSelect(1)}
+            isSelected={selectedUser === 1}
           />
           <UserCard
-            title="Individual"
-            description="As an Individual, you can explore talented freelancers, delegate tasks efficiently, and manage projects seamlessly to achieve your goals."
-            onClick={() => handleUserSelect("Individual")}
-            isSelected={selectedUser === "Individual"}
+            title="Client"
+            description="As an Client, you can explore talented freelancers, delegate tasks efficiently, and manage projects seamlessly to achieve your goals."
+            onClick={() => handleUserSelect(2)}
+            isSelected={selectedUser === 2}
           />
         </div>
         {showError && (

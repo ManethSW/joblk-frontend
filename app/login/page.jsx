@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter, router } from "next/navigation";
 import Link from "next/link";
@@ -15,11 +15,9 @@ import LoginRegisterBackground from "../components/auth/LogRegBackground/LogRegB
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX =
-  // /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Login = () => {
-  console.log("Login page rendered")
   const router = useRouter();
   const [email, emailValid, validateEmail] = useInputValidation("", (value) =>
     EMAIL_REGEX.test(value)
@@ -56,7 +54,6 @@ const Login = () => {
             withCredentials: true,
           });
           setUser(userResponse.data);
-          router.replace("/freelancer/profile");
         }
       } catch (error) {
         if (error.response && error.response.data) {
@@ -75,6 +72,16 @@ const Login = () => {
       setShowError(true);
     }
   };
+
+  useEffect(() => {
+    if (user && user.mode_preference !== undefined) {
+       if (user.mode_preference == 1) {
+         router.replace("/freelancer/profile"); 
+       } else {
+         router.replace("/client/profile"); 
+       }
+    }
+   }, [user]);
 
   return (
     <GoogleOAuthProvider clientId="313142226606-s0ckkqp44583t9kicgphf902polhi1p7.apps.googleusercontent.com">

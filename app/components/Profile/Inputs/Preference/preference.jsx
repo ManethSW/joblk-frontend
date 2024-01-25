@@ -11,40 +11,45 @@ import {
 const PreferenceInput = ({ value, setValue }) => {
   const [userPreferenceValidationMessage, setUserPreferenceValidationMessage] =
     useState("Please select one of the 2 options");
+  const [hasChangedPreference, setHasChangedPreference] = useState(false);
 
   const handleUserPreferenceChange = (preference) => {
-    setValue(preference);
+    if (preference != value) {
+      setHasChangedPreference(true);
+      setValue(preference);
+    }
   };
 
   const handleUsernameSave = async (e) => {
     e.preventDefault();
-    const username = value;
-    if (isUsernameValid) {
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}`;
-      const headers = {
-        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-      };
-      const data = {
-        username,
-      };
-      try {
-        await axios.put(url, data, {
-          headers,
-          withCredentials: true,
-        });
-        setUsernameValidationMessage("Username updated");
-      } catch (error) {
-        if (error.response && error.response.data) {
-          console.error(error.response.data["message"]);
-          if (error.response.data["code"].startsWith("ERR")) {
-            setUsernameValidationMessage(error.response.data["message"]);
-          }
+    const mode_preference = value;
+    console.log(mode_preference);
+    if (!hasChangedPreference) {
+      setUserPreferenceValidationMessage("Please select a different user preference");
+      return;
+    }
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}`;
+    const headers = {
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+    };
+    const data = {
+      mode_preference,
+    };
+    try {
+      await axios.put(url, data, {
+        headers,
+        withCredentials: true,
+      });
+      setUserPreferenceValidationMessage("User preference updated");
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.error(error.response.data["message"]);
+        if (error.response.data["code"].startsWith("ERR")) {
+          setUserPreferenceValidationMessage(error.response.data["message"]);
         }
       }
-    } else {
-      setUsernameValidationMessage("Username is invalid");
     }
-  };
+ };
 
   return (
     <FormContainer
@@ -56,14 +61,14 @@ const PreferenceInput = ({ value, setValue }) => {
           />
           <div className={styles.buttonContainer}>
             <button
-              onClick={() => handleUserPreferenceChange("freelancer")}
-              className={value === "freelancer" ? styles.activeButton : ""}
+              onClick={() => handleUserPreferenceChange(1)}
+              className={value === 1 ? styles.activeButton : ""}
             >
               Freelancer
             </button>
             <button
-              onClick={() => handleUserPreferenceChange("client")}
-              className={value === "client" ? styles.activeButton : ""}
+              onClick={() => handleUserPreferenceChange(2)}
+              className={value === 2 ? styles.activeButton : ""}
             >
               Client
             </button>
