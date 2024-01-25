@@ -11,9 +11,12 @@ const Projects = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedProjectStatus, setSelectedProjectStatus] = useState(null);
 
-  const openModal = (projectId) => {
+
+  const openModal = (projectId, projectStatus) => {
     setSelectedProjectId(projectId);
+    setSelectedProjectStatus(projectStatus)
     setIsModalOpen(true);
   };
 
@@ -109,7 +112,7 @@ const Projects = () => {
                             <td className="px-6 py-4 md:px-3">
                                 <div className="flex items-center space-x-4 text-sm">
                                     <button
-                                        onClick={() => openModal(project.id)}
+                                        onClick={() => openModal(project.id, project.status)}
                                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
                                     >
                                         View Milestones
@@ -125,22 +128,70 @@ const Projects = () => {
         </div>
       </div>
       {isModalOpen && (
-        <ViewMilestonesModal projectId={selectedProjectId} closeModal={closeModal} />
+        <ViewMilestonesModal projectId={selectedProjectId} closeModal={closeModal} projectStatus={selectedProjectStatus}/>
       )}
     </div>
   );
 };
 
-const ViewMilestonesModal = ({ projectId, closeModal }) => {
+const ViewMilestonesModal = ({ projectId, closeModal, projectStatus }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const acceptMilestones = async () => {
+        try {
+          const response = await axios.put(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project/${projectId}`,
+            {
+                user_type: "freelancer",
+              status: 3
+            },
+            {
+              headers: { 
+                'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN 
+              },
+              withCredentials: true,
+            }
+          );
+            if (response.status === 200) {
+                console.log('Milestones accepted successfully!');
+                closeModal();
+            }
+        } catch (error) {
+          console.error('Error submitting milestones:', error);
+        }
+       };
+
+       const denyMilestones = async () => {
+        try {
+          const response = await axios.put(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project/${projectId}`,
+            {
+                user_type: "freelancer",
+              status: 1
+            },
+            {
+              headers: { 
+                'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN 
+              },
+              withCredentials: true,
+            }
+          );
+            if (response.status === 200) {
+                console.log('Milestones denied successfully!');
+                closeModal();
+            }
+        } catch (error) {
+          console.error('Error denying milestones:', error);
+        }
+       };
   
     useEffect(() => {
       const fetchMilestones = async () => {
         setIsLoading(true);
         try {
           const response = await axios.get(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/milestones/${projectId}`, 
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/milestones/freelancer/${projectId}`, 
             {
               headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
               withCredentials: true,
@@ -205,6 +256,9 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
                         Status
                       </th>
                       <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Priority
+                      </th>
+                      <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Actions
                       </th>
                 
@@ -230,13 +284,22 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
                             {milestone.status === 1 ? 'Incomplete' : 'Complete'}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            {milestone.priority === 1 && "Low"}
+                            {milestone.priority === 2 && "Medium"}
+                            {milestone.priority === 3 && "High"}
+                            {milestone.priority === 4 && "Urgent"}
+                            {milestone.priority === 5 && "Critical"}
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <div className="flex justify-start items-center space-x-2">
-                        <button
-            //   onClick={() => handleDeleteMilestone(milestone.id)}
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-            >
-              Upload content
-            </button>
+                        {projectStatus === 4 && (
+                            <button
+                                // onClick={() => handleDeleteMilestone(milestone.id)}
+                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                            >
+                                Upload content
+                            </button>
+                        )}
             
           </div>
                         </td>
@@ -254,13 +317,36 @@ const ViewMilestonesModal = ({ projectId, closeModal }) => {
             </div>
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-              <button
+       
+                {projectStatus === 2 && (
+                    <button
+                        onClick={acceptMilestones}
+                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none me-3"
+                    >
+                        Accept
+                    </button>
+                    
+                    
+                )}
+                {projectStatus === 2 && (
+                    <button
+                        onClick={denyMilestones}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
+                    >
+                        Deny 
+                    </button>
+                    
+                    
+                )}
+
+           
+              {/* <button
                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
                 onClick={closeModal}
               >
                 Close
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
