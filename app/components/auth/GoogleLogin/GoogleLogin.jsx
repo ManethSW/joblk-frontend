@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useGoogleLogin } from '@react-oauth/google';
-import authStyles from '../../styles/auth.module.css';
+import authStyles from '../../../styles/auth.module.css';
 
 const GoogleLoginButton = () => {
   const handleGoogleLogin = useGoogleLogin({

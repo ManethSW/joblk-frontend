@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./RegisterSelectUser.module.css";
-import authStyles from '../../../styles/auth.module.css'
+import authStyles from "../../../../styles/auth.module.css";
 
 const UserCard = ({ title, description, onClick, isSelected }) => {
   return (

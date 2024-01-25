@@ -9,9 +9,9 @@ import authStyles from "../styles/auth.module.css";
 import UserContext from "../context/UserContext";
 import withAuth from "../hooks/UserChecker";
 import useInputValidation from "../hooks/UserInputValidation";
-import RegisterInput from "../components/Input/Input";
-import GoogleLoginButton from "../components/GoogleLogin/GoogleLogin";
-import LoginRegisterBackground from "../components/LogRegBackground/LogRegBackground";
+import RegisterInput from "../components/auth/Input/Input";
+import GoogleLoginButton from "../components/auth/GoogleLogin/GoogleLogin";
+import LoginRegisterBackground from "../components/auth/LogRegBackground/LogRegBackground";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX =

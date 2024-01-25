@@ -3,12 +3,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import styles from "./RegisterGeneralDetails.module.css";
 import Input from "../../Input/Input";
-import useInputValidation from "../../../hooks/UserInputValidation";
+import useInputValidation from "../../../../hooks/UserInputValidation";
 import axios from "axios";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/navigation";
-import alertStyles from "../RegisterSelectUser/RegisterSelectUser.module.css";
-import authStyles from "../../../styles/auth.module.css";
+import authStyles from "../../../../styles/auth.module.css";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9]{3,15}$/;
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
