@@ -9,7 +9,7 @@ import authStyles from "@/app/styles/auth.module.css";
 import otpStyles from "@/app/components/Profile/Profile.module.css";
 import withAuth from "@/app/hooks/UserChecker";
 import useInputValidation from "@/app/hooks/UserInputValidation";
-import RegisterInput from "@/app/components/Input/Input";
+import RegisterInput from "@/app/components/auth/Input/Input";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 

@@ -7,7 +7,6 @@ import {
   ActionButtonsSendOtp,
 } from "../Input";
 import OTPInput from "../Otp/Otp";
-import styles from "../../Profile/Profile.module.css";
 
 const EmailInput = ({ email, setEmail, emailVerified, setEmailVerified }) => {
   const [isEmailValid, setIsEmailValid] = useState(true);

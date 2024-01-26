@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import styles from "./page.module.css";
-import LogRegBackground from "../components/LogRegBackground/LogRegBackground";
-import RegisterSelectUser from "../components/Register/RegisterSelectUser/RegisterSelectUser";
-import RegisterGeneralDetails from "../components/Register/RegisterGeneralDetails/RegisterGeneralDetails";
+import LogRegBackground from "../components/auth/LogRegBackground/LogRegBackground";
+import RegisterSelectUser from "../components/auth/Register/RegisterSelectUser/RegisterSelectUser";
+import RegisterGeneralDetails from "../components/auth/Register/RegisterGeneralDetails/RegisterGeneralDetails";
 import withAuth from '../hooks/UserChecker';
 
 const Register = () => {

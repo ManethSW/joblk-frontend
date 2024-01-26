@@ -1,12 +1,14 @@
-import React from 'react';
-import Image from 'next/image';
-import { useGoogleLogin } from '@react-oauth/google';
-import authStyles from '../../styles/auth.module.css';
+import React from "react";
+import Image from "next/image";
+import { useGoogleLogin } from "@react-oauth/google";
+import authStyles from "../../../styles/auth.module.css";
 
 const GoogleLoginButton = () => {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       const { access_token } = response;
+      console.log(response);
+      console.log(`Access Token: ${access_token}`);
 
       const res = await fetch(
         "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
@@ -16,8 +18,8 @@ const GoogleLoginButton = () => {
           },
         }
       );
-      const googleUser = await res.json();
 
+      const googleUser = await res.json();
       const { email, name } = googleUser;
       const newUser = { username: name, email };
       console.log(newUser.email + " " + newUser.username);

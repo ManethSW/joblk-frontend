@@ -2,11 +2,11 @@ import React, { useState, createRef, useEffect, useContext } from "react";
 import styles from "../Profile.module.css";
 import UserContext from "../../../context/UserContext";
 import { useRouter } from "next/navigation";
-import UsernameInput from "../../ProfileInputs/Username/Username";
-import AddressInput from "../../ProfileInputs/Address/Address";
-import FullnameInput from "../../ProfileInputs/Fullname/Fullname";
-import AvtarInput from "../../ProfileInputs/Avatar/Avatar";
-import PreferenceInput from "../../ProfileInputs/Preference/preference";
+import UsernameInput from "../Inputs/Username/Username";
+import AddressInput from "../Inputs/Address/Address";
+import FullnameInput from "../Inputs/Fullname/Fullname";
+import AvtarInput from "../Inputs/Avatar/Avatar";
+import PreferenceInput from "../Inputs/Preference/preference";
 
 const General = () => {
   //variables used for when loading the page
@@ -29,13 +29,17 @@ const General = () => {
       router.replace("/login");
     } else {
       setIsLoading(false);
-      setUserPreference(user.userPreference);
+      setUserPreference(user.mode_preference);
       setUsername(user.username);
       setFullname(user.full_name);
       setCity(user.city);
       setProvinceOrState(user.province);
       setCountry(user.country);
-      setAvatar(user.avatar);
+      if (user.avatar = "") {
+        setAvatar(null);
+      } else {
+        setAvatar(user.avatar);
+      }
     }
   }, [user, router]);
 

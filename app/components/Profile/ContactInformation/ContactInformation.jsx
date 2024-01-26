@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import styles from "../Profile.module.css";
 import UserContext from "../../../context/UserContext";
-import PhoneNumberInput from "../../ProfileInputs/PhoneNumber/PhoneNumber";
-import EmailInput from "../../ProfileInputs/Email/Email";
+import PhoneNumberInput from "../Inputs/PhoneNumber/PhoneNumber";
+import EmailInput from "../Inputs/Email/Email";
 
 const ContactInformation = () => {
   const [phoneNumber, setPhoneNumber] = useState("");

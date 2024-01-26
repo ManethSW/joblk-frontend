@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
 import styles from "./page.module.css";
-import JobBids from "../../components/JobBids";
+import JobBids from "../../components/Job/JobBids";
 
 const MyJobs = () => {
     const { user } = useContext(UserContext);

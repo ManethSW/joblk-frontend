@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
 import styles from "./page.module.css";
+import withAuth from "@/app/hooks/UserChecker";
 
 const Dashboard = () => {
   const { user } = useContext(UserContext);
@@ -40,4 +41,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard;
+export default withAuth(Dashboard);

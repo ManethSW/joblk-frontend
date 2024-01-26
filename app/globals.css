@@ -30,6 +30,7 @@
 
 :root {
   --primary-color-100: rgba(29, 191, 115, 1);
+  --primary-color-75: rgba(29, 191, 115, 0.75);
   --primary-color-50: rgba(29, 191, 115, 0.5);
   --white-color-100: rgba(255, 255, 255, 1);
   --black-color-100: rgba(0, 0, 0, 1);

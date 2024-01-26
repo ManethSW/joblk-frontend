@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import UserContext from '../context/UserContext';
+import UserContext from '../../context/UserContext';
 
 const JobBids = ({ jobId }) => {
   const { user } = useContext(UserContext);
@@ -34,6 +34,7 @@ const JobBids = ({ jobId }) => {
 
   const updateBidStatus = async (bidId, status) => {
     try {
+        setIsLoading(true)
       const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/bid/${bidId}`, {
         status: status
       }, {
@@ -48,6 +49,7 @@ const JobBids = ({ jobId }) => {
       if (response.status === 200) {
         setBids(bids.map(bid => bid.id === bidId ? { ...bid, status: status } : bid));
       }
+      setIsLoading(false)
     } catch (error) {
         setErrorMessage(error.response.data.message);
       console.error('Error updating bid status:', error);
