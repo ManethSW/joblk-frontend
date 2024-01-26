@@ -29,13 +29,17 @@ const General = () => {
       router.replace("/login");
     } else {
       setIsLoading(false);
-      setUserPreference(user.userPreference);
+      setUserPreference(user.mode_preference);
       setUsername(user.username);
       setFullname(user.full_name);
       setCity(user.city);
       setProvinceOrState(user.province);
       setCountry(user.country);
-      setAvatar(user.avatar);
+      if (user.avatar = "") {
+        setAvatar(null);
+      } else {
+        setAvatar(user.avatar);
+      }
     }
   }, [user, router]);
 
