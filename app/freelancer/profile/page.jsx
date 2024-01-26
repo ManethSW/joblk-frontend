@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./page.module.css";
 import General from "../../components/Profile/General/General";
 import ContactInformation from "../../components/Profile/ContactInformation/ContactInformation";
@@ -50,7 +51,13 @@ const Profile = () => {
           <p>Edit and setup your account as prefered - freelancer</p>
         </div>
         <div>
-          <button className={styles.preview}>Preview</button>
+          <Link href="/freelancer/profile/preview">
+            {" "}
+            <button className={styles.preview}>
+              Preview
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </Link>
         </div>
       </div>
       <div className={styles.body}>
