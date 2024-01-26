@@ -34,9 +34,9 @@ const NavBar = () => {
     }
   }, [user, session]);
 
-  useEffect(() => {
-    router.replace(`/${userMode}/dashboard`);
-  }, [userMode]);
+  // useEffect(() => {
+  //   router.replace(`/${userMode}/dashboard`);
+  // }, [userMode]);
 
   const handleLogout = async () => {
     const logoutUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_AUTH_LOGOUT}`;
@@ -63,8 +63,10 @@ const NavBar = () => {
   const switchMode = async () => {
     if (userMode === "freelancer") {
       setSession({ user_mode: "client" });
+      router.replace(`/${userMode}/dashboard`);
     } else {
       setSession({ user_mode: "freelancer" });
+      router.replace(`/${userMode}/dashboard`);
     }
   };
 
