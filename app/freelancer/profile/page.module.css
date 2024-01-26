@@ -16,6 +16,9 @@
 }
 
 .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-left: 10px;
     width: 100%;
     padding-bottom: 25px;
@@ -28,6 +31,14 @@
 
 .header p {
     font-family: 'tripsans-medium';
+}
+
+.header button {
+    font-family: 'tripsans-medium';
+    font-size: 18px;
+    padding: 10px 20px;
+    border: 2px solid var(--primary-color-100);
+    border-radius: 10px;
 }
 
 .body {

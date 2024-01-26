@@ -5,10 +5,10 @@ import styles from "./page.module.css";
 import General from "../../components/Profile/General/General";
 import ContactInformation from "../../components/Profile/ContactInformation/ContactInformation";
 import ChangePassword from "../../components/Profile/ChangePassword/ChangePassword";
-import Portfolio from "../../components/Profile/Portfolio/Portfolio";
+import Portfolio from "../../components/Profile/Portfolio/PortfolioRefactored";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
-import withAuth from '../../hooks/UserChecker';
+import withAuth from "../../hooks/UserChecker";
 
 const Profile = () => {
   const [navigation, setNavigation] = useState("General");
@@ -28,7 +28,7 @@ const Profile = () => {
     }
 
     if (!session) {
-      setSession({ user_mode: "freelancer"});
+      setSession({ user_mode: "freelancer" });
     }
   }, [user, router, session]);
 
@@ -43,8 +43,15 @@ const Profile = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2>{user ? user.username : 'Guest'} / {navigation}</h2>
-        <p>Edit and setup your account as prefered - freelancer</p>
+        <div>
+          <h2>
+            {user ? user.username : "Guest"} / {navigation}
+          </h2>
+          <p>Edit and setup your account as prefered - freelancer</p>
+        </div>
+        <div>
+          <button className={styles.preview}>Preview</button>
+        </div>
       </div>
       <div className={styles.body}>
         <ul className={styles.menu}>

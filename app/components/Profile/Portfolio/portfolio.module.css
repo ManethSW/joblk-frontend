@@ -45,17 +45,31 @@
     user-select: none;
 }
 
+.projectContainerOpen {
+    position: relative;
+    width: 100%;
+}
+
 .formcontainer {
     overflow: hidden;
-    transition: all 0.5s ease-in-out 0s;
+    /* transition: all 0.5s ease-in-out 0s; */
     max-height: 0;
+    z-index: 1000;
+    border: 1px solid transparent;
 }
 
 .formcontainer.open {
-    max-height: 100vh;
+    position: absolute;
+    top: 65px;
+    left: 0;
+    right: 0;
+    background-color: var(--white-color-100);
+    border: 1px solid var(--black-color-100);
+    border-radius: 15px;
+    max-height: 500px;
     transition-timing-function: ease-in-out;
-    margin-top: 15px;
-    padding: 0px 5px;
+    /* margin-top: 15px; */
+    padding: 20px;
 }
 
 .addprojectform {
@@ -133,13 +147,17 @@
     width: 100%;
 }
 
-.formimage {
+.formimage,
+.imagecontainer {
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 5px;
     overflow: hidden;
+}
+
+.imagecontainer {
     border: 1px solid var(--black-color-25);
+    border-radius: 10px;
 }
 
 .imageactions {
@@ -251,41 +269,87 @@
     background-color: var(--primary-color-100);
 }
 
-.displayproject {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.tableprojects {
+    margin-top: 20px;
+    width: 100%;
 }
 
-.displayprojecttitleimage {
-    display: flex;
-    align-items: center;
-    column-gap: 15px;
+.tableprojects thead {
+    background-color: var(--black-color-10);
 }
 
-.image {
-    width: 50px;
+.tableprojects th:nth-of-type(1) {
+    border-radius: 10px 0px 0px 0px;
+}
+
+.tableprojects th:nth-of-type(4) {
+    border-radius: 0px 10px 0px 0px;
+}
+
+.tableprojects th {
+    text-align: left;
+    font-family: 'tripsans-medium';
+    color: var(--black-color-100);
+}
+
+.imgtitle {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.tableprojects h3 {
+    font-family: 'tripsans-regular';
+    font-size: 15px;
+    color: var(--black-color-100);
+}
+
+.displayprojectimage {
+    width: 75px;
     height: 50px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .projectcrud {
     display: flex;
     align-items: center;
-    column-gap: 15px;
+    column-gap: 10px;
 }
 
 .projectcrud button {
     font-family: 'tripsans-medium';
     font-size: 15px;
-    padding: 2px 10px;
+    color: var(--black-color-100);
+    border: 1px solid var(--black-color-50);
+    padding: 5px;
+    width: 75px;
     border-radius: 5px;
     transition: all 0.3s ease-in 0s;
 }
 
+.projectcrud button:hover {
+    border: 1px solid var(--black-color-100);
+}
+
 .projectcrud button:nth-of-type(1) {
-    background-color: rgba(28, 191, 115, 0.5);
+    background-color: var(--primary-color-50);
 }
 
 .projectcrud button:nth-of-type(1):hover {
-    background-color: rgba(28, 191, 115, 1);
+    background-color: var(--primary-color-100);
+}
+
+.projectcrud button:nth-of-type(2) {
+    background-color: rgb(255, 88, 97, 50%);
+}
+
+.projectcrud button:nth-of-type(2):hover {
+    background-color: rgb(255, 88, 97, 100%);
+}
+
+.formopen {
+    background: black;
+    height: 100%;
+    width: 100%;
 }
