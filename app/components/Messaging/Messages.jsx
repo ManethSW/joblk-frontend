@@ -61,7 +61,7 @@ const Messages = ({ conversationId }) => {
         withCredentials: true 
     });
       setNewMessage('');
-      fetchMessages(); // Fetch the messages again after sending a new one
+      fetchMessages(); 
     } catch (error) {
       console.error('Failed to send message', error);
     }
@@ -80,7 +80,6 @@ const Messages = ({ conversationId }) => {
             <div key={index} className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl p-3 rounded-lg ${message.sender_id === user.id ? 'bg-green-300' : 'bg-green-100'}`}>
                 <p>{message.message_content}</p>
-                {/* You can also display other properties like sender_id, created_at, etc. */}
               </div>
             </div>
           ))}
