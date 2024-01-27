@@ -8,6 +8,7 @@ import {
   ValidationMessage,
   VerificationHeader,
   ActionButtonsSendOtp,
+  ActionButtonsSave,
 } from "@/app/components/Profile/Inputs/Input";
 import OTPInput from "../Inputs/Otp/Otp";
 import styles from "../Profile.module.css";
@@ -16,7 +17,8 @@ const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const ChangePassword = () => {
   const { user, setUser } = useContext(UserContext);
-  const [passowrd, setPassword] = useState("");
+  const router = useRouter();
+
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [passwordValidationMessage, setPasswordValidationMessage] = useState(
     "Should enter all fields for the passwords"
@@ -27,24 +29,13 @@ const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
 
-  const [countdown, setCountdown] = useState(0);
-  const [otpSent, setOtpSent] = useState(false);
-  const intervalRef = useRef(null);
-  const [isDisabled, setIsDisabled] = useState(true);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
     if (!user) {
       router.replace("/login");
-    } else {
-      return () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
     }
   }, [user, router]);
 
@@ -112,39 +103,8 @@ const ChangePassword = () => {
     }
   };
 
-  const handlePasswordCountdown = () => {
-    setCountdown(60);
-    intervalRef.current = setInterval(() => {
-      setCountdown((prevCountdown) => {
-        if (prevCountdown <= 1) {
-          clearInterval(intervalRef.current);
-          return 0;
-        } else {
-          return prevCountdown - 1;
-        }
-      });
-    }, 1000);
-  };
-
-  const handleSendOTP = async (e) => {
-    e.preventDefault();
-    console.log(isPasswordValid);
-    console.log(countdown > 0 && isPasswordValid);
-    if (countdown > 0 && isPasswordValid) {
-      displayToast("Please wait before sending another OTP", "warning");
-    } else if (isPasswordValid) {
-      displayToast(`OTP code sent to your email`, "success");
-      handlePasswordCountdown();
-      setIsDisabled(false);
-      setOtpSent(true);
-    } else {
-      displayToast(`Please enter valid password`, "error");
-    }
-  };
-
-  const handleSubmitOTP = async (otp) => {
-    console.log(otp);
-    if (otp == "123456" && isPasswordValid) {
+  const handleSubmitOTP = async () => {
+    if (isPasswordValid) {
       const currentPass = oldPassword;
       const newPass = newPassword;
       const confPass = newPasswordConfirm;
@@ -167,11 +127,6 @@ const ChangePassword = () => {
         router.replace("/login");
         sessionStorage.removeItem("user");
         setUser(null);
-        // if (intervalRef.current) {
-        //   clearInterval(intervalRef.current);
-        // }
-        // setCountdown(0);
-        // setIsDisabled(true);
       } catch (error) {
         if (error.response && error.response.data) {
           console.error(error.response.data["message"]);
@@ -181,29 +136,8 @@ const ChangePassword = () => {
         }
       }
     } else {
-      displayToast(`Wrong OTP code`, "error");
+      displayToast(`Invalid password`, "error");
     }
-  };
-
-  const OTPInputField = ({ value, onChange, onKeyUp }) => {
-    const inputRef = React.useRef();
-
-    useEffect(() => {
-      if (value.length === 1) {
-        inputRef.current.focus();
-      }
-    }, [value]);
-
-    return (
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-        onKeyUp={onKeyUp}
-        maxLength="1"
-        ref={inputRef}
-      />
-    );
   };
 
   return (
@@ -285,11 +219,6 @@ const ChangePassword = () => {
             isValid={isPasswordValid}
             validationMessage={passwordValidationMessage}
           />
-          <OTPInput
-            onSubmit={(otp) => handleSubmitOTP(otp)}
-            countdown={countdown}
-            isDisabled={isDisabled}
-          />
         </>
       }
       validationAndActionSectionChildren={
@@ -299,7 +228,7 @@ const ChangePassword = () => {
             isTouched={isPasswordTouched}
             isValid={isPasswordValid}
           />
-          <ActionButtonsSendOtp handleSendOtp={handleSendOTP} />
+          <ActionButtonsSave onSave={handleSubmitOTP}></ActionButtonsSave>
         </>
       }
     />

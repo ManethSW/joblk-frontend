@@ -180,12 +180,12 @@ const NavBar = () => {
                       </div>
                     ) : (
                       <div className={styles.avatar}>
-                        <i class="fa-solid fa-user"></i>
+                        <i className={`fa-solid fa-user`}></i>
                       </div>
                     )}
                     <div className={styles.usernameandarrow}>
                       <h2>{user.username}</h2>
-                      <i class="fa-solid fa-chevron-down"></i>
+                      <i className={`fa-solid fa-chevron-down`}></i>
                     </div>
                   </div>
                 </label>

@@ -7,16 +7,17 @@ const Portfolio = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditFormOpen, setisEditFormOpen] = useState(false);
   const [project, setProject] = useState([]);
+  const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
   const [images, setImages] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
   const [projects, setProjects] = useState([]);
   const fileInputRef = useRef();
   const placeholderImages = new Array(3).fill(null);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const imagesEdit = [project.image1, project.image2, project.image3];
 
   useEffect(() => {
     getProjects();
@@ -61,8 +62,8 @@ const Portfolio = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("url", url);
-    images.forEach((image, index) => {
-      formData.append(`image${index + 1}`, image);
+    imageFiles.forEach((file, index) => {
+      formData.append(`image${index + 1}`, file);
     });
 
     const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/portfolio`;
@@ -77,6 +78,7 @@ const Portfolio = () => {
       });
       if (response.status === 200) {
         console.log("Successfully created project");
+        getProjects();
       } else {
         console.error("Failed to update projects", response);
       }
@@ -95,25 +97,62 @@ const Portfolio = () => {
     event.preventDefault();
 
     const formData = new FormData();
+    formData.append("id", id);
     formData.append("title", title);
     formData.append("description", description);
     formData.append("url", url);
-    images.forEach((image, index) => {
-      formData.append(`image${index + 1}`, image);
+    imageFiles.forEach((file, index) => {
+      formData.append(`image${index + 1}`, file);
     });
+
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/portfolio`;
+    const headers = {
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+    };
+
+    try {
+      const response = await axios.put(apiurl, formData, {
+        headers,
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log("Successfully updated project");
+        getProjects();
+      } else {
+        console.error("Failed to update projects", response);
+      }
+    } catch (error) {
+      console.error("Failed to update projects", error);
+    }
+
+    setTitle("");
+    setDescription("");
+    setUrl("");
+    setImages([]);
+    setIsFormOpen(false);
   };
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
     files.forEach((file) => {
       if (file) {
+        const imageUrl = URL.createObjectURL(file);
         setImages((oldImages) => {
           if (editingImageIndex !== null) {
             const newImages = [...oldImages];
-            newImages[editingImageIndex] = file;
+            newImages[editingImageIndex] = imageUrl;
             return newImages;
           } else {
-            return [...oldImages, file];
+            return [...oldImages, imageUrl];
+          }
+        });
+        setImageFiles((oldImageFiles) => {
+          if (editingImageIndex !== null) {
+            const newImageFiles = [...oldImageFiles];
+            newImageFiles[editingImageIndex] = file;
+            return newImageFiles;
+          } else {
+            return [...oldImageFiles, file];
           }
         });
         setEditingImageIndex(null);
@@ -125,20 +164,37 @@ const Portfolio = () => {
   const handleEditClick = (index) => {
     const project = projects[index];
     setProject(project);
+    setId(project.id);
     setTitle(project.title);
     setDescription(project.description);
     setUrl(project.url);
     images[0] = project.image1;
     images[1] = project.image2;
     images[2] = project.image3;
-    setIsFormOpen(true);
     setisEditFormOpen(true);
+    setIsFormOpen(true);
   };
 
-  const handleDeleteClick = (index) => {
-    const updatedProjects = [...projects];
-    updatedProjects.splice(index, 1);
-    setProjects(updatedProjects);
+  const handleDeleteClick = async (id) => {
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/portfolio?id=${id}`;
+    const headers = {
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+    };
+
+    try {
+      const response = await axios.delete(apiurl, {
+        headers,
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log("Successfully deleted project");
+        getProjects();
+      } else {
+        console.error("Failed to deleted project", response);
+      }
+    } catch (error) {
+      console.error("Failed to deleted project", error);
+    }
   };
 
   const handleFileButtonClick = () => {
@@ -148,12 +204,17 @@ const Portfolio = () => {
   const handleImageDelete = (event, index) => {
     event.preventDefault();
     event.stopPropagation();
-    setImages((oldImages) => oldImages.filter((_, i) => i !== index));
+    setImages((oldImages) => {
+      const imageUrl = oldImages[index];
+      URL.revokeObjectURL(imageUrl);
+      return oldImages.filter((_, i) => i !== index);
+    });
+    setImageFiles((oldImageFiles) => oldImageFiles.filter((_, i) => i !== index));
   };
 
   const handleImageEdit = (event, index) => {
     event.preventDefault();
-    event.stopPropagation(); 
+    event.stopPropagation();
     setEditingImageIndex(index);
     fileInputRef.current.click();
   };
@@ -168,7 +229,10 @@ const Portfolio = () => {
               : styles.addProjectContainerClose
           }`}
           onClick={() => {
-            setIsFormOpen(!isFormOpen);
+            setIsFormOpen(true);
+            if (isEditFormOpen) {
+              setisEditFormOpen(false);
+            }
             setTitle("");
             setDescription("");
             setUrl("");
@@ -184,7 +248,9 @@ const Portfolio = () => {
           {isFormOpen && (
             <div>
               <form
-                onSubmit={handleFormSubmit}
+                onSubmit={
+                  !isEditFormOpen ? handleFormSubmit : handleEditFormSubmit
+                }
                 className={styles.addprojectform}
               >
                 <div className={styles.addprojectformcontent}>
@@ -226,121 +292,97 @@ const Portfolio = () => {
                         className={styles.selectimages}
                       >
                         <div>
-                          <i class="fa-solid fa-image"></i>
+                          <i className={`fa-solid fa-image`}></i>
                           Select Images
                         </div>
                       </button>
                       <div className={styles.addprojectformactionbuttons}>
-                        <button
-                          onClick={() => {
-                            setIsFormOpen(!isFormOpen);
-                            setisEditFormOpen(!isEditFormOpen);
-                          }}
-                          className={styles.cancelproject}
-                        >
-                          <div>
-                            <i class="fa-solid fa-ban"></i>
-                            Cancel
-                          </div>
-                        </button>
                         {!isEditFormOpen ? (
-                          <button type="submit" className={styles.addproject}>
-                            <div>
-                              <i class="fa-solid fa-right-to-bracket"></i>
-                              Submit
-                            </div>
-                          </button>
+                          <>
+                            <button
+                              onClick={() => {
+                                setIsFormOpen(false);
+                              }}
+                              className={styles.cancelproject}
+                            >
+                              <div>
+                                <i class="fa-solid fa-ban"></i>
+                                Cancel
+                              </div>
+                            </button>
+                            <button type="submit" className={styles.addproject}>
+                              <div>
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                Submit
+                              </div>
+                            </button>
+                          </>
                         ) : (
-                          <button
-                            className={styles.addproject}
-                            onClick={handleEditFormSubmit}
-                          >
-                            <div>
-                              <i class="fa-solid fa-right-to-bracket"></i>
-                              Edit
-                            </div>
-                          </button>
+                          <>
+                            <button
+                              onClick={() => {
+                                setIsFormOpen(false);
+                                setisEditFormOpen(false);
+                              }}
+                              className={styles.cancelproject}
+                            >
+                              <div>
+                                <i class="fa-solid fa-ban"></i>
+                                Cancel
+                              </div>
+                            </button>
+                            <button type="submit" className={styles.addproject}>
+                              <div>
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                Edit
+                              </div>
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
                   </div>
-                  {!isEditFormOpen ? (
-                    <div className={styles.formimages}>
-                      {placeholderImages.map((_, index) => (
-                        <div key={index} className={styles.formimage}>
-                          {images[index] ? (
-                            <div className={styles.imagecontainer}>
-                              <Image
-                                src={images[index]}
-                                alt={`Preview ${index}`}
-                                layout="fill"
-                                objectFit="cover"
-                              />
-                              <div className={styles.imageactions}>
-                                <button
-                                  type="none"
-                                  onClick={(event) =>
-                                    handleImageDelete(event, index)
-                                  }
-                                >
-                                  <i className="fa-solid fa-trash"></i>
-                                </button>
-                                <button
-                                  type="none"
-                                  onClick={(event) =>
-                                    handleImageEdit(event, index)
-                                  }
-                                >
-                                  <i className="fa-solid fa-pen"></i>
-                                </button>
-                              </div>
+                  <div className={styles.formimages}>
+                    {placeholderImages.map((_, index) => (
+                      <div key={index} className={styles.formimage}>
+                        {images[index] ? (
+                          <div className={styles.imagecontainer}>
+                            <Image
+                              src={images[index]}
+                              alt={`Preview ${index}`}
+                              layout="fill"
+                              objectFit="cover"
+                            />
+                            <div className={styles.imageactions}>
+                              <button
+                                type="none"
+                                onClick={(event) =>
+                                  handleImageDelete(event, index)
+                                }
+                              >
+                                <i className="fa-solid fa-trash"></i>
+                              </button>
+                              <button
+                                type="none"
+                                onClick={(event) =>
+                                  handleImageEdit(event, index)
+                                }
+                              >
+                                <i className="fa-solid fa-pen"></i>
+                              </button>
                             </div>
-                          ) : (
-                            <div
-                              className={styles.placeholderImage}
-                              onClick={handleFileButtonClick}
-                            >
-                              <i class="fa-solid fa-image"></i>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className={styles.formimages}>
-                      {placeholderImages.map((_, index) => (
-                        <div key={index} className={styles.formimage}>
-                          {images[index] ? (
-                            <div className={styles.imagecontainer}>
-                              <Image
-                                src={images[index]}
-                                alt={`Preview ${index}`}
-                                layout="fill"
-                                objectFit="cover"
-                              />
-                              <div className={styles.imageactions}>
-                                <button
-                                  onClick={() => handleImageDelete(index)}
-                                >
-                                  <i className="fa-solid fa-trash"></i>
-                                </button>
-                                <button onClick={() => handleImageEdit(index)}>
-                                  <i className="fa-solid fa-pen"></i>
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div
-                              className={styles.placeholderImage}
-                              onClick={handleFileButtonClick}
-                            >
-                              <i class="fa-solid fa-image"></i>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                          </div>
+                        ) : (
+                          <div
+                            className={styles.placeholderImage}
+                            onClick={handleFileButtonClick}
+                          >
+                            <i class="fa-solid fa-image"></i>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <input
                   type="file"
@@ -439,7 +481,7 @@ const displayProjects = ({
               Edit
             </button>
             <button
-              onClick={() => handleDeleteClick(index)}
+              onClick={() => handleDeleteClick(project.id)}
               className={styles.delete}
             >
               Delete

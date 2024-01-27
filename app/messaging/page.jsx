@@ -2,6 +2,7 @@
 import React, { use, useState } from 'react';
 import ConversationsList from '../components/Messaging/ConversationList';
 import Messages from '../components/Messaging/Messages';
+import withAuth from '../hooks/UserChecker';
 
 
 const Messaging = () => {
@@ -34,4 +35,4 @@ const Messaging = () => {
   );
 };
 
-export default Messaging;
+export default withAuth(Messaging);

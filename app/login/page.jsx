@@ -14,8 +14,7 @@ import GoogleLoginButton from "../components/auth/GoogleLogin/GoogleLogin";
 import LoginRegisterBackground from "../components/auth/LogRegBackground/LogRegBackground";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const PASSWORD_REGEX =
-  /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Login = () => {
   const router = useRouter();
@@ -74,14 +73,10 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (user && user.mode_preference !== undefined) {
-       if (user.mode_preference == 1) {
-         router.replace("/freelancer/profile"); 
-       } else {
-         router.replace("/client/profile"); 
-       }
+    if (user) {
+      router.replace("/profile");
     }
-   }, [user]);
+  }, [user]);
 
   return (
     <GoogleOAuthProvider clientId="313142226606-s0ckkqp44583t9kicgphf902polhi1p7.apps.googleusercontent.com">

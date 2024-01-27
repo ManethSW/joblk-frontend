@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 import General from "@/app/components/Profile/General/General";
 import ContactInformation from "@/app/components/Profile/ContactInformation/ContactInformation";
 import ChangePassword from "@/app/components/Profile/ChangePassword/ChangePassword";
-import Portfolio from "@/app/components/Profile/Portfolio/PortfolioRefactored";
+import Portfolio from "@/app/components/Profile/Portfolio/Portfolio";
 import UserContext from "@/app/context/UserContext";
 import SessionContext from "@/app/context/SessionContext";
 import withAuth from "@/app/hooks/UserChecker";
@@ -49,7 +49,7 @@ const Profile = () => {
           <h2>
             {user ? user.username : "Guest"} / {navigation}
           </h2>
-          <p>Edit and setup your account as prefered - freelancer</p>
+          <p>Edit and setup your account as prefered</p>
         </div>
         <div>
           <Link href="/profile/preview">

@@ -213,6 +213,12 @@
     margin-top: 25px;
 }
 
+.resetcontainer {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    row-gap: 10px;
+}
+
 .otpheader {
     display: flex;
     align-items: center;
@@ -225,10 +231,20 @@
     font-size: 16px;
 }
 
+.resetheader h3,
+.resetheader span {
+    font-family: 'tripsans-bold';
+    color: var(--black-color-75);
+}
+
 .otpinputs {
     width: 300px;
     display: flex;
     justify-content: space-between;
+}
+
+.resetotpinputs {
+    width: 100%;
 }
 
 .otpinputs input {
@@ -236,8 +252,27 @@
     text-align: center;
 }
 
+.resetotpinputs input {
+    width: 50px!important;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid var(--black-color-50);
+    transition: all 0.3s ease-in-out 0s;
+}
+
+
+.resetotpinputs input:hover {
+    border: 2px solid var(--black-color-100);
+}
+
+.resetotpinputs input:focus {
+    border: 2px solid var(--black-color-100);
+    outline: none;
+}
+
 .otpinputs input:focus {
     border: 1px solid rgba(0, 0, 0, 1);
+    outline: none;
 }
 
 .otp {

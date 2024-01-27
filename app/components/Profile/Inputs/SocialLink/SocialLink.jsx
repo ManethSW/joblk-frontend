@@ -20,7 +20,7 @@ const SocialLink = ({ value, setValue, title, icon, description, link, placehold
           <Header
             title={
               <>
-                <i class={icon}></i>{title}
+                <i className={icon}></i>{title}
               </>
             }
             description={description}

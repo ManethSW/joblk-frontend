@@ -186,7 +186,7 @@ const Preview = () => {
                 </div>
               )}
               <div className={styles.usernameemail}>
-                <h2>{`${user.full_name} (${user.username})`}</h2>
+                <h2>{`${user.username} (${user.full_name})`}</h2>
                 <h3>{user.email}</h3>
               </div>
             </div>

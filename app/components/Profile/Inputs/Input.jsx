@@ -101,7 +101,7 @@ export const InputSocialLinkField = ({
 }) => (
   <div className={styles.inputSocialLinkField}>
     <label for={name}>
-      <i class="fa-solid fa-lock"></i>
+      <i className={`fa-solid fa-lock`}></i>
       {link}
     </label>
     <input

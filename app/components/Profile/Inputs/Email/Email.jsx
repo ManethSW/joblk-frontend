@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import {
   FormContainer,
   InputField,
@@ -52,25 +53,51 @@ const EmailInput = ({ email, setEmail, emailVerified, setEmailVerified }) => {
   const handleSendOTP = async () => {
     if (emailVerified == 1) {
       displayToast("Email already verified", "success");
-    } else if (emailCountdown > 0 && isEmailValid) {
+    } else 
+    if (emailCountdown > 0 && isEmailValid) {
       displayToast("Please wait before sending another OTP", "error");
     } else {
-      displayToast(`OTP code sent to your email`, "success");
-      setIsDisabled(false);
-      handleEmailCountdown();
+      const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify?email=${email}`;
+      const headers = {
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+      };
+      try {
+        const response = await axios.get(apiurl, {
+          headers,
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          displayToast(`OTP code sent to your email`, "success");
+          setIsDisabled(false);
+          handleEmailCountdown();
+        } else {
+          displayToast(`OTP failed to send`, "error");
+        }
+      } catch (error) {
+        displayToast(`OTP failed to send`, "error");
+      }
     }
   };
 
   const handleSubmitOTP = async (otp) => {
-    if (otp == "123456") {
-      displayToast(`Email changed successfully`, "success");
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/verify?email=${email}&code=${otp}`;
+    const headers = {
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+    };
+    try {
+      const response = await axios.get(apiurl, {
+        headers,
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        displayToast(`Email has being verified`, "success");
+        setEmailCountdown(0);
+        setIsDisabled(false);
+        setEmailVerified("1");
+      } else {
+        displayToast(`Wrong OTP code`, "error");
       }
-      setEmailCountdown(0);
-      setIsDisabled(true);
-      setEmailVerified("1");
-    } else {
+    } catch (error) {
       displayToast(`Wrong OTP code`, "error");
     }
   };
@@ -81,6 +108,7 @@ const EmailInput = ({ email, setEmail, emailVerified, setEmailVerified }) => {
       setEmailCountdown((prevCountdown) => {
         if (prevCountdown <= 1) {
           clearInterval(intervalRef.current);
+          setIsDisabled(true);
           return 0;
         } else {
           return prevCountdown - 1;
