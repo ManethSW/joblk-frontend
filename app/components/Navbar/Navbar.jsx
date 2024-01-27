@@ -119,11 +119,12 @@ const NavBar = () => {
                     </li>
                     <li
                       className={
-                        isActive == "client/my_jobs" ? styles.active : ""
+                        isActive == "client/projects" ? styles.active : ""
                       }
                     >
                       <Link href="/client/projects">My Projects</Link>
                     </li>
+
                   </>
                 ) : (
                   <>
@@ -161,6 +162,9 @@ const NavBar = () => {
                 )}
                 <li className={isActive == "users" ? styles.active : ""}>
                   <Link href="/users">Users</Link>
+                </li>
+                <li className={isActive == "messages" ? styles.active : ""}>
+                  <Link href="/messaging">Messaging</Link>
                 </li>
               </>
             )}
