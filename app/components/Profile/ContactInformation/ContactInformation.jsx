@@ -7,7 +7,7 @@ import EmailInput from "../Inputs/Email/Email";
 const ContactInformation = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [emailVerified, setEmailVerified] = useState("0");
+  const [emailVerified, setEmailVerified] = useState();
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -17,7 +17,7 @@ const ContactInformation = () => {
   useEffect(() => {
     if (user) {
       setEmail(user.email);
-      setEmailVerified(user.email_verified);
+      setEmailVerified(user.verified_email);
     }
   }, [user]);
 

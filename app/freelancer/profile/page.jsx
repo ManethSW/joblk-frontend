@@ -10,6 +10,7 @@ import Portfolio from "../../components/Profile/Portfolio/PortfolioRefactored";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
 import withAuth from "../../hooks/UserChecker";
+import SocialProfiles from "@/app/components/Profile/SocialProfiles/SocialProfiles";
 
 const Profile = () => {
   const [navigation, setNavigation] = useState("General");
@@ -89,7 +90,9 @@ const Profile = () => {
           )}
           {navigation === "Change Password" && <ChangePassword />}
           {navigation === "Social Profiles" && (
-            <div>Social Profiles Content</div>
+            <div>
+              <SocialProfiles />
+            </div>
           )}
         </div>
       </div>
