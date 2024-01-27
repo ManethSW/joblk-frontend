@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
+import UserContext from "../../../context/UserContext";
 import {
   FormContainer,
   InputField,
@@ -13,6 +15,7 @@ import styles from "../Profile.module.css";
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const ChangePassword = () => {
+  const { user, setUser } = useContext(UserContext);
   const [passowrd, setPassword] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [passwordValidationMessage, setPasswordValidationMessage] = useState(
@@ -31,14 +34,19 @@ const ChangePassword = () => {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
+    if (!user) {
+      router.replace("/login");
+    } else {
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    }
+  }, [user, router]);
 
   const displayToast = (message, type) => {
     setToastMessage(message);
@@ -156,11 +164,14 @@ const ChangePassword = () => {
           withCredentials: true,
         });
         displayToast(`Password changed successfully`, "success");
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-        setCountdown(0);
-        setIsDisabled(true);
+        router.replace("/login");
+        sessionStorage.removeItem("user");
+        setUser(null);
+        // if (intervalRef.current) {
+        //   clearInterval(intervalRef.current);
+        // }
+        // setCountdown(0);
+        // setIsDisabled(true);
       } catch (error) {
         if (error.response && error.response.data) {
           console.error(error.response.data["message"]);

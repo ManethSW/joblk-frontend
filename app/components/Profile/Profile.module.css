@@ -93,9 +93,24 @@
     background-color: rgb(255, 88, 97, 100%);
 }
 
+.socialsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.socialsHeader h2 {
+    font-family: 'tripsans-bold';
+    font-size: 16px;
+}
+
+.socialsHeader h3 {
+    font-family: 'tripsans-regular';
+    font-size: 14px;
+} 
+
 .saveSocials {
     width: fit-content;
-    margin-left: auto;
     display: flex;
     align-items: center;
     column-gap: 15px;

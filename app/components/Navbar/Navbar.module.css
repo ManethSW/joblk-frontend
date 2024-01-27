@@ -12,6 +12,7 @@
     padding: 25px 125px 0px 125px;
     display: flex;
     justify-content: space-between;
+    /* border-bottom: 2px solid var(--primary-color-100); */
 }
 
 .logoLinksContainer {
@@ -65,7 +66,8 @@
     color: var(--primary-color-100);
 }
 
-.linksContainer a:hover::before, .linksContainer .active a::before  {
+.linksContainer a:hover::before,
+.linksContainer .active a::before {
     left: 0;
 }
 
@@ -120,22 +122,59 @@
     background-color: var(--black-color-100);
 }
 
-.userContainer {
+.userinfo {
+    height: 100%;
     display: flex;
     align-items: center;
-    gap: 10px;
+    column-gap: 15px;
 }
 
-.userContainer p {
-    font-size: 16px;
+.avatar {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 100px;
+    border: 1px solid var(--black-color-50);
+    background-color: var(--black-color-50);
+    color: var(--white-color-100);
 }
 
-.userContainer i {
-    font-size: 20px;
-    border-radius: 50%;
-    padding: 8px;
-    border: 3px solid var(--primary-color-100);
-    color: var(--black-color-50);
+.avatarImage {
+    border-color: var(--black-color-100);
+}
+
+.avatar i {
+    font-size: 12px;
+}
+
+.usernameandarrow {
+    display: flex;
+    align-items: center;
+    column-gap: 15px;
+    height: 35px;
+    border: 2px solid var(--black-color-50);
+    border-radius: 100px;
+    padding: 0px 15px;
+    cursor: pointer;
+}
+
+.usernameandarrow h2 {
+    font-family: 'tripsans-ultra';
+}
+
+.usernameandarrow i {
+    font-size: 12.5px;
+    margin-top: 2.5px;
+}
+
+.usernameandarrow:hover {
+    background-color: var(--primary-color-100);
+    border-color: var(--black-color-100);
+    color: var(--black-color-100);
 }
 
 .navbarmobile {

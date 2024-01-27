@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import styles from "../Profile.module.css";
 import UserContext from "../../../context/UserContext";
 import SocialLink from "../Inputs/SocialLink/SocialLink";
@@ -20,18 +21,57 @@ const SocialProfiles = () => {
   const githubLink = "https://www.github.com/";
   const instagramLink = "https://www.instagram.com/";
 
+  const fetchSocials = async () => {
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/socials`;
+    const headers = {
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+    };
+
+    try {
+      const response = await axios.get(apiurl, {
+        headers,
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setLinkedin(
+          response.data.linkedin
+            ? response.data.linkedin.replace(linkedInLink, "")
+            : null
+        );
+        setFacebook(
+          response.data.facebook
+            ? response.data.facebook.replace(facebookLink, "")
+            : null
+        );
+        setTwitter(
+          response.data.x ? response.data.x.replace(twitterLink, "") : null
+        );
+        setGithub(
+          response.data.github
+            ? response.data.github.replace(githubLink, "")
+            : null
+        );
+        setInstagram(
+          response.data.instagram
+            ? response.data.instagram.replace(instagramLink, "")
+            : null
+        );
+      } else {
+        console.error("Failed to fetch socials", response);
+      }
+    } catch (error) {
+      console.error("Failed to fetch socials", error);
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       router.replace("/login");
     } else {
-      setLinkedin(user.linkedin);
-      setFacebook(user.facebook);
-      setTwitter(user.x);
-      setGithub(user.github);
-      setInstagram(user.instagram);
       setIsLoading(false);
+      fetchSocials();
     }
-  }, [user, router]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -41,19 +81,46 @@ const SocialProfiles = () => {
     );
   }
 
-  const saveSocials = (e) => {
+  const saveSocials = async (e) => {
     e.preventDefault();
-    const data = {
-      linkedin,
+    const data = {};
+    data.instagram = `${instagramLink}${instagram}`;
+    data.linkedIn = `${linkedInLink}${linkedin}`;
+    data.github = `${githubLink}${github}`;
+    data.facebook = `${facebookLink}${facebook}`;
+    data.x = `${twitterLink}${twitter}`;
+
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/socials`;
+    const headers = {
+      auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
-    console.log(data);
+    try {
+      const response = await axios.put(apiurl, data, {
+        headers,
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        console.log("Successfully updated socials");
+        getProjects();
+      } else {
+        console.error("Failed to updated socials", response);
+      }
+    } catch (error) {
+      console.error("Failed to updated socials", error);
+    }
   };
 
   return (
     <div className={styles.bodycontent}>
-      <div className={styles.saveSocials} onClick={saveSocials}>
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        <h3>Save All</h3>
+      <div className={styles.socialsHeader}>
+        <div>
+          <h2>Manage your socials here</h2>
+          <h3>These will be public for others when previewing your profile</h3>
+        </div>
+        <div className={styles.saveSocials} onClick={saveSocials}>
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <h3>Save All</h3>
+        </div>
       </div>
       <SocialLink
         value={linkedin}

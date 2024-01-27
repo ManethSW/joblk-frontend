@@ -52,7 +52,6 @@
 
 .formcontainer {
     overflow: hidden;
-    /* transition: all 0.5s ease-in-out 0s; */
     max-height: 0;
     z-index: 1000;
     border: 1px solid transparent;
@@ -346,10 +345,4 @@
 
 .projectcrud button:nth-of-type(2):hover {
     background-color: rgb(255, 88, 97, 100%);
-}
-
-.formopen {
-    background: black;
-    height: 100%;
-    width: 100%;
 }

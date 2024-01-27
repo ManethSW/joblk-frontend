@@ -108,10 +108,6 @@ const Portfolio = () => {
     files.forEach((file) => {
       if (file) {
         setImages((oldImages) => {
-          if (oldImages.length >= 3) {
-            alert("You can only upload 3 images");
-            return oldImages;
-          }
           if (editingImageIndex !== null) {
             const newImages = [...oldImages];
             newImages[editingImageIndex] = file;
@@ -149,11 +145,15 @@ const Portfolio = () => {
     fileInputRef.current.click();
   };
 
-  const handleImageDelete = (index) => {
+  const handleImageDelete = (event, index) => {
+    event.preventDefault();
+    event.stopPropagation();
     setImages((oldImages) => oldImages.filter((_, i) => i !== index));
   };
 
-  const handleImageEdit = (index) => {
+  const handleImageEdit = (event, index) => {
+    event.preventDefault();
+    event.stopPropagation(); 
     setEditingImageIndex(index);
     fileInputRef.current.click();
   };
@@ -251,7 +251,10 @@ const Portfolio = () => {
                             </div>
                           </button>
                         ) : (
-                          <button className={styles.addproject} onClick={handleEditFormSubmit}>
+                          <button
+                            className={styles.addproject}
+                            onClick={handleEditFormSubmit}
+                          >
                             <div>
                               <i class="fa-solid fa-right-to-bracket"></i>
                               Edit
@@ -274,12 +277,20 @@ const Portfolio = () => {
                                 objectFit="cover"
                               />
                               <div className={styles.imageactions}>
-                                <button type="none"
-                                  onClick={() => handleImageDelete(index)}
+                                <button
+                                  type="none"
+                                  onClick={(event) =>
+                                    handleImageDelete(event, index)
+                                  }
                                 >
                                   <i className="fa-solid fa-trash"></i>
                                 </button>
-                                <button type="none" onClick={() => handleImageEdit(index)}>
+                                <button
+                                  type="none"
+                                  onClick={(event) =>
+                                    handleImageEdit(event, index)
+                                  }
+                                >
                                   <i className="fa-solid fa-pen"></i>
                                 </button>
                               </div>
@@ -344,37 +355,40 @@ const Portfolio = () => {
           )}
         </div>
       </div>
-      <table
-        class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-        className={styles.tableprojects}
-      >
-        <thead class="">
-          <tr>
-            <th scope="col" class="px-6 py-3">
-              Thumbnail
-            </th>
-            <th scope="col" class="px-6 py-3">
-              Title
-            </th>
-            <th scope="col" class="px-6 py-3">
-              Description
-            </th>
-            <th scope="col" class="px-6 py-3">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((project, index) =>
-            displayProjects({
-              project,
-              index,
-              handleEditClick,
-              handleDeleteClick,
-            })
-          )}
-        </tbody>
-      </table>
+      <div className={`${isFormOpen ? styles.formopen : ""}`}>
+        <table
+          class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+          className={`${styles.tableprojects}
+            `}
+        >
+          <thead class="">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                Thumbnail
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Title
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Description
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {projects.map((project, index) =>
+              displayProjects({
+                project,
+                index,
+                handleEditClick,
+                handleDeleteClick,
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

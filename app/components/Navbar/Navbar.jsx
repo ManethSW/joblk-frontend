@@ -10,7 +10,6 @@ import styles from "./Navbar.module.css";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userMode, setUserMode] = useState("client"); // ["freelancer", "employer"]
   const { user, setUser } = useContext(UserContext);
   const { session, setSession } = useContext(SessionContext);
@@ -23,11 +22,6 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
 
     if (session && session.user_mode != userMode) {
       setUserMode(session.user_mode);
@@ -52,7 +46,6 @@ const NavBar = () => {
       if (logoutResponse.data.code === "SUCCESS") {
         sessionStorage.removeItem("user");
         setUser(null);
-        setIsLoggedIn(false);
         router.replace("/login");
       }
     } catch (error) {
@@ -82,7 +75,7 @@ const NavBar = () => {
             />
           </div>
           <ul className={`${styles.linksContainer}`}>
-            {!isLoggedIn ? (
+            {!user ? (
               <>
                 <li>
                   <Link href="/">Home</Link>
@@ -165,13 +158,29 @@ const NavBar = () => {
           </ul>
         </div>
         <div className={styles.actionButtonsContainer}>
-          {isLoggedIn ? (
+          {user != null ? (
             <>
               <div className="dropdown dropdown-bottom dropdown-end">
                 <label tabIndex={0} className="">
-                  <div className={styles.userContainer}>
-                    <i className="fa-solid fa-user"></i>
-                    <p>{user.username}</p>
+                  <div className={styles.userinfo}>
+                    {user.avatar ? (
+                      <div className={`${styles.avatarImage} ${styles.avatar}`}>
+                        <Image
+                          src={user.avatar}
+                          alt={`Avatar`}
+                          layout="fill"
+                          objectFit="cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className={styles.avatar}>
+                        <i class="fa-solid fa-user"></i>
+                      </div>
+                    )}
+                    <div className={styles.usernameandarrow}>
+                      <h2>{user.username}</h2>
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </div>
                   </div>
                 </label>
                 <ul
