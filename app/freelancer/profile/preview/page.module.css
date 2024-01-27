@@ -1,0 +1,246 @@
+.container {
+    width: 1100px;
+    display: flex;
+    gap: 25px;
+    margin: 75px auto 25px auto;
+}
+
+.close,
+.avatar {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 100px;
+}
+
+.close {
+    cursor: pointer;
+    width: 57.5px;
+    height: 54px;
+    border-radius: 100px;
+    border: 2px solid var(--primary-color-100);
+    transition: all 0.3s ease-in-out 0s;
+}
+
+.close:hover {
+    background-color: var(--primary-color-100);
+    border-color: var(--black-color-100);
+}
+
+.close i {
+    font-size: 18px;
+}
+
+.content {
+    width: 100%;
+}
+
+.contentheader {
+    display: flex;
+    justify-content: space-between;
+}
+
+.infosandsocials {
+    display: flex;
+    column-gap: 30px;
+    align-items: flex-end;
+}
+
+.userinfo {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    column-gap: 15px;
+}
+
+.avatar {
+    border: 2px solid var(--black-color-75);
+    background-color: var(--black-color-50);
+    color: var(--white-color-100);
+}
+
+.usernameemail h2 {
+    font-family: 'tripsans-ultra';
+    font-size: 20px;
+}
+
+.usernameemail h3 {
+    font-family: 'tripsans-medium';
+    font-size: 16px;
+}
+
+
+.socials {
+    display: flex;
+    align-items: center;
+    column-gap: 30px;
+}
+
+.socials i {
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease-in-out 0s;
+}
+
+.socials i:hover {
+    scale: 1.05;
+    color: var(--black-color-100);
+}
+
+.chatbutton {
+    cursor: pointer;
+    height: 45px;
+    margin: auto 0px;
+    display: grid;
+    align-items: center;
+    padding: 0px 20px;
+    border-radius: 100px;
+    border: 2px solid var(--primary-color-100);
+    font-family: 'tripsans-ultra';
+    font-size: 16px;
+    transition: all 0.3s ease-in-out 0s;
+}
+
+.chatbutton:hover {
+    background-color: var(--primary-color-100);
+    border-color: var(--black-color-100);
+}
+
+.contentdivider {
+    margin: 25px 0px;
+    height: 2px;
+    background-color: var(--black-color-15);
+}
+
+.sectionheader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sectionheader h3 {
+    font-family: 'tripsans-bold';
+    font-size: 16px
+}
+
+.sectionheader p {
+    font-family: 'tripsans-regular';
+    font-size: 14px;
+}
+
+.sectionbody {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.emptyprojects {
+    height: 45px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--black-color-15);
+    border-radius: 100px;
+}
+
+.alert {
+    position: absolute;
+    left: 0;
+    height: 37px;
+    width: 37px;
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+    margin-left: 5px;
+    border: 2px solid var(--black-color-50);
+    font-family: 'tripsans-ultra';
+    background-color: var(--white-color-100);
+    border-radius: 100px;
+}
+
+.emptyprojects h3:nth-of-type(2) {
+    /* text-align: center; */
+    width: fit-content;
+    margin: 0px auto;
+    font-family: 'tripsans-ultra';
+    font-size: 16px;
+    color: var(--black-color-100);
+}
+
+.project {
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+    width: 310px;
+    /* overflow: hidden; */
+}
+
+.emptyproject {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emptyproject i {
+    font-size: 20px;
+    color: var(--black-color-100);
+}
+
+.thumbnail {
+    position: relative;
+    height: 175px;
+    background-color: var(--black-color-15);
+    border: 2px solid var(--black-color-100);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.noimage {
+    height: 100%;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail h3 {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'tripsans-bold';
+    font-size: 16px;
+    color: var(--white-color-100);
+    padding: 5px 15px;
+    background-color: var(--black-color-75);
+    border-radius: 100px;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+.link h4 {
+    cursor: pointer;
+    user-select: none;
+    font-family: 'tripsans-medium';
+    text-decoration: underline;
+    color: var(--black-color-100);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.project p {
+    font-family: 'tripsans-regular';
+    text-align: justify;
+    color: var(--black-color-75);
+    overflow: hidden;
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
+}

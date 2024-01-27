@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import UserContext from "../../context/UserContext";
 import SessionContext from "../../context/SessionContext";
 import styles from "./page.module.css";
-import BidForm from "../../components/BidForm";
+import BidForm from "../../components/Job/BidForm";
 
 const Jobs = () => {
     const { user } = useContext(UserContext);

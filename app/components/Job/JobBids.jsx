@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import UserContext from '../context/UserContext';
+import UserContext from '../../context/UserContext';
 
 const JobBids = ({ jobId }) => {
   const { user } = useContext(UserContext);

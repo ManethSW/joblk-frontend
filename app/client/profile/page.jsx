@@ -2,13 +2,13 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import General from "../components/Profile/General/General";
-import ContactInformation from "../components/Profile/ContactInformation/ContactInformation";
-import ChangePassword from "../components/Profile/ChangePassword/ChangePassword";
-import Portfolio from "../components/Profile/Portfolio/Portfolio";
-import UserContext from "../context/UserContext";
-import SessionContext from "../context/SessionContext";
-import withAuth from '../hooks/UserChecker';
+import General from "../../components/Profile/General/General";
+import ContactInformation from "../../components/Profile/ContactInformation/ContactInformation";
+import ChangePassword from "../../components/Profile/ChangePassword/ChangePassword";
+import Portfolio from "../../components/Profile/Portfolio/Portfolio";
+import UserContext from "../../context/UserContext";
+import SessionContext from "../../context/SessionContext";
+import withAuth from '../../hooks/UserChecker';
 
 const Profile = () => {
   const [navigation, setNavigation] = useState("General");
@@ -21,7 +21,6 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // If the user is not logged in, redirect to the login page
     if (!user) {
       router.replace("/login");
     } else {
@@ -43,11 +42,9 @@ const Profile = () => {
 
   return (
     <div className={styles.container}>
-      {/* access the user data */}
-      <p></p>
       <div className={styles.header}>
         <h2>{user ? user.username : 'Guest'} / {navigation}</h2>
-        <p>Edit and setup your account as prefered</p>
+        <p>Edit and setup your account as prefered - client</p>
       </div>
       <div className={styles.body}>
         <ul className={styles.menu}>
