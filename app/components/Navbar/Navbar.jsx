@@ -200,10 +200,10 @@ const NavBar = () => {
                       </li>
                       <li
                         className={
-                          isActive == "freelancer/profile" ? styles.active : ""
+                          isActive == "/profile" ? styles.active : ""
                         }
                       >
-                        <Link href="/freelancer/profile">Profile</Link>
+                        <Link href="/profile">Profile</Link>
                       </li>
                     </div>
                   ) : (
@@ -213,10 +213,10 @@ const NavBar = () => {
                       </li>
                       <li
                         className={
-                          isActive == "client/profile" ? styles.active : ""
+                          isActive == "/profile" ? styles.active : ""
                         }
                       >
-                        <Link href="/client/profile">Profile</Link>
+                        <Link href="/profile">Profile</Link>
                       </li>
                     </div>
                   )}

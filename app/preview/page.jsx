@@ -19,7 +19,7 @@ const Preview = (user_id) => {
 
   const getUserData = async () => {
     user_id = 4;
-    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user_id}`;
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user_id}/details`;
     const headers = {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
@@ -117,11 +117,9 @@ const Preview = (user_id) => {
 
   return (
     <div className={styles.container}>
-      <Link href="/freelancer/profile">
-        <div className={styles.close}>
-          <i class="fa-solid fa-chevron-left"></i>
-        </div>
-      </Link>
+      <div className={styles.close} onClick={() => router.back()}>
+        <i class="fa-solid fa-chevron-left"></i>
+      </div>
       <div className={styles.content}>
         <div className={styles.contentheader}>
           <div className={styles.infosandsocials}>

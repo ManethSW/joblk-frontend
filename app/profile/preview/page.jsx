@@ -164,11 +164,9 @@ const Preview = () => {
 
   return (
     <div className={styles.container}>
-      <Link href="/freelancer/profile">
-        <div className={styles.close}>
-          <i class="fa-solid fa-chevron-left"></i>
-        </div>
-      </Link>
+      <div className={styles.close} onClick={() => router.back()}>
+        <i class="fa-solid fa-chevron-left"></i>
+      </div>
       <div className={styles.content}>
         <div className={styles.contentheader}>
           <div className={styles.infosandsocials}>
