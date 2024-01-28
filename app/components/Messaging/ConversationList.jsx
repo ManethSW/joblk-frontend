@@ -42,7 +42,7 @@ const ConversationsList = ({ onSelectConversation }) => {
               <div>
                 <p className="text-black font-bold">{conversation.user_two_username === user.username ? conversation.user_one_username : conversation.user_two_username}</p>
                 <p className="text-gray-500 text-sm overflow-hidden overflow-ellipsis">
-                  {conversation.last_message.length > 20
+                {conversation.last_message && conversation.last_message.length > 20
                     ? conversation.last_message.substring(0, 20) + "..."
                     : conversation.last_message}
                 </p>
