@@ -25,12 +25,34 @@ const Bids = () => {
     setShowModal(true);
    }, []);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    // Send a request to the API to update the bid value and supporting content
-    // ...
-    setShowModal(false);
-  };
+   const handleSubmit = async (event) => {
+      event.preventDefault();
+    
+      try {
+        const response = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/bid`,
+          {
+            bidId: currentBid.id,
+            bid_value: currentBid.bid_value,
+            supporting_content: currentBid.supporting_content,
+          },
+          {
+            headers: {
+              auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN, 
+            },
+            withCredentials: true,
+          }
+        );
+    
+        if (response.status === 200) {
+          console.log('Bid updated successfully:', response.data);
+          setShowModal(false);
+        }
+      } catch (error) {
+        console.error('Error updating bid:', error);
+      }
+    };
+    
   const handleInputChange = (event) => {
     setCurrentBid({
       ...currentBid,
@@ -52,6 +74,7 @@ const Bids = () => {
         setBids(response.data);
         setBidProvider(response.data);
         setFilteredBids(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching bids:', error);
       }
@@ -151,19 +174,19 @@ const Bids = () => {
                       <form onSubmit={handleSubmit}>
                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                           <div className="sm:flex sm:items-start">
-                            <div className="mt-3 mr-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <div className="mt-3 mr-4 text-center sm:mt-0 sm:ml-4 sm:text-left">
                               <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
                               Edit Bid
                               </h3>
                               <div className="mt-4">
-                                <label htmlFor="bidValue" className="mb-2 block text-sm font-medium text-gray-700">
+                                <label htmlFor="bid_value" className="mb-2 block text-sm font-medium text-gray-700">
                                     Bid Value
                                 </label>
-                                <input type="number" name="bidValue" id="bidValue" className="mb-4 shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={currentBid.bid_value} onChange={handleInputChange}  />
-                                <label htmlFor="supportingContent" className="mb-2 text-sm font-medium text-gray-700">
+                                <input type="number" name="bid_value" id="bid_value" className="text-sm mb-4 shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={currentBid.bid_value} onChange={handleInputChange}  />
+                                <label htmlFor="supporting_content" className="mb-2 text-sm font-medium text-gray-700">
                                     Supporting Content
                                 </label>
-                                <textarea name="supportingContent" id="supportingContent" className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={currentBid.supporting_content} onChange={handleInputChange} />
+                                <textarea name="supporting_content" id="supporting_content" className=" text-sm shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={currentBid.supporting_content} onChange={handleInputChange} />
                               </div>
                             </div>
                           </div>
