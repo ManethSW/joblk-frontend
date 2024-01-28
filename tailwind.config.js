@@ -9,6 +9,9 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    colors: {
+      'joblk-green': '#1DBF73',
+    }
   },
   daisyui: {
     themes: ["light"]

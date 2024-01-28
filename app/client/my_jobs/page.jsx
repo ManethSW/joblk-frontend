@@ -49,6 +49,7 @@ const MyJobs = () => {
           (response) => {
             setJobsProvider(response.data);
             setFilteredJobs(response.data);
+            console.log(response.data)
           }
         ).catch(
           (error) => {
@@ -84,6 +85,22 @@ const MyJobs = () => {
       }
     }
 
+    let completedJobs = 0;
+    let ongoingJobs = 0;
+    let pendingJobs = 0;
+
+    jobsProvider.map((job) => {
+      if (job.job_status == 1) {
+        pendingJobs++;
+      }
+      if (job.job_status == 2) {
+        ongoingJobs++;
+      }
+      if (job.job_status == 3) {
+        completedJobs++;
+      }
+    });
+
     if (isLoading) {
       return (
           <div className="flex items-center justify-center min-h-screen">
@@ -104,9 +121,9 @@ const MyJobs = () => {
                 <div className={styles.title}>Completed Jobs</div>
               </div>
               <div className={styles.column}>
-                <div className={styles.value}>10</div>
-                <div className={styles.value}>2</div>
-                <div className={styles.value}>50</div>
+                <div className={styles.value}>{ pendingJobs }</div>
+                <div className={styles.value}>{ ongoingJobs }</div>
+                <div className={styles.value}>{ completedJobs }</div>
               </div>
             </div>
           </div>
@@ -463,10 +480,11 @@ const ViewJobModal = ({
   data,
 }) => {
 
-  const [viewModalCurrent, setViewModalCurrent] = useState(0);
-  const switchModalView = () => {
-    setViewModalCurrent(viewModalCurrent === 0 ? 1 : 0);
-  }
+  const [milestones, setMilestones] = useState();
+
+  useEffect(() => {
+    handleGetMilestone();
+  }, [data]);
 
   const categorySelector = (value) => {
     if (value == 1) {
@@ -508,14 +526,30 @@ const ViewJobModal = ({
     }
   }
 
+  const handleGetMilestone = async () => {
+    try{
+      const milestones = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${data.id}`, 
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }
+      ).then((res) => {
+        setMilestones(res.data);
+        console.log(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div id={`view-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative p-4 w-full max-w-4xl max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {viewModalCurrent == 0 ? `View Job` : `View Bids`}
-
+              View Job
             </h3>
             <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle={`view-job-modal-${data.id}`}>
               <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -526,77 +560,107 @@ const ViewJobModal = ({
           </div>  
           <form id="add-job" className="p-4 md:p-5">
             <div id="carousel" className="relative w-full" data-carousel="static">
-                <div className="relative overflow-y-auto overflow-x-hidden rounded-lg h-96">
-                  <div className="hidden duration-200 ease-linear" data-carousel-item="active">
-                    <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
-                      <div className="inline">
-                        <div className="grid gap-4 mb-4 grid-cols-2">
-                          <div className="col-span-2">
-                            <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
-                            <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.title}</div>
-                          </div>
-                          <div className="col-span-2">
-                            <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
-                            <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.description}</div>                    
-                          </div>
-                          <div className="col-span-2 sm:col-span-1">
-                            <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                            <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{categorySelector(data.category)}</div>
-                          </div>
-                          <div className="col-span-2 sm:col-span-1">
-                            <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                            <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{subCategorySelector(data.sub_category)}</div>
-                          </div>
-                          <div className="col-span-2 sm:col-span-1">
-                            <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
-                            <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR {Number(data.budget).toLocaleString()}</div>
-                          </div>
+              <div className="relative overflow-y-auto overflow-x-hidden rounded-lg h-96">
+                <div className="hidden duration-200 ease-linear" data-carousel-item="active">
+                  <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
+                    <div className="inline">
+                      <div className="grid gap-4 mb-4 grid-cols-2">
+                        <div className="col-span-2">
+                          <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
+                          <div id="name" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.title}</div>
                         </div>
-                      </div>
-                      <div className="inline">
-                        <div className="grid gap-4 mb-4 grid-cols-2">
-                          <div className="col-span-2 sm:col-span-1">
-                            <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                            <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{expLvlSelector(data.experience_level)}</div>
-                          </div>
-                          <div className="col-span-2 sm:col-span-1">
-                            <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                            <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{commMethodSelector(data.communication_method)}</div>
-                          </div>
-                          <div className="col-span-2">
-                            <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
-                            <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                              {data.job_tags.split(",").map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={tag}>{tag}</span> }) }
-                            </div>
-                          </div>
-                          <div className="col-span-2">
-                            <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
-                            <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                              {data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={skill}>{skill}</span> })}
-                            </div>
-                          </div>
+                        <div className="col-span-2">
+                          <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
+                          <div id="description" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">{data.description}</div>                    
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
+                          <div id="catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{categorySelector(data.category)}</div>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
+                          <div id="sub-catergory" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{subCategorySelector(data.sub_category)}</div>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
+                          <div id="budget" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">LKR {Number(data.budget).toLocaleString()}</div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="hidden duration-200 ease-linear" data-carousel-item>
-                      <div className="flex items-center justify-center h-full">
-                      <JobBids jobId={data.id} />
-
+                    <div className="inline">
+                      <div className="grid gap-4 mb-4 grid-cols-2">
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
+                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{expLvlSelector(data.experience_level)}</div>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
+                          <div id="experience" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">{commMethodSelector(data.communication_method)}</div>
+                        </div>
+                        <div className="col-span-2">
+                          <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
+                          <div id="tags" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {data.job_tags ? data.job_tags.split(",").map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={tag}>{tag}</span> }) : "No tags"}
+                          </div>
+                        </div>
+                        <div className="col-span-2">
+                          <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
+                          <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {data.required ? data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={skill}>{skill}</span> }) : "No skills"}
+                          </div>
+                        </div>
+                        
                       </div>
-                      
+                    </div>
                   </div>
                 </div>
-                <div data-carousel-next onClick={switchModalView} className="flex flex-row justify-between w-full">
-                <button type="button" className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  {viewModalCurrent == 0 ? `View Bids` : `View Job`}
-                </button>
-                <button  type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
-                  Close
-                </button>
+                <div className="hidden duration-200 ease-linear" data-carousel-item>
+                  <div className="flex items-center justify-center h-full">
+                    <JobBids jobId={data.id} />
+                  </div>
+                </div>
+                <div className="hidden duration-200 ease-linear" data-carousel-item>
+                  <div className="col-span-2">
+                    <label htmlFor="milestones" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</label>
+                    {milestones ? (
+                      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                            <th scope="col" className="py-3 px-6">Name</th>
+                            <th scope="col" className="py-3 px-6">Due Date</th>
+                            <th scope="col" className="py-3 px-6">Priority</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {milestones.map((milestone) => (
+                            <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                              <td className="py-4 px-6">{milestone.name}</td>
+                              <td className="py-4 px-6">{(milestone.due_date).substring(0,10)}</td>
+                              <td className="py-4 px-6">{milestone.priority}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      'No milestones'
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-row justify-between w-full">
+                  <button type="button" data-carousel-prev className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Previous
+                  </button>
+                <div className="flex flex-row items-center gap-1">
+                  <button type="button" data-carousel-next className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Next
+                  </button>
+                  <button  type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
-            
           </form>
         </div>
       </div>
@@ -618,6 +682,16 @@ const EditJobModal = ({
   const [communicationMethod, setCommunicationMethod] = useState(data.communication_method);
   const [jobTags, setJobTags] = useState(data.job_tags);
   const [requiredSkills, setRequiredSkills] = useState(data.required_skills);
+
+  const [milestoneName, setMilestoneName] = useState("");
+  const [milestoneDesc, setMilestoneDesc] = useState("");
+  const [milestoneDueDate, setMilestoneDueDate] = useState("");
+  const [milestonePriority, setMilestonePriority] = useState("");
+  const [milestones, setMilestones] = useState();
+
+  useEffect(() => {
+    handleGetMilestone();
+  }, [data]);
 
   const handleClose = (state) => {
     setShow(state)
@@ -653,6 +727,23 @@ const EditJobModal = ({
     }
   }
 
+  const handleGetMilestone = async () => {
+    try{
+      const milestones = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${data.id}`, 
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }
+      ).then((res) => {
+        setMilestones(res.data);
+        console.log(res.data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div id={`edit-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative p-4 w-full max-w-4xl max-h-full">
@@ -669,82 +760,146 @@ const EditJobModal = ({
             </button>
           </div>  
           <form id="add-job" className="p-4 md:p-5">
-            <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
-              <div className="inline">
-                <div className="grid gap-4 mb-4 grid-cols-2">
-                  <div className="col-span-2">
-                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                    <input type="text" name="name" id="name" onChange={(e)=>{setName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required="" defaultValue={data.title}/>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    <textarea id="description" name="description" onChange={(e)=>{setDescription(e.target.value)}} rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={data.description}></textarea>                    
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
-                    <select id="catergory" defaultValue={data.category} onChange={(e)=>{setCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option value="1">Development</option>
-                      <option value="2">Engineering</option>
-                      <option value="3">Designing</option>
-                    </select>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
-                    <select id="sub-catergory" defaultValue={data.sub_category} onChange={(e)=>{setSubCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option value="1">Frontend</option>
-                      <option value="2">Backend</option>
-                      <option value="3">FullStack</option>
-                    </select>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
-                    <Datepicker onChange={(selectedDate) => {setDeadline(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose} />
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
-                    <div id="budget" className="flex flex-row items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      LKR
-                      <input type="text" id="budget-input" onInput={(event) => {setBudget(Number.parseInt(event.target.value.split(",").join(""))); event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" defaultValue={Number(data.budget).toLocaleString()} required/>
+            <div id="edit-carousel" className="relative w-full" data-carousel="static">
+              <div className="relative overflow-y-auto overflow-x-hidden rounded-lg h-96">
+                <div className="hidden duration-200 ease-linear" data-carousel-item="active">
+                  <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
+                    <div className="inline">
+                      <div className="grid gap-4 mb-4 grid-cols-2">
+                        <div className="col-span-2">
+                          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                          <input type="text" name="name" id="name" onChange={(e)=>{setName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type the name of Job" required="" defaultValue={data.title}/>
+                        </div>
+                        <div className="col-span-2">
+                          <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                          <textarea id="description" name="description" onChange={(e)=>{setDescription(e.target.value)}} rows="4" className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={data.description}></textarea>                    
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Catergory</label>
+                          <select id="catergory" defaultValue={data.category} onChange={(e)=>{setCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option value="1">Development</option>
+                            <option value="2">Engineering</option>
+                            <option value="3">Designing</option>
+                          </select>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="sub-catergory" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sub Catergory</label>
+                          <select id="sub-catergory" defaultValue={data.sub_category} onChange={(e)=>{setSubCategory(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option value="1">Frontend</option>
+                            <option value="2">Backend</option>
+                            <option value="3">FullStack</option>
+                          </select>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
+                          <Datepicker onChange={(selectedDate) => {setDeadline(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} />
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
+                          <div id="budget" className="flex flex-row items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            LKR
+                            <input type="text" id="budget-input" onInput={(event) => {setBudget(Number.parseInt(event.target.value.split(",").join(""))); event.target.value = Number(event.target.value.replace(/[^\d]/g, '').substring(0,11)).toLocaleString();}} className="flex w-32 border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="0.00" defaultValue={Number(data.budget).toLocaleString()} required/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="inline">
+                      <div className="grid gap-4 mb-4 grid-cols-2">
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
+                          <select id="experience" defaultValue={data.experience_level} onChange={(e) => {setExperienceLevel(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option value="1">Entry</option>
+                            <option value="2">Intermediate</option>
+                            <option value="3">Expert</option>
+                          </select>
+                        </div>
+                        <div className="col-span-2 sm:col-span-1">
+                          <label htmlFor="communication" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
+                          <select id="communication" defaultValue={data.communication_method} onChange={(e) => {setCommunicationMethod(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option value="1">Text / Messages</option>
+                            <option value="2">Phone Call</option>
+                            <option value="3">Online Meeting</option>
+                          </select>
+                        </div>
+                        <div className="col-span-2">
+                          <label htmlFor="tags" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Tags</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the tags by a comma)</p></label>
+                          <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required defaultValue={data.job_tags.split(",").join(", ")}/>
+                          </div>
+                        </div>
+                        <div className="col-span-2">
+                          <label htmlFor="skills" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Required Skills</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the skills by a comma)</p></label>
+                          <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required defaultValue={data.required_skills.split(",").join(", ")}/>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+                <div className="hidden duration-200 ease-linear" data-carousel-item>
+                  <div className="col-span-2">
+                    <label htmlFor="milestones" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</label>
+                    {milestones ? (
+                      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                            <th scope="col" className="py-3 px-6">Name</th>
+                            <th scope="col" className="py-3 px-6">Description</th>
+                            <th scope="col" className="py-3 px-6">Due Date</th>
+                            <th scope="col" className="py-3 px-6">Priority</th>
+                            <th scope="col" className="py-3 px-6">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* {milestones.map((milestone) => (
+                            <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                              <td className="py-4 px-6"><input type="text" name="name" id="name" onChange={(e)=>{setMilestoneName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" defaultValue={milestone.name}/></td>
+                              <td className="py-4 px-6"><textarea id="description" name="description" onChange={(e)=>{setMilestoneDesc(e.target.value)}} rows="4" className="block p-2.5 w-60 h-[70px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={milestone.description}></textarea></td>
+                              <td className="py-4 px-6"><Datepicker onChange={(selectedDate) => {setMilestoneDueDate(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose} /></td>
+                              <td className="py-4 px-6"><input type="number" name="priority" id="priority" max={5} min={1} onChange={(e)=>{setMilestonePriority(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" defaultValue={milestone.priority}/></td>
+                            </tr>
+                          ))} */}
+                          {milestones.map((milestone) => (
+                            <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                              <td className="py-4 px-6">{milestone.name}</td>
+                              <td className="py-4 px-6">{milestone.description}</td>
+                              <td className="py-4 px-6 whitespace-nowrap">{(milestone.due_date).substring(0,10)}</td>
+                              <td className="py-4 px-6">{milestone.priority}</td>
+                              <td className="py-4 px-6">
+                              <div className="flex items-center space-x-4 text-sm">
+                                <button data-modal-target={`edit-milestone-modal-${milestone.id}`} data-modal-toggle={`edit-milestone-modal-${milestone.id}`}>
+                                  <img src="/icons/edit.svg" className="w-4 h-4"/>
+                                </button>
+                                <button data-modal-target={`delete-milestone-modal-${milestone.id}`} data-modal-toggle={`delete-milestone-modal-${milestone.id}`}>
+                                  <img src="/icons/delete.svg" className="w-4 h-4"/>
+                                </button>
+                              </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      'No milestones'
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="inline">
-                <div className="grid gap-4 mb-4 grid-cols-2">
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="experience" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Experience Level</label>
-                    <select id="experience" defaultValue={data.experience_level} onChange={(e) => {setExperienceLevel(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option value="1">Entry</option>
-                      <option value="2">Intermediate</option>
-                      <option value="3">Expert</option>
-                    </select>
-                  </div>
-                  <div className="col-span-2 sm:col-span-1">
-                    <label htmlFor="communication" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Communication Method</label>
-                    <select id="communication" defaultValue={data.communication_method} onChange={(e) => {setCommunicationMethod(Number.parseInt(e.target.value))}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                      <option value="1">Text / Messages</option>
-                      <option value="2">Phone Call</option>
-                      <option value="3">Online Meeting</option>
-                    </select>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="tags" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Tags</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the tags by a comma)</p></label>
-                    <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required defaultValue={data.job_tags.split(",").join(", ")}/>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="skills" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Required Skills</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the skills by a comma)</p></label>
-                    <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required defaultValue={data.required_skills.split(",").join(", ")}/>
-                    </div>
-                  </div>
+              <div className="flex flex-row justify-between w-full">
+                <button type="button" data-carousel-prev className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  Previous
+                </button>
+                <div className="flex flex-row items-center gap-1">
+                  <button type="button" data-carousel-next className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Next
+                  </button>
+                  <button type="button" data-modal-toggle={`edit-job-modal-${data.id}`} onClick={handleJobSave} className="text-white inline-flex items-center bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                    Save Job
+                  </button>
                 </div>
               </div>
             </div>
-            <button type="button" data-modal-toggle={`edit-job-modal-${data.id}`} onClick={handleJobSave} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              Save Job
-            </button>
           </form>
         </div>
       </div>
