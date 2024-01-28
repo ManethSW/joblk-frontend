@@ -32,9 +32,9 @@ const ConversationsList = ({ onSelectConversation }) => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <button onClick={() => onSelectConversation(null)} className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center m-4">
+      {/* <button onClick={() => onSelectConversation(null)} className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center m-4">
         New Conversation
-      </button>
+      </button> */}
       <div className="overflow-y-auto">
         {conversations.map((conversation) => (
           <div key={conversation.id} onClick={() => handleSelectConversation(conversation.id)} className="cursor-pointer bg-green-100 p-1 hover:bg-green-300 rounded-md mt-1 mr-4 ml-4 border border-gray-500 transition duration-300">
