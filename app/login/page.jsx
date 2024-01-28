@@ -7,6 +7,7 @@ import axios from "axios";
 import styles from "./page.module.css";
 import authStyles from "../styles/auth.module.css";
 import UserContext from "../context/UserContext";
+import SessionContext from "@/app/context/SessionContext";
 import withAuth from "../hooks/UserChecker";
 import useInputValidation from "../hooks/UserInputValidation";
 import RegisterInput from "../components/auth/Input/Input";
@@ -18,6 +19,7 @@ const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const Login = () => {
   const router = useRouter();
+  const { session, setSession } = useContext(SessionContext);
   const [email, emailValid, validateEmail] = useInputValidation("", (value) =>
     EMAIL_REGEX.test(value)
   );
@@ -52,6 +54,12 @@ const Login = () => {
             headers: headers,
             withCredentials: true,
           });
+          const user = userResponse.data;
+          if (user.mode_preference == 1) {
+            setSession({ user_mode: "freelancer" });
+          } else {
+            setSession({ user_mode: "client" });
+          }
           setUser(userResponse.data);
         }
       } catch (error) {
@@ -142,7 +150,7 @@ const Login = () => {
             <div>
               <p>Do not have an account?</p>
               <p>
-                <Link href="/">Sign Up</Link>
+                <Link href="/register">Sign Up</Link>
               </p>
             </div>
             <p>

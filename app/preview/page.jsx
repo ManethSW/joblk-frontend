@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 import withAuth from "@/app/hooks/UserChecker";
-import styles from "@/app/freelancer/profile/preview/page.module.css";
+import styles from "@/app/profile/preview/page.module.css";
 
 const Preview = (user_id) => {
   const [userData, setUserData] = useState([]);

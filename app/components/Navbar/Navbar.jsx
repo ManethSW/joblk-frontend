@@ -10,7 +10,7 @@ import styles from "./Navbar.module.css";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [userMode, setUserMode] = useState("client"); // ["freelancer", "employer"]
+  const [userMode, setUserMode] = useState("");
   const { user, setUser } = useContext(UserContext);
   const { session, setSession } = useContext(SessionContext);
   const [isActive, setActive] = useState("dashboard");
@@ -22,7 +22,6 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-
     if (session && session.user_mode != userMode) {
       setUserMode(session.user_mode);
     }
@@ -45,6 +44,7 @@ const NavBar = () => {
       );
       if (logoutResponse.data.code === "SUCCESS") {
         sessionStorage.removeItem("user");
+        sessionStorage.removeItem("sessionData");
         setUser(null);
         router.replace("/login");
       }
@@ -53,14 +53,10 @@ const NavBar = () => {
     }
   };
 
-  const switchMode = async () => {
-    if (userMode === "freelancer") {
-      setSession({ user_mode: "client" });
-      router.replace(`/${userMode}/dashboard`);
-    } else {
-      setSession({ user_mode: "freelancer" });
-      router.replace(`/${userMode}/dashboard`);
-    }
+  const switchMode = () => {
+    const newUserMode = userMode === "freelancer" ? "client" : "freelancer";
+    setSession({ user_mode: newUserMode });
+    router.replace(`/${newUserMode}/dashboard`);
   };
 
   return (
@@ -117,7 +113,6 @@ const NavBar = () => {
                     >
                       <Link href="/client/projects">My Projects</Link>
                     </li>
-
                   </>
                 ) : (
                   <>
@@ -199,9 +194,7 @@ const NavBar = () => {
                         <a>Switch to Client</a>
                       </li>
                       <li
-                        className={
-                          isActive == "/profile" ? styles.active : ""
-                        }
+                        className={isActive == "/profile" ? styles.active : ""}
                       >
                         <Link href="/profile">Profile</Link>
                       </li>
@@ -212,9 +205,7 @@ const NavBar = () => {
                         <a>Switch to Freelancer</a>
                       </li>
                       <li
-                        className={
-                          isActive == "/profile" ? styles.active : ""
-                        }
+                        className={isActive == "/profile" ? styles.active : ""}
                       >
                         <Link href="/profile">Profile</Link>
                       </li>
