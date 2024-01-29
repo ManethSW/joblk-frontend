@@ -318,6 +318,7 @@ const ViewMilestonesModal = ({ projectId, closeModal, projectStatus, openSubmiss
   const SubmissionModal = ({ milestone, closeModal }) => {
     const [files, setFiles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
@@ -348,7 +349,7 @@ const ViewMilestonesModal = ({ projectId, closeModal, projectStatus, openSubmiss
           });
       
           const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${milestone.id}/upload`;
-      
+          setIsLoading(true);
           try {
               const response = await axios.put(apiUrl, formData, {
                   headers: {
@@ -364,58 +365,68 @@ const ViewMilestonesModal = ({ projectId, closeModal, projectStatus, openSubmiss
               console.error('There was a problem with the upload operation:', error);
               setErrorMessage('There was a problem uploading the files.');
           }
+          finally {
+              setIsLoading(false);
+          }
     };
 
     return (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-            {/* Modal content */}
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                {/* Overlay */}
-                <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-                
-                {/* Modal box */}
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div className="sm:flex sm:items-start">
-                            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                                    Upload Files
-                                </h3>
-                                <div className="mt-2">
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        You can upload up to 5 files.
-                                    </p>
-                                    {errorMessage && (
-                                        <p className="text-sm text-red-500 mb-2">{errorMessage}</p>
-                                    )}
-                                </div>
-                                <input type="file" multiple onChange={handleFileChange} className="w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
-                                <div className="mt-3">
-                                    {files.map((file, index) => (
-                                        <div key={index} className="flex items-center justify-between py-2">
-                                            <span className="text-sm text-gray-600">{file.name}</span>
-                                            <button type="button" onClick={() => removeFile(file.name)} className="text-red-600 hover:text-red-800">
-                                                Remove
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+      <div className="fixed z-10 inset-0 overflow-y-auto">
+        {/* Modal content */}
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          {/* Overlay */}
+          <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+          
+          {/* Modal box */}
+          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                {/* <span className="mr-4">Uploading</span> */}
+                <span className="loading loading-spinner loading-lg pb-24"></span>
+              </div>
+            ) : (
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                      Upload Files
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500 mb-2">
+                        You can upload up to 5 files.
+                      </p>
+                      {errorMessage && (
+                        <p className="text-sm text-red-500 mb-2">{errorMessage}</p>
+                      )}
+                    </div>
+                    <input type="file" multiple onChange={handleFileChange} className="w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"/>
+                    <div className="mt-3">
+                      {files.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between py-2">
+                          <span className="text-sm text-gray-600">{file.name}</span>
+                          <button type="button" onClick={() => removeFile(file.name)} className="text-red-600 hover:text-red-800">
+                            Remove
+                          </button>
                         </div>
+                      ))}
                     </div>
-                    <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button onClick={handleUploadClick} className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Upload
-                        </button>
-                        <button onClick={closeModal} className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Close
-                        </button>
-                    </div>
+                  </div>
                 </div>
+              </div>
+            )}
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button onClick={handleUploadClick} className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Upload
+              </button>
+              <button onClick={closeModal} className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                Close
+              </button>
             </div>
+          </div>
         </div>
+      </div>
     );
 };
 

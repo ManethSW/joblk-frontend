@@ -11,18 +11,17 @@ const Projects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedProjectStatus, setSelectedProjectStatus] = useState(null);
+    const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
 
+  const openSubmissionModal = (milestone) => {
+    setSelectedMilestone(milestone);
+    setIsSubmissionModalOpen(true);
+    closeModal();
+  };
 
-  const openAddMilestoneModal = (projectId) => {
-    setSelectedProjectId(projectId);
-    setIsAddModalOpen(true);
-   };
-
-  const closeAddModal = () => {
-    setIsAddModalOpen(false);
+  const closeSubmissionModal = () => {
+    setIsSubmissionModalOpen(false);
   };
 
   const openModal = (projectId, projectStatus) => {
@@ -35,11 +34,6 @@ const Projects = () => {
     setIsModalOpen(false);
   };
 
-  const openEditMilestoneModal = (milestone) => {
-    setSelectedMilestone(milestone);
-    setIsModalOpen(false); 
-    setIsEditModalOpen(true); 
-  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -156,46 +150,23 @@ const Projects = () => {
           projectId={selectedProjectId}
           projectStatus={selectedProjectStatus}
           closeModal={closeModal}
-          openEditMilestoneModal={openEditMilestoneModal}
+          openSubmissionModal={openSubmissionModal} 
+
 
         />
+      )}
+      {isSubmissionModalOpen && (
+        <SubmissionModal milestone={selectedMilestone} closeModal={closeSubmissionModal}/>
       )}
     </div>
   );
 };
 
 
-const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal, projectStatus }) => {
+const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, projectStatus }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    
-
-       const makePayment = async () => {
-        try {
-          const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project_payment/${projectId}`,
-            {
-              status: 4
-            },
-            {
-              headers: { 
-                'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN 
-              },
-              withCredentials: true,
-            }
-          );
-            if (response.status === 200) {
-                console.log('Milestones submitted successfully!');
-                closeModal();
-            }
-        } catch (error) {
-          console.error('Error submitting milestones:', error);
-        }
-       };
-
-
-    
-        
+      
   
     useEffect(() => {
       const fetchMilestones = async () => {
@@ -336,14 +307,14 @@ const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal, pr
             <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
             
 
-            {projectStatus === 3 && (
+            {/* {projectStatus === 3 && (
                 <button
                     onClick={makePayment}
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
                 >
                     Make Payment
                 </button>
-            )}
+            )} */}
               {/* <button
                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
@@ -358,6 +329,97 @@ const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal, pr
       </div> 
     );
   };
+
+
+const SubmissionModal = ({ milestone, closeModal }) => {
+    const [files, setFiles] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+      const fetchMilestoneContent = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${milestone.id}/content`, {
+                    headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+                    withCredentials: true,
+                });
+                setFiles(response.data.upload_reference || []);
+            } catch (error) {
+                console.error('Error fetching milestone content:', error);
+            }
+            setIsLoading(false);
+        };
+
+        fetchMilestoneContent();
+    }, [milestone]);
+
+    // const isViewableInBrowser = (fileName) => {
+    //     return fileName.match(/\.(jpeg|jpg|gif|png|pdf)$/i);
+    // };
+
+    const handleFileView = (fileUrl) => {
+      window.open(fileUrl, '_blank');
+  };
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <span className="loading loading-spinner loading-lg pb-24"></span>
+                </div>
+              ) : (
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Uploaded Files
+                    </h3>
+                    <div className="mt-5 mb-5">
+                      {files.length > 0 ? (
+                        <table className="table-auto">
+                          <thead>
+                            <tr>
+                              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">File Name</th>
+                              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">Submitted On</th>
+                              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {files.map((file, index) => (
+                              <tr key={index}>
+                                <td className="border px-3 py-3">{file.reference.split('/').pop()}</td>
+                                <td className="border px-3 py-3">{new Date(file.createdAt).toLocaleDateString()}</td>
+                                <td className="border px-3 py-3">
+                                  <button onClick={() => handleFileView(file.reference, file.reference.split('/').pop())} className="text-green-500 hover:text-blue-800">
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p>No files uploaded.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button onClick={closeModal} className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
   
 
 
