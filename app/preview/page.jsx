@@ -5,28 +5,21 @@ import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 import withAuth from "@/app/hooks/UserChecker";
-import UserContext from "@/app/context/UserContext";
-import styles from "./page.module.css";
+import styles from "@/app/profile/preview/page.module.css";
 
-const Preview = () => {
-  const { user } = useContext(UserContext);
+const Preview = (user_id) => {
+  const [userData, setUserData] = useState([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [projects, setProjects] = useState([]);
-  const chatTitle = "Start a new chat   👋";
+  const chatTitle = "Start a new chat 👋";
 
   useEffect(() => {
-    if (!user) {
-      router.replace("/login");
-    } else {
-      setIsLoading(false);
-    }
+    getUserData();
+  }, []);
 
-    getProjects();
-  }, [user, router]);
-
-  const getProjects = async () => {
-    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/portfolio`;
+  const getUserData = async () => {
+    user_id = 4;
+    const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user_id}/details`;
     const headers = {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
@@ -37,7 +30,8 @@ const Preview = () => {
         withCredentials: true,
       });
       if (response.status === 200) {
-        setProjects(response.data);
+        setUserData(response.data);
+        console.log(userData);
         setIsLoading(false);
       } else {
         console.error("Failed to fetch projects", response);
@@ -52,9 +46,9 @@ const Preview = () => {
       return (
         <div className={styles.project}>
           <div className={styles.thumbnail}>
-            {project && project.image1 ? (
+            {project && project.images[0] ? (
               <Image
-                src={project.image1}
+                src={project.images[0]}
                 alt={`Preview`}
                 layout="fill"
                 objectFit="cover"
@@ -87,8 +81,8 @@ const Preview = () => {
 
   const renderSections = () => {
     let sections = [];
-    const noProjects = `No projects uploaded by ${user.username} :'(`;
-    if (projects.length == 0) {
+    const noProjects = `No projects uploaded by ${userData.username} :'(`;
+    if (userData.projects.length == 0) {
       sections.push(
         <div className={styles.sectionbody}>
           <div className={styles.emptyprojects}>
@@ -98,12 +92,12 @@ const Preview = () => {
         </div>
       );
     } else {
-      for (let i = 0; i < projects.length; i += 3) {
+      for (let i = 0; i < userData.projects.length; i += 3) {
         sections.push(
           <div className={styles.sectionbody}>
-            {renderProject(projects[i])}
-            {renderProject(projects[i + 1])}
-            {renderProject(projects[i + 2])}
+            {renderProject(userData.projects[i])}
+            {renderProject(userData.projects[i + 1])}
+            {renderProject(userData.projects[i + 2])}
           </div>
         );
       }
@@ -123,19 +117,17 @@ const Preview = () => {
 
   return (
     <div className={styles.container}>
-      <Link href="/freelancer/profile">
-        <div className={styles.close}>
-          <i class="fa-solid fa-chevron-left"></i>
-        </div>
-      </Link>
+      <div className={styles.close} onClick={() => router.back()}>
+        <i class="fa-solid fa-chevron-left"></i>
+      </div>
       <div className={styles.content}>
         <div className={styles.contentheader}>
           <div className={styles.infosandsocials}>
             <div className={styles.userinfo}>
-              {user.avatar ? (
+              {userData.avatar ? (
                 <div className={styles.avatar}>
                   <Image
-                    src={user.avatar}
+                    src={userData.avatar}
                     alt={`Avatar`}
                     layout="fill"
                     objectFit="cover"
@@ -147,26 +139,36 @@ const Preview = () => {
                 </div>
               )}
               <div className={styles.usernameemail}>
-                <h2>{user.username}</h2>
-                <h3>{user.email}</h3>
+                <h2>{`${user.username} (${user.full_name})`}</h2>
+                <h3>{userData.email}</h3>
               </div>
             </div>
             <div className={styles.socials}>
-              <Link href="/#">
-                <i class="fa-brands fa-instagram"></i>
-              </Link>
-              <Link href="/#">
-                <i class="fa-brands fa-facebook"></i>
-              </Link>
-              <Link href="/#">
-                <i class="fa-brands fa-x-twitter"></i>
-              </Link>
-              <Link href="/#">
-                <i class="fa-brands fa-linkedin"></i>
-              </Link>
-              <Link href="/#">
-                <i class="fa-brands fa-github"></i>
-              </Link>
+              {userData.social_links.instagram && (
+                <Link href={userData.social_links.instagram} target="_blank">
+                  <i class="fa-brands fa-instagram"></i>
+                </Link>
+              )}
+              {userData.social_links.facebook && (
+                <Link href={userData.social_links.facebook} target="_blank">
+                  <i class="fa-brands fa-facebook"></i>
+                </Link>
+              )}
+              {userData.social_links.twitter && (
+                <Link href={userData.social_links.twitter} target="_blank">
+                  <i class="fa-brands fa-twitter"></i>
+                </Link>
+              )}
+              {userData.social_links.linkedin && (
+                <Link href={userData.social_links.linkedin} target="_blank">
+                  <i class="fa-brands fa-linkedin"></i>
+                </Link>
+              )}
+              {userData.social_links.github && (
+                <Link href={userData.social_links.github} target="_blank">
+                  <i class="fa-brands fa-github"></i>
+                </Link>
+              )}
             </div>
           </div>
           <div className={styles.chatbutton}>

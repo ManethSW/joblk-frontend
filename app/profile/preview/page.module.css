@@ -163,8 +163,7 @@
     border-radius: 100px;
 }
 
-.emptyprojects h3:nth-of-type(2) {
-    /* text-align: center; */
+.emptyprojects h3 {
     width: fit-content;
     margin: 0px auto;
     font-family: 'tripsans-ultra';

@@ -15,7 +15,6 @@
 }
 
 .header {
-    margin-left: 10px;
     width: 100%;
     padding-bottom: 25px;
     border-bottom: 1px solid var(--black-color-25);
@@ -59,7 +58,6 @@
 }
 
 .bodycontent {
-    /* position: relative; */
     width: 100%;
     display: grid;
     row-gap: 25px;
@@ -82,8 +80,55 @@
     font-family: 'tripsans-medium';
     font-size: 18px;
     color: black;
-    background-color: var(--primary-color-100);
     padding: 15px 20px;
     padding-right: 25px;
     border-radius: 25px;
+}
+
+.toastsuccess {
+    background-color: var(--primary-color-100);
+}
+
+.toasterror {
+    background-color: rgb(255, 88, 97, 100%);
+}
+
+.socialsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.socialsHeader h2 {
+    font-family: 'tripsans-bold';
+    font-size: 16px;
+}
+
+.socialsHeader h3 {
+    font-family: 'tripsans-regular';
+    font-size: 14px;
+} 
+
+.saveSocials {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    column-gap: 15px;
+    border: 2px solid var(--primary-color-100);
+    background-color: var(--primary-color-25);
+    padding: 7.5px 20px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out 0s;
+}
+
+.saveSocials:hover {
+    border-color: var(--black-color-100);
+    color: var(--black-color-100);
+    background-color: var(--primary-color-100);
+}
+
+.saveSocials h3 {
+    font-family: 'tripsans-medium';
+    font-size: 16px;
 }

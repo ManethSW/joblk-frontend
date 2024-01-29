@@ -1,11 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import UserContext from "../../../context/UserContext";
+import {
+  FormContainer,
+  InputField,
+  ValidationMessage,
+  VerificationHeader,
+  ActionButtonsSendOtp,
+  ActionButtonsSave,
+} from "@/app/components/Profile/Inputs/Input";
+import OTPInput from "../Inputs/Otp/Otp";
 import styles from "../Profile.module.css";
 
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const ChangePassword = () => {
-  const [passowrd, setPassword] = useState("");
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const { user, setUser } = useContext(UserContext);
+  const router = useRouter();
+
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [passwordValidationMessage, setPasswordValidationMessage] = useState(
     "Should enter all fields for the passwords"
   );
@@ -15,11 +29,15 @@ const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
 
-  const [countdown, setCountdown] = useState(0);
-  const [otpSent, setOtpSent] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
+
+  useEffect(() => {
+    if (!user) {
+      router.replace("/login");
+    }
+  }, [user, router]);
 
   const displayToast = (message, type) => {
     setToastMessage(message);
@@ -85,230 +103,135 @@ const ChangePassword = () => {
     }
   };
 
-  const Countdown = ({ initialCountdown, onEnd }) => {
-    const [countdown, setCountdown] = useState(initialCountdown);
-
-    useEffect(() => {
-      if (countdown > 0) {
-        const intervalId = setInterval(() => {
-          setCountdown((prevCountdown) => {
-            if (prevCountdown <= 1) {
-              clearInterval(intervalId);
-              onEnd();
-              return 0;
-            } else {
-              return prevCountdown - 1;
-            }
-          });
-        }, 1000);
-        return () => clearInterval(intervalId);
+  const handleSubmitOTP = async () => {
+    if (isPasswordValid) {
+      const currentPass = oldPassword;
+      const newPass = newPassword;
+      const confPass = newPasswordConfirm;
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}/password`;
+      const headers = {
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+      };
+      const data = {
+        currentPass,
+        newPass,
+        confPass,
+      };
+      console.log(data);
+      try {
+        await axios.put(url, data, {
+          headers,
+          withCredentials: true,
+        });
+        displayToast(`Password changed successfully`, "success");
+        router.replace("/login");
+        sessionStorage.removeItem("user");
+        setUser(null);
+      } catch (error) {
+        if (error.response && error.response.data) {
+          console.error(error.response.data["message"]);
+          if (error.response.data["code"].startsWith("ERR")) {
+            displayToast(error.response.data["message"], "error");
+          }
+        }
       }
-    }, [countdown, onEnd]);
-
-    return <span style={{ "--value": countdown }}></span>;
-  };
-
-  const handleSendOTP = async (type) => {
-    if (countdown > 0) {
-      displayToast("Please wait before sending another OTP", "warning");
     } else {
-      displayToast(`OTP code sent to your email`, "success");
-      setCountdown(60);
-      setOtpSent(true);
+      displayToast(`Invalid password`, "error");
     }
-    // const response = await mockApiCall("/send-otp", { [type]: value });
-    // if (response.status === 200) {
-    //   displayToast("OTP code sent");
-    // } else {
-    //   displayToast("Failed to send OTP");
-    // }
-  };
-
-  const handleSubmitOTP = async (otp) => {
-    displayToast(`Password changed successfully`, "success");
-    // const response = await mockApiCall("/submit-otp", { otp });
-    // if (response.status === 200) {
-    //   displayToast(`${type} changed successfully`, "success");
-    // } else {
-    //   displayToast("Failed to submit OTP. Please retry.", "warning");
-    // }
-  };
-
-  const OTPInputField = ({ value, onChange, onKeyUp }) => {
-    const inputRef = React.useRef();
-
-    useEffect(() => {
-      if (value.length === 1) {
-        inputRef.current.focus();
-      }
-    }, [value]);
-
-    return (
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-        onKeyUp={onKeyUp}
-        maxLength="1"
-        ref={inputRef}
-      />
-    );
-  };
-
-  const OTPInput = ({ onSubmit, countdown }) => {
-    const [otp, setOtp] = useState(Array(6).fill(""));
-    const otpInputRefs = Array.from({ length: 6 }, () => React.createRef());
-
-    const handleChange = (elementIndex, event) => {
-      const newOtp = [...otp];
-      newOtp[elementIndex] = event.target.value;
-
-      setOtp(newOtp);
-
-      // If all 6 characters are entered, automatically submit and save
-      if (newOtp.join("").length === 6) {
-        onSubmit(newOtp.join(""));
-      } else if (event.target.value.length === 1) {
-        // Focus on the next input field
-        if (elementIndex < 5) {
-          otpInputRefs[elementIndex + 1].current.focus();
-        }
-      }
-    };
-
-    const handleKeyUp = (elementIndex, event) => {
-      // If backspace is pressed and the current input field is empty, focus on the previous input field
-      if (event.keyCode === 8 && !otp[elementIndex]) {
-        if (elementIndex > 0) {
-          otpInputRefs[elementIndex - 1].current.focus();
-        }
-      }
-    };
-
-    return (
-      <div className={styles.otpcontainer}>
-        <div className={styles.otpheader}>
-          <h3>Enter OTP Code</h3>
-          <span className="countdown">
-            <Countdown
-              initialCountdown={countdown}
-              onEnd={() => !otpSent && setCountdown(0)}
-            />
-          </span>
-        </div>
-        <div className={styles.otpinputs}>
-          {otp.map((value, index) => (
-            <OTPInputField
-              value={value}
-              onChange={(event) => handleChange(index, event)}
-              onKeyUp={(event) => handleKeyUp(index, event)}
-              key={index}
-            />
-          ))}
-        </div>
-      </div>
-    );
   };
 
   return (
-    <div className={styles.bodyContent}>
-      {toastVisible && (
-        <div className={`toast toast-end`}>
-          <div className={`${styles.toast}`}>
-            {toastType === "success" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            )}
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
-      <div className={styles.content}>
-        <div className={`${styles.bodycontentsection}`}>
-          <div>
-            <h2>Change Your Password</h2>
-            <p>
-              You can change your password here. Please enter your current
-              password and then enter your new password twice.{" "}
-            </p>
-          </div>
-          <input
+    <FormContainer
+      inputSectionChildren={
+        <>
+          {toastVisible && (
+            <div className={`toast toast-end`}>
+              {toastType === "success" ? (
+                <div className={`${styles.toast} ${styles.toastsuccess}`}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{toastMessage}</span>
+                </div>
+              ) : (
+                <div className={`${styles.toast} ${styles.toasterror}`}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="stroke-current shrink-0 h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{toastMessage}</span>
+                </div>
+              )}
+            </div>
+          )}
+          <VerificationHeader
+            title={"Change Password"}
+            description={
+              "You can change your password here. Please enter your current password and then enter your new password twice."
+            }
+          />
+          <InputField
             type="password"
             name="oldpassword"
-            className={styles.input}
             value={oldPassword}
             onChange={handleOldPasswordChange}
             placeholder="Current Password"
+            isTouched={isPasswordTouched}
+            isValid={isPasswordValid}
+            validationMessage={passwordValidationMessage}
           />
-          <input
+          <InputField
             type="password"
             name="newpassword"
-            className={styles.input}
             value={newPassword}
             onChange={handleNewPasswordChange}
             placeholder="New Password"
+            isTouched={isPasswordTouched}
+            isValid={isPasswordValid}
+            validationMessage={passwordValidationMessage}
           />
-          <input
+          <InputField
             type="password"
             name="confirmpassword"
-            className={styles.input}
             value={newPasswordConfirm}
             onChange={handleNewPasswordConfirmChange}
             placeholder="Confirm New Password"
+            isTouched={isPasswordTouched}
+            isValid={isPasswordValid}
+            validationMessage={passwordValidationMessage}
           />
-          <OTPInput
-            onSubmit={(otp) => handleSubmitOTP("phone", otp)}
-            countdown={countdown}
+        </>
+      }
+      validationAndActionSectionChildren={
+        <>
+          <ValidationMessage
+            message={passwordValidationMessage}
+            isTouched={isPasswordTouched}
+            isValid={isPasswordValid}
           />
-        </div>
-        <div className={styles.footer}>
-          <p
-            className={
-              isPasswordTouched
-                ? isPasswordValid
-                  ? styles.valid
-                  : styles.invalid
-                : styles.initial
-            }
-          >
-            {passwordValidationMessage}
-          </p>
-          <div className={styles.buttons}>
-            <button
-              className={`${styles.save} ${styles.button}`}
-              onClick={handleSendOTP}
-            >
-              Send OTP
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          <ActionButtonsSave onSave={handleSubmitOTP}></ActionButtonsSave>
+        </>
+      }
+    />
   );
 };
 

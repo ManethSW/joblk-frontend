@@ -24,10 +24,9 @@ export default function withAuth(Component) {
             });
             setUser(userResponse.data);
           } catch (error) {
-            if (pathname === "/login") {
-              //   router.replace("/login");
-            } else if (pathname === "/register") {
-              //   router.replace("/register");
+            router.replace("/login");
+            if (pathname === "/register") {
+              router.replace("/register");
             }
           } finally {
             setLoading(false);

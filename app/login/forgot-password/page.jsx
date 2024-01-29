@@ -1,15 +1,12 @@
 "use client";
-import React, { useState, useCallback, useContext } from "react";
-import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import axios from "axios";
 import styles from "./page.module.css";
 import authStyles from "@/app/styles/auth.module.css";
-import otpStyles from "@/app/components/Profile/Profile.module.css";
-import withAuth from "@/app/hooks/UserChecker";
 import useInputValidation from "@/app/hooks/UserInputValidation";
 import RegisterInput from "@/app/components/auth/Input/Input";
+import OTPInput from "@/app/components/Profile/Inputs/Otp/Otp";
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -18,13 +15,110 @@ const ForgotPassword = () => {
   const [email, emailValid, validateEmail] = useInputValidation("", (value) =>
     EMAIL_REGEX.test(value)
   );
+  const [password, passwordValid, validatePassword] = useInputValidation(
+    "",
+    (value) => value.length >= 8
+  );
+  const [confPassword, confPasswordValid, validateConfPassword] =
+    useInputValidation("", (value) => value === password);
+
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showError, setShowError] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const [emailCountdown, setEmailCountdown] = useState(0);
+  const intervalRef = useRef(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
-  const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  const handleSendOTP = async () => {
+    if (emailCountdown > 0 && emailValid) {
+      displayToast("Please wait before sending another OTP", "error");
+    } else {
+      setIsLoading(true);
+      const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password?email=${email}`;
+      const headers = {
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+      };
+      try {
+        const response = await axios.get(apiurl, {
+          headers,
+          withCredentials: true,
+        });
+        if (response.status === 200) {
+          displayToast(`OTP code sent to your email`, "success");
+          setIsDisabled(false);
+          handleEmailCountdown();
+        } else {
+          displayToast(`OTP failed to send`, "error");
+        }
+      } catch (error) {
+        displayToast(`OTP failed to send`, "error");
+      }
+    }
+    setIsLoading(false);
+  };
+
+  const handleSubmitOTP = async (otp) => {
+    if (
+      emailValid == "valid" &&
+      passwordValid == "valid" &&
+      confPasswordValid == "valid"
+    ) {
+      setIsLoading(true);
+      const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/forgot-password`;
+      const headers = {
+        auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
+      };
+      try {
+        const response = await axios.post(
+          apiurl,
+          {
+            email: email,
+            code: otp,
+            password: password,
+          },
+          {
+            headers,
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          displayToast(`Password updated successfully`, "success");
+          router.push("/login", "/login", { shallow: false });
+        } else {
+          displayToast(`Wrong OTP code`, "error");
+        }
+      } catch (error) {
+        displayToast(`Wrong OTP code`, "error");
+      }
+    } else {
+      displayToast(`Enter valid password`, "error");
+    }
+    setIsLoading(false);
+  };
+
+  const handleEmailCountdown = () => {
+    setEmailCountdown(60);
+    intervalRef.current = setInterval(() => {
+      setEmailCountdown((prevCountdown) => {
+        if (prevCountdown <= 1) {
+          clearInterval(intervalRef.current);
+          setIsDisabled(true);
+          return 0;
+        } else {
+          return prevCountdown - 1;
+        }
+      });
+    }, 1000);
+  };
 
   const displayToast = (message, type) => {
     setToastMessage(message);
@@ -35,121 +129,12 @@ const ForgotPassword = () => {
     }, 5000);
   };
 
-  const handleSendOTP = async (e) => {
-    console.log(emailValid);
-    if (emailValid === "valid") {
-      if (countdown > 0) {
-        displayToast("Please wait before sending another OTP", "warning");
-      } else {
-        console.log("handleLogin called");
-        e.preventDefault();
-        setIsLoading(true);
-        const sendOtpUrl = `http://localhost:3001/auth/verify?email=${email}`;
-        const headers = {
-          auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-        };
-        try {
-          const sendOtpResponse = await axios.get(sendOtpUrl, {
-            headers,
-            withCredentials: true,
-          });
-          console.log(sendOtpResponse.data);
-        } catch (error) {
-          console.log(error);
-          if (error.response && error.response.data) {
-            console.error(error.response.data["message"]);
-            if (error.response.data["code"].startsWith("ERR")) {
-              setError(error.response.data["message"]);
-              setShowError(true);
-            }
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    } else {
-      displayToast("Please enter a valid email", "warning");
-    }
-  };
-
-  const handleSubmitOTP = async (type, otp) => {
-    displayToast(`${type} changed successfully`, "success");
-  };
-
-  const handleCountdown = () => {
-    setCountdown(60);
-    const interval = setInterval(() => {
-      setCountdown((prevCountdown) => {
-        if (prevCountdown <= 1) {
-          clearInterval(interval);
-          return 0;
-        } else {
-          return prevCountdown - 1;
-        }
-      });
-    }, 1000);
-  };
-
-  const OTPInput = ({ onSubmit, countdown }) => {
-    const [otp, setOtp] = useState(Array(6).fill(""));
-    const otpInputRefs = Array.from({ length: 6 }, () => React.createRef());
-
-    const handleChange = (elementIndex, event) => {
-      const newOtp = [...otp];
-      newOtp[elementIndex] = event.target.value;
-
-      setOtp(newOtp);
-
-      if (newOtp.join("").length === 6) {
-        onSubmit(newOtp.join(""));
-      } else if (event.target.value.length === 1) {
-        if (elementIndex < 5) {
-          otpInputRefs[elementIndex + 1].current.focus();
-        }
-      }
-    };
-
-    const handleKeyUp = (elementIndex, event) => {
-      if (event.keyCode === 8 && !otp[elementIndex]) {
-        if (elementIndex > 0) {
-          otpInputRefs[elementIndex - 1].current.focus();
-        }
-      }
-    };
-
-    return (
-      <div className={styles.otpcontainer}>
-        <label htmlFor={`otp${0}`} className={styles.otpheader}>
-          <h3>Enter otp code</h3>
-          <span className="countdown">
-            <span style={{ "--value": countdown }}></span>
-          </span>
-        </label>
-        <div className={styles.otpinputs}>
-          {otp.map((value, index) => (
-            <input
-              type="text"
-              name={`otp${index}`}
-              id={`otp${index}`}
-              value={value}
-              onChange={(event) => handleChange(index, event)}
-              onKeyUp={(event) => handleKeyUp(index, event)}
-              maxLength="1"
-              key={index}
-              ref={otpInputRefs[index]}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div>
       {toastVisible && (
         <div className={`toast toast-end`}>
-          <div className={`${otpStyles.toast}`}>
-            {toastType === "success" ? (
+          {toastType === "success" ? (
+            <div className={`${styles.toast} ${styles.toastsuccess}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="stroke-current shrink-0 h-6 w-6"
@@ -163,7 +148,10 @@ const ForgotPassword = () => {
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-            ) : (
+              <span>{toastMessage}</span>
+            </div>
+          ) : (
+            <div className={`${styles.toast} ${styles.toasterror}`}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="stroke-current shrink-0 h-6 w-6"
@@ -177,9 +165,9 @@ const ForgotPassword = () => {
                   d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-            )}
-            <span>{toastMessage}</span>
-          </div>
+              <span>{toastMessage}</span>
+            </div>
+          )}
         </div>
       )}
       <div className={authStyles.title}>Change Password</div>
@@ -196,34 +184,31 @@ const ForgotPassword = () => {
             isValid={emailValid}
             onChange={validateEmail}
           />
+          <RegisterInput
+            id="password"
+            type="password"
+            placeholder="Enter your new password"
+            value={password}
+            isValid={passwordValid}
+            onChange={validatePassword}
+          />
+          <RegisterInput
+            id="confPassword"
+            type="password"
+            placeholder="Confirm your new password"
+            value={confPassword}
+            isValid={confPasswordValid}
+            onChange={validateConfPassword}
+          />
         </div>
         <div>
           <OTPInput
             onSubmit={(otp) => handleSubmitOTP(otp)}
-            countdown={countdown}
+            countdown={emailCountdown}
+            isDisabled={isDisabled}
+            isResetPassword={true}
           />
         </div>
-        {/* {showError && (
-          <div
-            role="alert"
-            className={`${authStyles.alertbox} alert alert-error`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current shrink-0 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>{error}</span>
-          </div>
-        )} */}
         <div>
           {isLoading ? (
             <button onClick={handleSendOTP} className={authStyles.button}>
@@ -241,4 +226,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default withAuth(ForgotPassword);
+export default ForgotPassword;

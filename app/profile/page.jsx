@@ -1,14 +1,16 @@
 "use client";
 import React, { useState, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./page.module.css";
-import General from "../../components/Profile/General/General";
-import ContactInformation from "../../components/Profile/ContactInformation/ContactInformation";
-import ChangePassword from "../../components/Profile/ChangePassword/ChangePassword";
-import Portfolio from "../../components/Profile/Portfolio/Portfolio";
-import UserContext from "../../context/UserContext";
-import SessionContext from "../../context/SessionContext";
-import withAuth from '../../hooks/UserChecker';
+import General from "@/app/components/Profile/General/General";
+import ContactInformation from "@/app/components/Profile/ContactInformation/ContactInformation";
+import ChangePassword from "@/app/components/Profile/ChangePassword/ChangePassword";
+import Portfolio from "@/app/components/Profile/Portfolio/Portfolio";
+import UserContext from "@/app/context/UserContext";
+import SessionContext from "@/app/context/SessionContext";
+import withAuth from "@/app/hooks/UserChecker";
+import SocialProfiles from "@/app/components/Profile/SocialProfiles/SocialProfiles";
 
 const Profile = () => {
   const [navigation, setNavigation] = useState("General");
@@ -28,7 +30,7 @@ const Profile = () => {
     }
 
     if (!session) {
-      setSession({ user_mode: "client"});
+      setSession({ user_mode: "freelancer" });
     }
   }, [user, router, session]);
 
@@ -43,8 +45,21 @@ const Profile = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2>{user ? user.username : 'Guest'} / {navigation}</h2>
-        <p>Edit and setup your account as prefered - client</p>
+        <div>
+          <h2>
+            {user ? user.username : "Guest"} / {navigation}
+          </h2>
+          <p>Edit and setup your account as prefered</p>
+        </div>
+        <div>
+          <Link href="/profile/preview">
+            {" "}
+            <button className={styles.preview}>
+              Preview
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </Link>
+        </div>
       </div>
       <div className={styles.body}>
         <ul className={styles.menu}>
@@ -75,7 +90,9 @@ const Profile = () => {
           )}
           {navigation === "Change Password" && <ChangePassword />}
           {navigation === "Social Profiles" && (
-            <div>Social Profiles Content</div>
+            <div>
+              <SocialProfiles />
+            </div>
           )}
         </div>
       </div>

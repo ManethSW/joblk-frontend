@@ -10,8 +10,7 @@ import styles from "./Navbar.module.css";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userMode, setUserMode] = useState("client"); // ["freelancer", "employer"]
+  const [userMode, setUserMode] = useState("");
   const { user, setUser } = useContext(UserContext);
   const { session, setSession } = useContext(SessionContext);
   const [isActive, setActive] = useState("dashboard");
@@ -23,12 +22,6 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-
     if (session && session.user_mode != userMode) {
       setUserMode(session.user_mode);
     }
@@ -51,8 +44,8 @@ const NavBar = () => {
       );
       if (logoutResponse.data.code === "SUCCESS") {
         sessionStorage.removeItem("user");
+        sessionStorage.removeItem("sessionData");
         setUser(null);
-        setIsLoggedIn(false);
         router.replace("/login");
       }
     } catch (error) {
@@ -60,14 +53,10 @@ const NavBar = () => {
     }
   };
 
-  const switchMode = async () => {
-    if (userMode === "freelancer") {
-      setSession({ user_mode: "client" });
-      router.replace(`/${userMode}/dashboard`);
-    } else {
-      setSession({ user_mode: "freelancer" });
-      router.replace(`/${userMode}/dashboard`);
-    }
+  const switchMode = () => {
+    const newUserMode = userMode === "freelancer" ? "client" : "freelancer";
+    setSession({ user_mode: newUserMode });
+    router.replace(`/${newUserMode}/dashboard`);
   };
 
   return (
@@ -84,7 +73,7 @@ const NavBar = () => {
             />
           </div>
           <ul className={`${styles.linksContainer}`}>
-            {!isLoggedIn ? (
+            {!user ? (
               <>
                 <li>
                   <Link href="/">Home</Link>
@@ -119,7 +108,7 @@ const NavBar = () => {
                     </li>
                     <li
                       className={
-                        isActive == "client/my_jobs" ? styles.active : ""
+                        isActive == "client/projects" ? styles.active : ""
                       }
                     >
                       <Link href="/client/projects">My Projects</Link>
@@ -162,18 +151,37 @@ const NavBar = () => {
                 <li className={isActive == "users" ? styles.active : ""}>
                   <Link href="/users">Users</Link>
                 </li>
+                <li className={isActive == "messages" ? styles.active : ""}>
+                  <Link href="/messaging">Messaging</Link>
+                </li>
               </>
             )}
           </ul>
         </div>
         <div className={styles.actionButtonsContainer}>
-          {isLoggedIn ? (
+          {user != null ? (
             <>
               <div className="dropdown dropdown-bottom dropdown-end">
                 <label tabIndex={0} className="">
-                  <div className={styles.userContainer}>
-                    <i className="fa-solid fa-user"></i>
-                    <p>{user.username}</p>
+                  <div className={styles.userinfo}>
+                    {user.avatar ? (
+                      <div className={`${styles.avatarImage} ${styles.avatar}`}>
+                        <Image
+                          src={user.avatar}
+                          alt={`Avatar`}
+                          layout="fill"
+                          objectFit="cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className={styles.avatar}>
+                        <i className={`fa-solid fa-user`}></i>
+                      </div>
+                    )}
+                    <div className={styles.usernameandarrow}>
+                      <h2>{user.username}</h2>
+                      <i className={`fa-solid fa-chevron-down`}></i>
+                    </div>
                   </div>
                 </label>
                 <ul
@@ -186,11 +194,9 @@ const NavBar = () => {
                         <a>Switch to Client</a>
                       </li>
                       <li
-                        className={
-                          isActive == "freelancer/profile" ? styles.active : ""
-                        }
+                        className={isActive == "/profile" ? styles.active : ""}
                       >
-                        <Link href="/freelancer/profile">Profile</Link>
+                        <Link href="/profile">Profile</Link>
                       </li>
                     </div>
                   ) : (
@@ -199,11 +205,9 @@ const NavBar = () => {
                         <a>Switch to Freelancer</a>
                       </li>
                       <li
-                        className={
-                          isActive == "client/profile" ? styles.active : ""
-                        }
+                        className={isActive == "/profile" ? styles.active : ""}
                       >
-                        <Link href="/client/profile">Profile</Link>
+                        <Link href="/profile">Profile</Link>
                       </li>
                     </div>
                   )}

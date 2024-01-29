@@ -6,17 +6,24 @@ export const FormContainer = ({
   inputSectionChildren,
   validationAndActionSectionChildren,
   isAvatarInput,
+  isSocialInput,
 }) => {
   return (
     <div className={styles.formContainer}>
       <div
         className={`${isAvatarInput ? styles.inputAvatarSection : ""} ${
-          styles.inputSection
-        }`}
+          isSocialInput ? styles.inputSocialSection : ""
+        } ${styles.inputSection}`}
       >
         {inputSectionChildren}
       </div>
-      <div className={styles.validationAndActionSection}>
+      <div
+        className={` ${
+          isSocialInput
+            ? styles.validationNone
+            : styles.validationAndActionSection
+        }`}
+      >
         {validationAndActionSectionChildren}
       </div>
     </div>
@@ -38,6 +45,20 @@ export const Header = ({ title, description }) => {
 };
 
 Header.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
+
+export const SocialHeader = ({ title, description }) => {
+  return (
+    <div className={styles.inputSectionHeader}>
+      <h2>{title}</h2>
+      <p>{description}</p>
+    </div>
+  );
+};
+
+SocialHeader.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
 };
@@ -65,6 +86,37 @@ export const InputField = ({ name, value, placeholder, onChange }) => (
 );
 
 InputField.propTypes = {
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+export const InputSocialLinkField = ({
+  link,
+  name,
+  value,
+  placeholder,
+  onChange,
+}) => (
+  <div className={styles.inputSocialLinkField}>
+    <label for={name}>
+      <i className={`fa-solid fa-lock`}></i>
+      {link}
+    </label>
+    <input
+      id={name}
+      type="text"
+      name={name}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+    />
+  </div>
+);
+
+InputSocialLinkField.propTypes = {
+  link: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   placeholder: PropTypes.string,

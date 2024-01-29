@@ -34,21 +34,21 @@ const PhoneNumberInput = ({ phoneNumber, setPhoneNumber }) => {
 
   const handlePhoneNumberSave = async (e) => {
     e.preventDefault();
-    const username = value;
-    if (isUsernameValid) {
+    const phoneNo = phoneNumber;
+    if (isPhoneNumberValid) {
       const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}${process.env.NEXT_PUBLIC_API_USER}`;
       const headers = {
         auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
       };
       const data = {
-        username,
+        phoneNo,
       };
       try {
         await axios.put(url, data, {
           headers,
           withCredentials: true,
         });
-        setPhoneNumberValidationMessage("Username updated");
+        setPhoneNumberValidationMessage("Phone number updated");
       } catch (error) {
         if (error.response && error.response.data) {
           console.error(error.response.data["message"]);
@@ -58,7 +58,7 @@ const PhoneNumberInput = ({ phoneNumber, setPhoneNumber }) => {
         }
       }
     } else {
-      setPhoneNumberValidationMessage("Username is invalid");
+      setPhoneNumberValidationMessage("Phone number is invalid");
     }
   };
 

@@ -3,6 +3,10 @@
     border-radius: 8px;
 }
 
+.formLinkContainer {
+    border: 8px;
+}
+
 .formContainer:hover {
     box-shadow: 4px 4px 4px var(--black-color-15);
 }
@@ -45,9 +49,24 @@
     flex-direction: row;
 }
 
+.inputSocialSection {
+    border-radius: 8px;
+}
+
 .avatarsection {
     flex-direction: row;
     column-gap: 20px;
+}
+
+.inputSectionHeader h2 {
+    display: flex;
+    align-items: center;
+}
+
+
+.inputSectionHeader i {
+    font-size: 18px;
+    margin-right: 10px;
 }
 
 .bodycontent h2 {
@@ -95,6 +114,37 @@
 
 .inputSection input:hover {
     border: 1px solid var(--black-color-75);
+}
+
+.inputSocialLinkField {
+    display: flex;
+    align-items: center;
+}
+
+.inputSocialLinkField label {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+    background-color: var(--white-color-100);
+    padding: 5px 10px;
+    border-radius: 5px 0px 0px 5px;
+    border: 1px solid var(--black-color-25);
+    font-family: 'tripsans-bold';
+    font-size: 16px;
+}
+
+.inputSocialLinkField input {
+    border-radius: 0px 5px 5px 0px;
+    border-left: 1px solid transparent;
+    padding: 5px 10px;
+}
+
+.inputSocialLinkField label i {
+    font-size: 12.5px;
+}
+
+.validationNone {
+    display: none;
 }
 
 .validationAndActionSection {
@@ -163,6 +213,12 @@
     margin-top: 25px;
 }
 
+.resetcontainer {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    row-gap: 10px;
+}
+
 .otpheader {
     display: flex;
     align-items: center;
@@ -175,10 +231,20 @@
     font-size: 16px;
 }
 
+.resetheader h3,
+.resetheader span {
+    font-family: 'tripsans-bold';
+    color: var(--black-color-75);
+}
+
 .otpinputs {
     width: 300px;
     display: flex;
     justify-content: space-between;
+}
+
+.resetotpinputs {
+    width: 100%;
 }
 
 .otpinputs input {
@@ -186,8 +252,27 @@
     text-align: center;
 }
 
+.resetotpinputs input {
+    width: 50px!important;
+    height: 50px;
+    border-radius: 10px;
+    border: 2px solid var(--black-color-50);
+    transition: all 0.3s ease-in-out 0s;
+}
+
+
+.resetotpinputs input:hover {
+    border: 2px solid var(--black-color-100);
+}
+
+.resetotpinputs input:focus {
+    border: 2px solid var(--black-color-100);
+    outline: none;
+}
+
 .otpinputs input:focus {
     border: 1px solid rgba(0, 0, 0, 1);
+    outline: none;
 }
 
 .otp {

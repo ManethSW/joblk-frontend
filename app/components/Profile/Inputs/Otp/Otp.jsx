@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../Input.module.css";
 
-const OTPInput = ({ onSubmit, countdown, isDisabled }) => {
+const OTPInput = ({ onSubmit, countdown, isDisabled, isResetPassword }) => {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const otpInputRefs = Array.from({ length: 6 }, () => React.createRef());
 
@@ -32,29 +32,57 @@ const OTPInput = ({ onSubmit, countdown, isDisabled }) => {
   };
 
   return (
-    <div className={styles.otpcontainer}>
-      <div className={styles.otpheader}>
-        <h3>Enter OTP Code</h3>
-        <span className="countdown">
-          <span style={{ "--value": countdown }}></span>
-        </span>
-      </div>
-      <div className={styles.otpinputs}>
-        {otp.map((value, index) => (
-          <input
-            type="text"
-            name={`otp${index}`}
-            value={value}
-            onChange={(event) => handleChange(index, event)}
-            onKeyDown={(event) => handleKeyDown(index, event)}
-            maxLength="1"
-            key={index}
-            ref={otpInputRefs[index]}
-            disabled={isDisabled}
-          />
-        ))}
-      </div>
-    </div>
+    <>
+      {!isResetPassword ? (
+        <div className={styles.otpcontainer}>
+          <div className={styles.otpheader}>
+            <h3>Enter OTP Code</h3>
+            <span className="countdown">
+              <span style={{ "--value": countdown }}></span>
+            </span>
+          </div>
+          <div className={styles.otpinputs}>
+            {otp.map((value, index) => (
+              <input
+                type="text"
+                name={`otp${index}`}
+                value={value}
+                onChange={(event) => handleChange(index, event)}
+                onKeyDown={(event) => handleKeyDown(index, event)}
+                maxLength="1"
+                key={index}
+                ref={otpInputRefs[index]}
+                disabled={isDisabled}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className={`${styles.resetcontainer} ${styles.otpcontainer}`}>
+          <div className={`${styles.resetheader} ${styles.otpheader}`}>
+            <h3>Enter OTP Code</h3>
+            <span className="countdown">
+              <span style={{ "--value": countdown }}></span>
+            </span>
+          </div>
+          <div className={`${styles.resetotpinputs} ${styles.otpinputs}`}>
+            {otp.map((value, index) => (
+              <input
+                type="text"
+                name={`otp${index}`}
+                value={value}
+                onChange={(event) => handleChange(index, event)}
+                onKeyDown={(event) => handleKeyDown(index, event)}
+                maxLength="1"
+                key={index}
+                ref={otpInputRefs[index]}
+                disabled={isDisabled}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
