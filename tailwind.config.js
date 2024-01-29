@@ -10,7 +10,15 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
-      'joblk-green': '#1DBF73',
+      // 'joblk-green-100': '#1DBF73',
+      // 'joblk-green-200': '#1DBF73',
+      // 'joblk-green-300': '#1DBF73',
+      // 'joblk-green-400': '#1DBF73',
+      'joblk-green-500': '#1DBF73',
+      'joblk-green-600': '#009951',
+      'joblk-green-700': '#007430',
+      'joblk-green-800': '#005111',
+      'joblk-green-900': '#003100',
     }
   },
   daisyui: {

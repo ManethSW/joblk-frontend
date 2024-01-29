@@ -213,6 +213,12 @@ const ViewJobModal = ({
   const [viewModalCurrent, setViewModalCurrent] = useState(0);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
 
+  const [milestones, setMilestones] = useState();
+
+  useEffect(() => {
+    handleGetMilestone();
+  }, [data]);
+
   const openBidModal = () => setIsBidModalOpen(true);
   const closeBidModal = () => setIsBidModalOpen(false);
 
@@ -257,6 +263,23 @@ const ViewJobModal = ({
       return "Phone Call";
     } else if (value == 3) {
       return "Online Meeting";
+    }
+  }
+
+  const handleGetMilestone = async () => {
+    try{
+      const milestones = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${data.id}`, 
+        {
+          headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+          withCredentials: true,
+        }
+      ).then((res) => {
+        setMilestones(res.data);
+        console.log(res.data);
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -317,14 +340,13 @@ const ViewJobModal = ({
                         <div className="col-span-2">
                           <label htmlFor="tags" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tags</label>
                           <div id="tags" className="flex flex-wrap border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            {data.job_tags.split(",").map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={tag}>{tag}</span> }) }
+                          {data.job_tags ? data.job_tags.split(",").map((tag) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={tag}>{tag}</span> }) : "No tags"}
                           </div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
                           <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            {data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={skill}>{skill}</span> })}
-                            {/* <span className="bg-gray-700 text-white text-xs font-medium px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">Time Management</span> */}
+                          {data.required ? data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={skill}>{skill}</span> }) : "No skills"}
                           </div>
                         </div>
                       </div>
@@ -332,33 +354,50 @@ const ViewJobModal = ({
                   </div>
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
+                  <div className="col-span-2">
+                    <label htmlFor="milestones" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</label>
+                    {milestones ? (
+                      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                            <th scope="col" className="py-3 px-6">Name</th>
+                            <th scope="col" className="py-3 px-6">Due Date</th>
+                            <th scope="col" className="py-3 px-6">Priority</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {milestones.map((milestone) => (
+                            <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                              <td className="py-4 px-6">{milestone.name}</td>
+                              <td className="py-4 px-6">{(milestone.due_date).substring(0,10)}</td>
+                              <td className="py-4 px-6">{milestone.priority}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      'No milestones'
+                    )}
+                  </div>
+                </div>
+                <div className="hidden duration-200 ease-linear" data-carousel-item>
                   <div className="flex items-center justify-center h-full">
                     <BidForm jobId={data.id}  closeModal={closeBidModal} />
                   </div>
-                  {/* <div className="mb-4">
-                    <h4 className="text-md font-semibold text-gray-900 dark:text-white">Bids</h4>
-                  </div>
-                  <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
-                    <div className="col-span-4">
-                      <div className="flex flex-row justify-between bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                        <div className="">Name</div>
-                        <div className="">LKR 10,000</div>
-                      </div>
-                    </div>
-                  </div> */}
                 </div>
               </div>
-              <div className="absolute z-50 flex -translate-x-1/2 space-x-1 rtl:space-x-reverse bottom-5 left-1/2">
-                <button type="button" className="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-                <button type="button" className="w-2 h-2 rounded-full bg-gray-300 hover:bg-gray-400" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-              </div>
-              <div className="flex flex-row justify-between w-full pt-4">
-                <button type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
-                  Close
+              <div className="flex flex-row justify-between w-full">
+                <button type="button" data-carousel-prev className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                  Previous
                 </button>
-                <button type="button" data-carousel-next onClick={switchModalView} className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                  {viewModalCurrent == 0 ? `Place Bids` : `Go Back`}
-                </button>
+                <div className="flex flex-row items-center gap-1">
+                  <button type="button" data-carousel-next className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Next
+                  </button>
+                  <button  type="button" className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" data-modal-toggle={`view-job-modal-${data.id}`}>
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           </form>

@@ -7,7 +7,8 @@ import Image from "next/image";
 import withAuth from "@/app/hooks/UserChecker";
 import styles from "@/app/profile/preview/page.module.css";
 
-const Preview = (user_id) => {
+const Preview = () => {
+  const { user_id } = router.query;
   const [userData, setUserData] = useState([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -18,7 +19,6 @@ const Preview = (user_id) => {
   }, []);
 
   const getUserData = async () => {
-    user_id = 4;
     const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user_id}/details`;
     const headers = {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
