@@ -11,17 +11,16 @@ const Projects = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedMilestone, setSelectedMilestone] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedProjectStatus, setSelectedProjectStatus] = useState(null);
-
-  const openAddMilestoneModal = (projectId) => {
-    setSelectedProjectId(projectId);
-    setIsAddModalOpen(true);
+    const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+  const openSubmissionModal = (milestone) => {
+    setSelectedMilestone(milestone);
+    setIsSubmissionModalOpen(true);
+   closeModal();
   };
 
-  const closeAddModal = () => {
-    setIsAddModalOpen(false);
+  const closeSubmissionModal = () => {
+    setIsSubmissionModalOpen(false);
   };
 
   const openModal = (projectId, projectStatus) => {
@@ -34,11 +33,6 @@ const Projects = () => {
     setIsModalOpen(false);
   };
 
-  const openEditMilestoneModal = (milestone) => {
-    setSelectedMilestone(milestone);
-    setIsModalOpen(false);
-    setIsEditModalOpen(true);
-  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -52,13 +46,14 @@ const Projects = () => {
             withCredentials: true,
           }
         );
-        setProjects(response.data);
+        const sortedProjects = response.data.sort((a, b) => a.status - b.status);
+        setProjects(sortedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
       setIsLoading(false);
     };
-
+  
     if (user) {
       fetchProjects();
     }
@@ -121,37 +116,28 @@ const Projects = () => {
                       <td className="px-6 py-4 md:px-3">
                         {project.description}
                       </td>
-                      <td className="px-6 py-4 md:px-3">
-                        {project.status === 1
-                          ? "Milestone definition"
-                          : project.status === 2
-                          ? "Milestone Approval"
-                          : project.status === 3
-                          ? "Payment"
-                          : project.status === 4
-                          ? "Active"
-                          : project.status === 5
-                          ? "Completed"
-                          : ""}
-                      </td>
+                    <td className="px-6 py-4 md:px-3">
+                        {project.status === 1 ? "Active" :
+                         project.status === 2 ? "Completed" : ""}
+                    </td>
                       <td className="px-6 py-4 md:px-3">
                         <div className="flex items-center space-x-4 text-sm">
-                          {project.status === 1 && (
+                          {project.status === 2 ? (
                             <button
-                              onClick={() => openAddMilestoneModal(project.id)}
-                              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                              onClick={() => openModal(project.id, project.status)}
+                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
                             >
-                              Add Milestones
+                              Submission History
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => openModal(project.id, project.status)}
+                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                            >
+                              View Milestones
                             </button>
                           )}
-                          <button
-                            onClick={() =>
-                              openModal(project.id, project.status)
-                            }
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                          >
-                            View Milestones
-                          </button>
+                          
                         </div>
                       </td>
                     </tr>
@@ -167,443 +153,52 @@ const Projects = () => {
           projectId={selectedProjectId}
           projectStatus={selectedProjectStatus}
           closeModal={closeModal}
-          openEditMilestoneModal={openEditMilestoneModal}
+          openSubmissionModal={openSubmissionModal} 
+
+
         />
       )}
-      {isEditModalOpen && selectedMilestone && (
-        <EditMilestoneModal
-          milestone={selectedMilestone}
-          closeModal={() => setIsEditModalOpen(false)}
-        />
-      )}
-      {isAddModalOpen && (
-        <AddMilestoneModal
-          projectId={selectedProjectId}
-          closeModal={closeAddModal}
-        />
+      {isSubmissionModalOpen && (
+        <SubmissionModal milestone={selectedMilestone} closeModal={closeSubmissionModal}/>
       )}
     </div>
   );
 };
 
-const AddMilestoneModal = ({ projectId, closeModal }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [status, setStatus] = useState("1");
-  const [priority, setPriority] = useState("1");
 
-  const handleAddMilestone = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${projectId}`,
-        {
-          name: name,
-          description: description,
-          due_date: dueDate,
-
-          priority: priority,
-          // description,
-          // due_date: dueDate,
-          // // status: parseInt(status),
-          // priority: parseInt(priority),
-        },
-        {
-          headers: { auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-          withCredentials: true,
+const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, projectStatus }) => {
+    const [milestones, setMilestones] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+      
+  
+    useEffect(() => {
+      const fetchMilestones = async () => {
+        
+        setIsLoading(true);
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/milestones/client/${projectId}`, 
+            {
+              headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+              withCredentials: true,
+            }
+          );
+          setMilestones(response.data);
+        } catch (error) {
+          console.error('Error fetching milestones:', error);
         }
-      );
-      if (response.status === 201) {
-        closeModal();
-        console.log("Milestone added successfully!");
+        setIsLoading(false);
+      };
+  
+      if (projectId) {
+        fetchMilestones();
       }
-    } catch (error) {
-      console.error("Error adding milestone:", error);
-    }
-  };
+    }, [projectId]);
+  
+    return (
+        <div className={styles.modalOverlay}>
 
-  return (
-    <div
-      className={styles.modalOverlay}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div className={styles.frame}>
-        <div className={styles.div} style={{ width: "600px" }}>
-          <div className={styles.header}>
-            <div className="flex flex-row justify-between">
-              {/* <div className={styles.cont}>
-                  <h1 className={styles.title}>Add Milestone</h1>
-                  <span className={styles.titleUnderline}></span>
-                </div> */}
-              <h3 className="text-2xl font-semibold ms-3 mt-3">
-                Add Milestones
-              </h3>
-            </div>
-          </div>
-          <div
-            className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}
-          >
-            <form
-              className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-              onSubmit={handleAddMilestone}
-            >
-              {/* Name input */}
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="name"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              {/* Description input */}
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="description"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              {/* Due Date input */}
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="dueDate"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Due Date
-                </label>
-                <input
-                  type="date"
-                  id="dueDate"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              {/* Status select */}
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="priority"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Priority
-                </label>
-                <select
-                  id="priority"
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-              {/* Buttons */}
-              <div className="flex items-center justify-end px-6 py-3">
-                <button
-                  // onClick={handleAddMilestone}
-                  type="submit"
-                  className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none"
-                >
-                  Add
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none ml-2"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const EditMilestoneModal = ({ milestone, closeModal }) => {
-  const [name, setName] = useState(milestone.name);
-  const [description, setDescription] = useState(milestone.description);
-  const [dueDate, setDueDate] = useState(
-    new Date(milestone.due_date).toISOString().split("T")[0]
-  );
-  const [status, setStatus] = useState(milestone.status);
-  const [priority, setPriority] = useState(milestone.priority);
-
-  const handleUpdateMilestone = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${milestone.id}`,
-        {
-          name: name,
-          description: description,
-          due_date: dueDate,
-
-          priority: priority,
-        },
-        {
-          headers: { auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        closeModal();
-      }
-    } catch (error) {
-      console.error("Error updating milestone:", error);
-    }
-  };
-
-  const handleCloseModal = () => {
-    closeModal();
-  };
-
-  return (
-    <div
-      className={styles.modalOverlay}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div className={styles.frame}>
-        <div className={styles.div} style={{ width: "600px" }}>
-          <div className={styles.header}>
-            <div className="flex flex-row justify-between">
-              {/* <div className={styles.cont}>
-                    <h1 className={styles.title}>Edit Milestone</h1>
-                    <span className={styles.titleUnderline}></span>
-                  </div> */}
-              <h3 className="text-2xl font-semibold ms-3 mt-3">
-                Edit Milestones
-              </h3>
-            </div>
-          </div>
-
-          <div
-            className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}
-          >
-            <form
-              className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-              onSubmit={handleUpdateMilestone}
-            >
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="name"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="description"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="dueDate"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Due Date
-                </label>
-                <input
-                  type="date"
-                  id="dueDate"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              <div className="px-6 py-3">
-                <label
-                  htmlFor="priority"
-                  className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-                >
-                  Priority
-                </label>
-                <select
-                  id="priority"
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-              <div className="flex items-center justify-end px-6 py-3">
-                <button
-                  //   onClick={handleUpdateMilestone}
-                  type="submit"
-                  className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none me-2"
-                >
-                  Update
-                </button>
-                <button
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none"
-                >
-                  Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ViewMilestonesModal = ({
-  projectId,
-  closeModal,
-  openEditMilestoneModal,
-  projectStatus,
-}) => {
-  const [milestones, setMilestones] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const handleDeleteMilestone = async (milestoneId) => {
-    try {
-      const response = await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${milestoneId}`,
-        {
-          headers: { auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        setMilestones(
-          milestones.filter((milestone) => milestone.id !== milestoneId)
-        );
-      }
-    } catch (error) {
-      console.error("Error deleting milestone:", error);
-    }
-  };
-
-  const submitMilestones = async () => {
-    try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project/${projectId}`,
-        {
-          status: 2,
-        },
-        {
-          headers: {
-            auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        console.log("Milestones submitted successfully!");
-        closeModal();
-      }
-    } catch (error) {
-      console.error("Error submitting milestones:", error);
-    }
-  };
-
-  const makePayment = async () => {
-    try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project_payment/${projectId}`,
-        {
-          status: 4,
-        },
-        {
-          headers: {
-            auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        console.log("Milestones submitted successfully!");
-        closeModal();
-      }
-    } catch (error) {
-      console.error("Error submitting milestones:", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchMilestones = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/milestones/client/${projectId}`,
-          {
-            headers: { auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-            withCredentials: true,
-          }
-        );
-        setMilestones(response.data);
-      } catch (error) {
-        console.error("Error fetching milestones:", error);
-      }
-      setIsLoading(false);
-    };
-
-    if (projectId) {
-      fetchMilestones();
-    }
-  }, [projectId]);
-
-  return (
-    <div className={styles.modalOverlay}>
-      <div
-        id={`view-milestones-modal-${projectId}`}
-        tabIndex="-1"
-        aria-hidden="true"
-        className="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
-      >
+      <div id={`view-milestones-modal-${projectId}`} tabIndex="-1" aria-hidden="true" className="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center">
         <div className="relative w-auto my-6 mx-auto max-w-4xl">
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -686,39 +281,21 @@ const ViewMilestonesModal = ({
                             {milestone.priority === 3 && "High"}
                             {milestone.priority === 4 && "Urgent"}
                             {milestone.priority === 5 && "Critical"}
-                          </td>
-                          <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <div className="flex justify-start items-center space-x-2">
-                              {projectStatus === 1 && (
-                                <>
-                                  {/* <button
-                                    // onClick={() => handleDeleteMilestone(milestone.id)}
-                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                                >
-                                    Complete
-                                </button> */}
-                                  <button
-                                    onClick={() =>
-                                      openEditMilestoneModal(milestone)
-                                    }
-                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteMilestone(milestone.id)
-                                    }
-                                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                                  >
-                                    Delete
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <div className="flex justify-start items-center space-x-2">
+                            {/*add upload files modal*/}
+                          
+                            <button
+                                onClick={() => openSubmissionModal(milestone)}
+                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                            >
+                                Submissions
+                            </button>
+                        </div>
+                        </td>
+                        
+                        {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           {milestone.order_number}
                         </td> */}
                         </tr>
@@ -730,23 +307,16 @@ const ViewMilestonesModal = ({
             </div>
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-              {projectStatus === 1 && (
-                <button
-                  onClick={submitMilestones}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                >
-                  Submit Milestones
-                </button>
-              )}
+            
 
-              {projectStatus === 3 && (
+            {/* {projectStatus === 3 && (
                 <button
                   onClick={makePayment}
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
                 >
                   Make Payment
                 </button>
-              )}
+            )} */}
               {/* <button
                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
@@ -758,8 +328,101 @@ const ViewMilestonesModal = ({
           </div>
         </div>
       </div>
+      </div> 
+    );
+  };
+
+
+const SubmissionModal = ({ milestone, closeModal }) => {
+    const [files, setFiles] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+      const fetchMilestoneContent = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${milestone.id}/content`, {
+                    headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+                    withCredentials: true,
+                });
+                setFiles(response.data.upload_reference || []);
+            } catch (error) {
+                console.error('Error fetching milestone content:', error);
+            }
+            setIsLoading(false);
+        };
+
+        fetchMilestoneContent();
+    }, [milestone]);
+
+    // const isViewableInBrowser = (fileName) => {
+    //     return fileName.match(/\.(jpeg|jpg|gif|png|pdf)$/i);
+    // };
+
+    const handleFileView = (fileUrl) => {
+      window.open(fileUrl, '_blank');
+  };
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <span className="loading loading-spinner loading-lg pb-24"></span>
+                </div>
+              ) : (
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Uploaded Files
+                    </h3>
+                    <div className="mt-5 mb-5">
+                      {files.length > 0 ? (
+                        <table className="table-auto">
+                          <thead>
+                            <tr>
+                              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">File Name</th>
+                              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">Submitted On</th>
+                              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-bold text-gray-800 uppercase tracking-wider">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {files.map((file, index) => (
+                              <tr key={index}>
+                                <td className="border px-3 py-3">{file.reference.split('/').pop()}</td>
+                                <td className="border px-3 py-3">{new Date(file.createdAt).toLocaleDateString()}</td>
+                                <td className="border px-3 py-3">
+                                  <button onClick={() => handleFileView(file.reference, file.reference.split('/').pop())} className="text-green-500 hover:text-blue-800">
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        <p>No files uploaded.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button onClick={closeModal} className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
+  
+
 
 export default Projects;

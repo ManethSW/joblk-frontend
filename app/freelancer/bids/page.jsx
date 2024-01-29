@@ -276,10 +276,10 @@ const Bids = () => {
                                       <td className="px-6 py-4 whitespace-normal break-words text-sm text-gray-500">{milestone.description}</td>
                                       <td className="px-6 py-4 whitespace-normal break-words text-sm text-gray-500">{milestone.due_date}</td>
                                       <td className="px-6 py-4 whitespace-normal break-words text-sm text-gray-500">
-                                        {milestone.priority === 1 && "Trivial"}
-                                        {milestone.priority === 2 && "Low"}
-                                        {milestone.priority === 3 && "Medium"}
-                                        {milestone.priority === 4 && "High"}
+                                        {milestone.priority === 1 && "Low"}
+                                        {milestone.priority === 2 && "Medium"}
+                                        {milestone.priority === 3 && "High"}
+                                        {milestone.priority === 4 && "Urgent"}
                                         {milestone.priority === 5 && "Critical"}
                                       </td>
                                       <td className="px-6 py-4 whitespace-normal break-words text-sm text-gray-500">{Math.round(milestone.budget)}</td>
