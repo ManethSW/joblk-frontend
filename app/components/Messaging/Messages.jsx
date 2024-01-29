@@ -94,7 +94,19 @@ const Messages = ({ conversationId }) => {
             </div>
             <div className="p-4 border-t border-gray-200">
                 <div className="flex space-x-2">
-                    <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} className="flex-1 p-2 border rounded-lg" placeholder="Type a message..." />
+                <input 
+                    type="text" 
+                    value={newMessage} 
+                    onChange={(e) => setNewMessage(e.target.value)} 
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault(); 
+                        sendMessage();
+                      }
+                    }} 
+                    className="flex-1 p-2 border rounded-lg" 
+                    placeholder="Type a message..." 
+                  />
                     <button onClick={sendMessage} className="bg-green-500 hover:bg-green-600 text-white rounded-lg px-4 py-2">Send</button>
                 </div>
             </div>
