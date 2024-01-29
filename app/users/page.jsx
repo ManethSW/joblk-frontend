@@ -111,7 +111,6 @@ const UserCard = ({
       );
   };
 
-
   return (
     <>
       <RateModal id={user.id} />

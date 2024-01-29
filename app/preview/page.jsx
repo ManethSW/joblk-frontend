@@ -19,6 +19,7 @@ const Preview = () => {
   }, []);
 
   const getUserData = async () => {
+    // const user_id = 4;
     const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user_id}/details`;
     const headers = {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
@@ -139,7 +140,7 @@ const Preview = () => {
                 </div>
               )}
               <div className={styles.usernameemail}>
-                <h2>{`${user.username} (${user.full_name})`}</h2>
+                <h2>{`${userData.username} (${userData.full_name})`}</h2>
                 <h3>{userData.email}</h3>
               </div>
             </div>
