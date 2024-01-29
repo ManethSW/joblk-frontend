@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useContext } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,9 +8,9 @@ import withAuth from "@/app/hooks/UserChecker";
 import styles from "@/app/profile/preview/page.module.css";
 
 const Preview = () => {
-  const { user_id } = router.query;
-  const [userData, setUserData] = useState([]);
   const router = useRouter();
+  const user_id = useSearchParams().get("id")
+  const [userData, setUserData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const chatTitle = "Start a new chat 👋";
 
