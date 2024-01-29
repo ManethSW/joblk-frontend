@@ -18,6 +18,12 @@ const MyJobs = () => {
     const [currentUser, setCurrentUser] = useState({});
     const [jobsProvider, setJobsProvider] = useState([]);
     const [filteredJobs, setFilteredJobs] = useState([]);
+    
+
+    
+    
+
+    
 
     useEffect(() => {
       initFlowbite();
@@ -57,6 +63,8 @@ const MyJobs = () => {
           }
         );
     };
+
+    
 
     // const searchFilteredJobs = filteredJobs.filter((job) => {
     //   return job.client_id == currentUser.id;
@@ -212,9 +220,13 @@ const MyJobs = () => {
         </div>
         {/* Add Job Modal */}
         <AddJobModal/>
+            
+
       </div>
     );
 };
+
+
 
 const AddJobModal = () => {
   const [show, setShow] = useState(false);
@@ -688,6 +700,8 @@ const EditJobModal = ({
   const [milestoneDueDate, setMilestoneDueDate] = useState("");
   const [milestonePriority, setMilestonePriority] = useState("");
   const [milestones, setMilestones] = useState();
+  const [selectedMilestone, setSelectedMilestone] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     handleGetMilestone();
@@ -696,6 +710,10 @@ const EditJobModal = ({
   const handleClose = (state) => {
     setShow(state)
   }
+  const handleEditMilestone = (milestone) => {
+    setSelectedMilestone(milestone);
+    setIsEditModalOpen(true);
+  };
 
   const handleJobSave = async () => {
     try{
@@ -743,6 +761,132 @@ const EditJobModal = ({
       console.log(error);
     }
   }
+  const EditMilestoneModal = ({ milestone, closeModal }) => {
+    const [name, setName] = useState(milestone.name);
+    const [description, setDescription] = useState(milestone.description);
+    const [dueDate, setDueDate] = useState(new Date(milestone.due_date).toISOString().split('T')[0]);
+    const [status, setStatus] = useState(milestone.status);
+    const [priority, setPriority] = useState(milestone.priority);
+  
+    const handleUpdateMilestone = async (event) => {
+        event.preventDefault();
+        try {
+          const response = await axios.put(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${milestone.id}`,
+            {
+                'name':name,
+                'description':description,
+                'due_date':dueDate,
+                
+                'priority':priority,
+            },
+            {
+              headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+              withCredentials: true,
+            }
+          );
+          if (response.status === 200) {
+            closeModal();
+          }
+        } catch (error) {
+          console.error('Error updating milestone:', error);
+        }
+      };
+  
+    const handleCloseModal = () => {
+        closeModal();
+    }
+  
+    return (
+          <div className={styles.modalOverlay} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+  
+          <div className={styles.frame}>
+            <div className={styles.div} style={{ width: '600px' }}>
+              <div className={styles.header}>
+                <div className="flex flex-row justify-between">
+                  {/* <div className={styles.cont}>
+                    <h1 className={styles.title}>Edit Milestone</h1>
+                    <span className={styles.titleUnderline}></span>
+                  </div> */}
+                  <h3 className="text-2xl font-semibold ms-3 mt-3">
+                Edit Milestones
+              </h3>
+                </div>
+              </div>
+              
+              <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
+                <form 
+                    className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                    onSubmit={handleUpdateMilestone}
+  
+                >
+                  <div className="px-6 py-3">
+                    <label htmlFor="name" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div className="px-6 py-3">
+                    <label htmlFor="description" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Description</label>
+                    <textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div className="px-6 py-3">
+                    <label htmlFor="dueDate" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Due Date</label>
+                    <input
+                      type="date"
+                      id="dueDate"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    />
+                  </div>
+                <div className="px-6 py-3">
+                    <label htmlFor="priority" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Priority</label>
+                    <select
+                        id="priority"
+                        value={priority}
+                        onChange={(e) => setPriority(e.target.value)}
+                        className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    >
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                  <div className="flex items-center justify-end px-6 py-3">
+                    <button
+                    //   onClick={handleUpdateMilestone}
+                    type='submit'
+                      className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none me-2"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={handleCloseModal}
+                      className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none"
+                    >
+                      Close
+                    </button>
+                    
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+  };
 
   return (
     <div id={`edit-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -868,9 +1012,10 @@ const EditJobModal = ({
                               <td className="py-4 px-6">{milestone.priority}</td>
                               <td className="py-4 px-6">
                               <div className="flex items-center space-x-4 text-sm">
-                                <button data-modal-target={`edit-milestone-modal-${milestone.id}`} data-modal-toggle={`edit-milestone-modal-${milestone.id}`}>
+                              <button onClick={() => handleEditMilestone(milestone)}>
                                   <img src="/icons/edit.svg" className="w-4 h-4"/>
                                 </button>
+
                                 <button data-modal-target={`delete-milestone-modal-${milestone.id}`} data-modal-toggle={`delete-milestone-modal-${milestone.id}`}>
                                   <img src="/icons/delete.svg" className="w-4 h-4"/>
                                 </button>
@@ -903,6 +1048,12 @@ const EditJobModal = ({
           </form>
         </div>
       </div>
+      {isEditModalOpen && (
+      <EditMilestoneModal 
+        milestone={selectedMilestone} 
+        closeModal={() => setIsEditModalOpen(false)} 
+      />
+    )}
     </div>
   )
 }
