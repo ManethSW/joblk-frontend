@@ -36,7 +36,8 @@ const Projects = () => {
             withCredentials: true,
           }
         );
-        setProjects(response.data);
+        const sortedProjects = response.data.sort((a, b) => a.status - b.status);
+        setProjects(sortedProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
@@ -91,7 +92,6 @@ const Projects = () => {
                 </thead>
                 <tbody>
                 {projects
-                    .filter((project) => project.status !== 1)
                     .map((project) => (
                         <tr key={project.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             {/* <td className="px-6 py-4 md:px-3">
@@ -104,19 +104,26 @@ const Projects = () => {
                                 {project.description} 
                             </td>
                             <td className="px-6 py-4 md:px-3">
-                                {project.status === 2 ? "Milestone Approval" :
-                                 project.status === 3 ? "Payment" :
-                                 project.status === 4 ? "Active" :
-                                 project.status === 5 ? "Completed" : ""}
+                                {project.status === 1 ? "Active" :
+                                 project.status === 2 ? "Completed" : ""}
                             </td>
                             <td className="px-6 py-4 md:px-3">
                                 <div className="flex items-center space-x-4 text-sm">
-                                    <button
+                                {project.status === 2 ? (
+                                      <button
                                         onClick={() => openModal(project.id, project.status)}
                                         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                                    >
+                                      >
+                                        Submission History
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => openModal(project.id, project.status)}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                                      >
                                         View Milestones
-                                    </button>
+                                      </button>
+                                    )}
                                 </div>
                             </td>
                         </tr>
@@ -137,54 +144,6 @@ const Projects = () => {
 const ViewMilestonesModal = ({ projectId, closeModal, projectStatus }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    const acceptMilestones = async () => {
-        try {
-          const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project/${projectId}`,
-            {
-                user_type: "freelancer",
-              status: 3
-            },
-            {
-              headers: { 
-                'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN 
-              },
-              withCredentials: true,
-            }
-          );
-            if (response.status === 200) {
-                console.log('Milestones accepted successfully!');
-                closeModal();
-            }
-        } catch (error) {
-          console.error('Error submitting milestones:', error);
-        }
-       };
-
-       const denyMilestones = async () => {
-        try {
-          const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project/${projectId}`,
-            {
-                user_type: "freelancer",
-              status: 1
-            },
-            {
-              headers: { 
-                'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN 
-              },
-              withCredentials: true,
-            }
-          );
-            if (response.status === 200) {
-                console.log('Milestones denied successfully!');
-                closeModal();
-            }
-        } catch (error) {
-          console.error('Error denying milestones:', error);
-        }
-       };
   
     useEffect(() => {
       const fetchMilestones = async () => {
@@ -292,18 +251,16 @@ const ViewMilestonesModal = ({ projectId, closeModal, projectStatus }) => {
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <div className="flex justify-start items-center space-x-2">
-                        {projectStatus === 4 && (
-                            <button
-                                // onClick={() => handleDeleteMilestone(milestone.id)}
-                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                            >
-                                Upload content
-                            </button>
-                        )}
+                          <button
+                                  onClick={() => openSubmissionModal(milestone)}
+                                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                              >
+                                  Submissions
+                          </button>
             
-          </div>
+                        </div>
                         </td>
-                        
+
                         {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           {milestone.order_number}
                         </td> */}
@@ -318,26 +275,7 @@ const ViewMilestonesModal = ({ projectId, closeModal, projectStatus }) => {
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
        
-                {projectStatus === 2 && (
-                    <button
-                        onClick={acceptMilestones}
-                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none me-3"
-                    >
-                        Accept
-                    </button>
-                    
-                    
-                )}
-                {projectStatus === 2 && (
-                    <button
-                        onClick={denyMilestones}
-                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                    >
-                        Deny 
-                    </button>
-                    
-                    
-                )}
+           
 
            
               {/* <button

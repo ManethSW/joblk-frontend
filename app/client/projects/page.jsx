@@ -53,13 +53,14 @@ const Projects = () => {
             withCredentials: true,
           }
         );
-        setProjects(response.data);
+        const sortedProjects = response.data.sort((a, b) => a.status - b.status);
+        setProjects(sortedProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }
       setIsLoading(false);
     };
-
+  
     if (user) {
       fetchProjects();
     }
@@ -119,28 +120,26 @@ const Projects = () => {
                         {project.description} 
                       </td>
                     <td className="px-6 py-4 md:px-3">
-                        {project.status === 1 ? "Milestone definition" :
-                         project.status === 2 ? "Milestone Approval" :
-                         project.status === 3 ? "Payment" :
-                         project.status === 4 ? "Active" :
-                         project.status === 5 ? "Completed" : ""}
+                        {project.status === 1 ? "Active" :
+                         project.status === 2 ? "Completed" : ""}
                     </td>
                       <td className="px-6 py-4 md:px-3">
                         <div className="flex items-center space-x-4 text-sm">
-                        {project.status === 1 && (
+                          {project.status === 2 ? (
                             <button
-                                onClick={() => openAddMilestoneModal(project.id)}
-                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                              onClick={() => openModal(project.id, project.status)}
+                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
                             >
-                                Add Milestones
+                              Submission History
                             </button>
-                        )}
-                          <button
-                            onClick={() => openModal(project.id, project.status)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                          >
-                            View Milestones
-                          </button>
+                          ) : (
+                            <button
+                              onClick={() => openModal(project.id, project.status)}
+                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                            >
+                              View Milestones
+                            </button>
+                          )}
                           
                         </div>
                       </td>
@@ -161,326 +160,15 @@ const Projects = () => {
 
         />
       )}
-      {isEditModalOpen && selectedMilestone && (
-        <EditMilestoneModal
-          milestone={selectedMilestone}
-          closeModal={() => setIsEditModalOpen(false)}
-        />
-      )}
-       {isAddModalOpen && (
-      <AddMilestoneModal
-        projectId={selectedProjectId}
-        closeModal={closeAddModal}
-      />
-    )}
     </div>
   );
 };
-
-const AddMilestoneModal = ({ projectId, closeModal }) => {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [status, setStatus] = useState('1'); 
-    const [priority, setPriority] = useState('1');
-  
-    const handleAddMilestone = async (event) => {
-        event.preventDefault();
-      try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${projectId}`,
-          {
-            'name':name,
-            'description':description,
-            'due_date':dueDate,
-            
-            'priority':priority,
-            // description,
-            // due_date: dueDate,
-            // // status: parseInt(status),
-            // priority: parseInt(priority),
-          },
-          {
-            headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-            withCredentials: true,
-          }
-        );
-        if (response.status === 201) {
-          closeModal();
-          console.log('Milestone added successfully!');
-        }
-      } catch (error) {
-        console.error('Error adding milestone:', error);
-      }
-    };
-  
-    return (
-      <div className={styles.modalOverlay} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className={styles.frame} >
-          <div className={styles.div} style={{ width: '600px' }}>
-            <div className={styles.header}>
-              <div className="flex flex-row justify-between">
-                {/* <div className={styles.cont}>
-                  <h1 className={styles.title}>Add Milestone</h1>
-                  <span className={styles.titleUnderline}></span>
-                </div> */}
-                <h3 className="text-2xl font-semibold ms-3 mt-3">
-               Add Milestones
-             </h3>
-              </div>
-            </div>
-            <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
-              <form 
-                className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-                onSubmit={handleAddMilestone}
-
-              >
-                {/* Name input */}
-                <div className="px-6 py-3">
-                  <label htmlFor="name" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                  />
-                </div>
-                {/* Description input */}
-                <div className="px-6 py-3">
-                  <label htmlFor="description" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Description</label>
-                  <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                  />
-                </div>
-                {/* Due Date input */}
-                <div className="px-6 py-3">
-                  <label htmlFor="dueDate" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Due Date</label>
-                  <input
-                    type="date"
-                    id="dueDate"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                  />
-                </div>
-                {/* Status select */}
-                <div className="px-6 py-3">
-                    <label htmlFor="priority" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Priority</label>
-                    <select
-                        id="priority"
-                        value={priority}
-                        onChange={(e) => setPriority(e.target.value)}
-                        className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    >
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-                {/* Buttons */}
-                <div className="flex items-center justify-end px-6 py-3">
-                  <button
-            
-
-                    // onClick={handleAddMilestone}
-                    type="submit"
-                    className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none"
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={closeModal}
-                    className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none ml-2"
-                  >
-                    Close
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-const EditMilestoneModal = ({ milestone, closeModal }) => {
-    const [name, setName] = useState(milestone.name);
-    const [description, setDescription] = useState(milestone.description);
-    const [dueDate, setDueDate] = useState(new Date(milestone.due_date).toISOString().split('T')[0]);
-    const [status, setStatus] = useState(milestone.status);
-    const [priority, setPriority] = useState(milestone.priority);
-  
-    const handleUpdateMilestone = async (event) => {
-        event.preventDefault();
-        try {
-          const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${milestone.id}`,
-            {
-                'name':name,
-                'description':description,
-                'due_date':dueDate,
-                
-                'priority':priority,
-            },
-            {
-              headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-              withCredentials: true,
-            }
-          );
-          if (response.status === 200) {
-            closeModal();
-          }
-        } catch (error) {
-          console.error('Error updating milestone:', error);
-        }
-      };
-
-    const handleCloseModal = () => {
-        closeModal();
-    }
-  
-    return (
-          <div className={styles.modalOverlay} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-
-          <div className={styles.frame}>
-            <div className={styles.div} style={{ width: '600px' }}>
-              <div className={styles.header}>
-                <div className="flex flex-row justify-between">
-                  {/* <div className={styles.cont}>
-                    <h1 className={styles.title}>Edit Milestone</h1>
-                    <span className={styles.titleUnderline}></span>
-                  </div> */}
-                  <h3 className="text-2xl font-semibold ms-3 mt-3">
-                Edit Milestones
-              </h3>
-                </div>
-              </div>
-              
-              <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
-                <form 
-                    className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-                    onSubmit={handleUpdateMilestone}
-
-                >
-                  <div className="px-6 py-3">
-                    <label htmlFor="name" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Name</label>
-                    <input
-                      type="text"
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    />
-                  </div>
-                  <div className="px-6 py-3">
-                    <label htmlFor="description" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Description</label>
-                    <textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    />
-                  </div>
-                  <div className="px-6 py-3">
-                    <label htmlFor="dueDate" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Due Date</label>
-                    <input
-                      type="date"
-                      id="dueDate"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    />
-                  </div>
-                <div className="px-6 py-3">
-                    <label htmlFor="priority" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Priority</label>
-                    <select
-                        id="priority"
-                        value={priority}
-                        onChange={(e) => setPriority(e.target.value)}
-                        className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    >
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
-                </div>
-                  <div className="flex items-center justify-end px-6 py-3">
-                    <button
-                    //   onClick={handleUpdateMilestone}
-                    type='submit'
-                      className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none me-2"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={handleCloseModal}
-                      className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none"
-                    >
-                      Close
-                    </button>
-                    
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-  };
-
 
 
 const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal, projectStatus }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    const handleDeleteMilestone = async (milestoneId) => {
-        try {
-            const response = await axios.delete(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${milestoneId}`,
-                {
-                    headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
-                    withCredentials: true,
-                }
-            );
-            if (response.status === 200) {
-                setMilestones(milestones.filter(milestone => milestone.id !== milestoneId));
-            }
-        } catch (error) {
-            console.error('Error deleting milestone:', error);
-        }
-    };
     
-    const submitMilestones = async () => {
-        try {
-          const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/project/${projectId}`,
-            {
-              status: 2
-            },
-            {
-              headers: { 
-                'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN 
-              },
-              withCredentials: true,
-            }
-          );
-            if (response.status === 200) {
-                console.log('Milestones submitted successfully!');
-                closeModal();
-            }
-        } catch (error) {
-          console.error('Error submitting milestones:', error);
-        }
-       };
 
        const makePayment = async () => {
         try {
@@ -622,29 +310,15 @@ const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal, pr
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <div className="flex justify-start items-center space-x-2">
-                        {projectStatus === 1 && (
-                            <>
-                                {/* <button
-                                    // onClick={() => handleDeleteMilestone(milestone.id)}
-                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                                >
-                                    Complete
-                                </button> */}
-                                <button
-                                    onClick={() => openEditMilestoneModal(milestone)} 
-                                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteMilestone(milestone.id)}
-                                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                                >
-                                    Delete
-                                </button>
-                            </>
-                        )}
-          </div>
+                            {/*add upload files modal*/}
+                          
+                            <button
+                                onClick={() => openSubmissionModal(milestone)}
+                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                            >
+                                Submissions
+                            </button>
+                        </div>
                         </td>
                         
                         {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -660,14 +334,7 @@ const ViewMilestonesModal = ({ projectId, closeModal, openEditMilestoneModal, pr
             </div>
             {/*footer*/}
             <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-            {projectStatus === 1 && (
-                <button
-                    onClick={submitMilestones}
-                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                >
-                    Submit Milestones
-                </button>
-            )}
+            
 
             {projectStatus === 3 && (
                 <button
