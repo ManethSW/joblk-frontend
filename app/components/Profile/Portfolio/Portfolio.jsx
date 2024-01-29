@@ -59,6 +59,7 @@ const Portfolio = () => {
     event.preventDefault();
 
     const formData = new FormData();
+    // Append form fields to the FormData object
     formData.append("title", title);
     formData.append("description", description);
     formData.append("url", url);
@@ -66,12 +67,14 @@ const Portfolio = () => {
       formData.append(`image${index + 1}`, file);
     });
 
+    // Construct the API URL from environment variables and set the headers for the request
     const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/portfolio`;
     const headers = {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
 
     try {
+      // Send a POST request to the API URL
       const response = await axios.post(apiurl, formData, {
         headers,
         withCredentials: true,
@@ -86,6 +89,7 @@ const Portfolio = () => {
       console.error("Failed to update projects", error);
     }
 
+    // Reset the form fields and close the form
     setTitle("");
     setDescription("");
     setUrl("");

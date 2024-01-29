@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useContext } from "react";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import { useRouter, router } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
 import styles from "./page.module.css";
@@ -65,11 +65,6 @@ const Login = () => {
       } catch (error) {
         if (error.response && error.response.data) {
           console.log(error);
-          console.error(error.response.data["message"]);
-          if (error.response.data["code"].startsWith("ERR")) {
-            setError(error.response.data["message"]);
-            setShowError(true);
-          }
         }
       } finally {
         setIsLoading(false);

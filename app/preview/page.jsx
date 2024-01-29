@@ -7,9 +7,10 @@ import Image from "next/image";
 import withAuth from "@/app/hooks/UserChecker";
 import styles from "@/app/profile/preview/page.module.css";
 
-const Preview = (user_id) => {
+const Preview = () => {
   const [userData, setUserData] = useState([]);
   const router = useRouter();
+  const { user_id } = router.query;
   const [isLoading, setIsLoading] = useState(true);
   const chatTitle = "Start a new chat 👋";
 
