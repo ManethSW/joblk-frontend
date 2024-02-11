@@ -95,7 +95,7 @@ const JobBids = ({ jobId }) => {
           <tbody>
             {bids.map((bid) => (
               <tr key={bid.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="py-4 px-6">{bid.bid_value}</td>
+                <td className="py-4 px-6">LKR {Number(bid.bid_value).toLocaleString()}</td>
                 <td className="py-4 px-6">{bid.freelancer_username}</td>
                 <td className="py-4 px-6">{bid.supporting_content || 'N/A'}</td>
                 <td className="py-4 px-6">{bid.bid_Score}</td>
