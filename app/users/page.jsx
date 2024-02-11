@@ -7,7 +7,7 @@ import UserContext from "../context/UserContext";
 import SessionContext from "../context/SessionContext";
 import styles from "./page.module.css";
 
-const Jobs = () => {
+const Users = () => {
     const { user } = useContext(UserContext);
     const { session, setSession } = useContext(SessionContext);
     const router = useRouter();
@@ -135,7 +135,7 @@ const UserCard = ({
               <a href="#" className="text-sm font-medium text-gray-900 underline hover:no-underline dark:text-white">{reviews.length} reviews</a>
             </div>
             <div className="flex gap-1 mt-4">
-              <button type="button" onClick={() => router.push(`/preview/${user.id}`)} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800">View Profile</button>
+              <button type="button" onClick={() => router.push(`/preview?id=${user.id}`)} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800">View Profile</button>
               <button type="button" data-modal-target={`rate-job-modal-${user.id}`} data-modal-toggle={`rate-job-modal-${user.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800"><i class="fa-solid fa-message"></i></button>
             </div>
           </div>
@@ -148,7 +148,7 @@ const UserCard = ({
 const RateModal = ({
   id,
 }) => {
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [review, setReview] = useState("");
 
   const handleAddReview = async() => {
@@ -183,13 +183,14 @@ const RateModal = ({
                     <h3 className="text-lg font-semibold">Rating and Review</h3>
                     <div className="flex flex-col items-center my-4">
                       <div class="relative flex items-center max-w-[8rem] mb-4">
-                        <button type="button" id="decrement-button" data-input-counter-decrement={`rate-job-input-${id}`} class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                        <button type="button" id="decrement-button" onClick={()=>{rating > 1 ? setRating(rating-1) : null ;}} data-input-counter-decrement={`rate-job-input-${id}`} class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
                             </svg>
                         </button>
-                        <input type="text" id={`rate-job-input-${id}`} onChange={(e) => {setRating(Number.parseInt(e.target.value))}} data-input-counter data-input-counter-min="1" data-input-counter-max="5" aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="999" value="1" required/>
-                        <button type="button" id="increment-button" data-input-counter-increment={`rate-job-input-${id}`} class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                        {/* <input type="text" id={`rate-job-input-${id}`} onChange={(e) => {setRating(Number.parseInt(e.target.value))}} data-input-counter data-input-counter-min="1" data-input-counter-max="5" aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="999" value="1" required/> */}
+                        <div className="bg-gray-50 border border-gray-300 h-11 px-4 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">{rating}</div>
+                        <button type="button" id="increment-button" onClick={()=>{rating < 5 ? setRating(rating+1) : null ;}} data-input-counter-increment={`rate-job-input-${id}`} class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
                             </svg>
@@ -206,4 +207,4 @@ const RateModal = ({
   )
 }
 
-export default Jobs;
+export default Users;

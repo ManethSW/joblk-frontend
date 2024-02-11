@@ -692,9 +692,11 @@ const EditJobModal = ({
   const handleEditMilestone = (milestone) => {
     setSelectedMilestone(milestone);
     setIsEditModalOpen(true);
+    isAddModalOpen ? setIsAddModalOpen(false) : null;
   };
   const handleAddMilestone = () => {
     setIsAddModalOpen(true);
+    isEditModalOpen ? setIsEditModalOpen(false) : null;
   };
 
   const handleJobSave = async () => {
@@ -916,7 +918,7 @@ const EditJobModal = ({
                   <span className={styles.titleUnderline}></span>
                 </div> */}
                 <h3 className="text-2xl font-semibold ms-3 mt-3">
-              Edit Milestones
+              Add Milestones
             </h3>
               </div>
             </div>

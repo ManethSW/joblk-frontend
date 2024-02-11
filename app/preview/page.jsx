@@ -19,7 +19,6 @@ const Preview = () => {
   }, []);
 
   const getUserData = async () => {
-    // const user_id = 4;
     const apiurl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user_id}/details`;
     const headers = {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
@@ -83,7 +82,7 @@ const Preview = () => {
   const renderSections = () => {
     let sections = [];
     const noProjects = `No projects uploaded by ${userData.username} :'(`;
-    if (userData.projects.length == 0) {
+    if (!userData.projects) {
       sections.push(
         <div className={styles.sectionbody}>
           <div className={styles.emptyprojects}>
