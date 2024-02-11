@@ -679,7 +679,8 @@ const EditJobModal = ({
   const [milestonePriority, setMilestonePriority] = useState("");
   const [milestones, setMilestones] = useState();
   const [selectedMilestone, setSelectedMilestone] = useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     handleGetMilestone();
@@ -691,6 +692,9 @@ const EditJobModal = ({
   const handleEditMilestone = (milestone) => {
     setSelectedMilestone(milestone);
     setIsEditModalOpen(true);
+  };
+  const handleAddMilestone = () => {
+    setIsAddModalOpen(true);
   };
 
   const handleJobSave = async () => {
@@ -865,6 +869,130 @@ const EditJobModal = ({
     );
   };
 
+  const AddMilestoneModal = ({ closeModal }) => {
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [dueDate, setDueDate] = useState(null);
+    const [priority, setPriority] = useState(1);
+  
+    const handleAddMilestone = async (event) => {
+        event.preventDefault();
+        try {
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone`,
+            {
+              'jobId': data.id,
+              'name':name,
+              'description':description,
+              'due_date':dueDate,
+              'priority':priority,
+            },
+            {
+              headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+              withCredentials: true,
+            }
+          );
+          if (response.status === 200) {
+            handleGetMilestone();
+            closeModal();
+          }
+        } catch (error) {
+          console.error('Error updating milestone:', error);
+        }
+      };
+  
+    const handleCloseModal = () => {
+        closeModal();
+    }
+  
+    return (
+      <div className={`${styles.modalOverlay} flex items-center justify-center`}>
+        <div className={styles.frame}>
+          <div className={styles.div} style={{ width: '600px' }}>
+            <div className={styles.header}>
+              <div className="flex flex-row justify-between">
+                {/* <div className={styles.cont}>
+                  <h1 className={styles.title}>Edit Milestone</h1>
+                  <span className={styles.titleUnderline}></span>
+                </div> */}
+                <h3 className="text-2xl font-semibold ms-3 mt-3">
+              Edit Milestones
+            </h3>
+              </div>
+            </div>
+            
+            <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
+              <form 
+                  className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                  onSubmit={handleAddMilestone}
+
+              >
+                <div className="px-6 py-3">
+                  <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Milestone Name"
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
+                </div>
+                <div className="px-6 py-3">
+                  <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
+                  <textarea
+                    id="description"
+                    placeholder="Milestone Description"
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  />
+                </div>
+                <div className="px-6 py-3">
+                  <label htmlFor="dueDate" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Due Date</label>
+                  <input
+                    type="date"
+                    id="dueDate"
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
+                </div>
+              <div className="px-6 py-3">
+                  <label htmlFor="priority" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Priority</label>
+                  <select
+                      id="priority"
+                      onChange={(e) => setPriority(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  >
+                      <option value="1" selected>1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                  </select>
+              </div>
+                <div className="flex items-center justify-end gap-1 px-6 py-3">
+                  <button
+                  //   onClick={handleUpdateMilestone}
+                  type='submit'
+                    className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={handleCloseModal}
+                    className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                  >
+                    Close
+                  </button>
+                  
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div id={`edit-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 p-4 justify-center items-center gap-2 w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative w-full max-w-4xl max-h-full">
@@ -962,7 +1090,7 @@ const EditJobModal = ({
                   <div className="col-span-2">
                     <div className="flex justify-between">
                       <div className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</div>
-                      <button className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Add Milestone</button>
+                      <button type="button" onClick={handleAddMilestone} className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Add Milestone</button>
                     </div>
                     {milestones ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -976,14 +1104,6 @@ const EditJobModal = ({
                           </tr>
                         </thead>
                         <tbody className="overflow-y-auto">
-                          {/* {milestones.map((milestone) => (
-                            <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                              <td className="py-4 px-6"><input type="text" name="name" id="name" onChange={(e)=>{setMilestoneName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" defaultValue={milestone.name}/></td>
-                              <td className="py-4 px-6"><textarea id="description" name="description" onChange={(e)=>{setMilestoneDesc(e.target.value)}} rows="4" className="block p-2.5 w-60 h-[70px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={milestone.description}></textarea></td>
-                              <td className="py-4 px-6"><Datepicker onChange={(selectedDate) => {setMilestoneDueDate(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose} /></td>
-                              <td className="py-4 px-6"><input type="number" name="priority" id="priority" max={5} min={1} onChange={(e)=>{setMilestonePriority(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" defaultValue={milestone.priority}/></td>
-                            </tr>
-                          ))} */}
                           {milestones.map((milestone) => (
                             <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                               <td className="py-4 px-6">{milestone.name}</td>
@@ -996,9 +1116,14 @@ const EditJobModal = ({
                                   <img src="/icons/edit.svg" className="w-4 h-4"/>
                                 </button>
                                 
-                                <button data-modal-target={`delete-milestone-modal-${milestone.id}`} data-modal-toggle={`delete-milestone-modal-${milestone.id}`}>
-                                  <img src="/icons/delete.svg" className="w-4 h-4"/>
-                                </button>
+                                {/* check if it is the final milestone in the list */}
+                                {milestones.length > 1 ? (
+                                  <button data-modal-target={`delete-milestone-modal-${milestone.id}`} data-modal-toggle={`delete-milestone-modal-${milestone.id}`}>
+                                    <img src="/icons/delete.svg" className="w-4 h-4"/>
+                                  </button>
+                                ) : (
+                                  ''
+                                )}
                               </div>
                               </td>
                             </tr>
@@ -1032,6 +1157,11 @@ const EditJobModal = ({
         <EditMilestoneModal 
           milestone={selectedMilestone} 
           closeModal={() => setIsEditModalOpen(false)} 
+        />
+      )}
+      {isAddModalOpen && (
+        <AddMilestoneModal 
+          closeModal={() => setIsAddModalOpen(false)} 
         />
       )}
     </div>
