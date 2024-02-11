@@ -6,6 +6,7 @@ import moment from "moment";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserContext from "@/app/context/UserContext";
+import withAuth from "@/app/hooks/UserChecker";
 import SessionContext from "@/app/context/SessionContext";
 import styles from "@/app/client/my_jobs/page.module.css";
 import JobBids from "@/app/components/Job/JobBids";
@@ -1223,4 +1224,4 @@ const checkAll = () => {
   }
 }
 
-export default MyJobs;
+export default withAuth(MyJobs);
