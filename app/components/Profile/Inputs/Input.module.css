@@ -83,11 +83,11 @@
     width: 75px;
     height: 75px;
     background-image: url("/characterone.svg");
-    background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
     border-radius: 50%;
+    display: flex;
     overflow: hidden;
-    box-sizing: formContainer-box;
     border: 1px solid var(--black-color-50);
     cursor: pointer;
     transition: all 0.3s ease-in 0s;
@@ -248,12 +248,12 @@
 }
 
 .otpinputs input {
-    width: 40px!important;
+    width: 40px !important;
     text-align: center;
 }
 
 .resetotpinputs input {
-    width: 50px!important;
+    width: 50px !important;
     height: 50px;
     border-radius: 10px;
     border: 2px solid var(--black-color-50);
