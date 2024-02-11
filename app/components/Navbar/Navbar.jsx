@@ -14,6 +14,7 @@ const NavBar = () => {
   const { user, setUser } = useContext(UserContext);
   const { session, setSession } = useContext(SessionContext);
   const [isActive, setActive] = useState("dashboard");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const router = useRouter();
 
@@ -24,6 +25,11 @@ const NavBar = () => {
   useEffect(() => {
     if (session && session.user_mode != userMode) {
       setUserMode(session.user_mode);
+    }
+    if (user) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
   }, [user, session]);
 
@@ -73,7 +79,7 @@ const NavBar = () => {
             />
           </div>
           <ul className={`${styles.linksContainer}`}>
-            {!user ? (
+            {!isLoggedIn ? (
               <>
                 <li>
                   <Link href="/">Home</Link>
