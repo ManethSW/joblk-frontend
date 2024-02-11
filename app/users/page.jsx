@@ -111,6 +111,23 @@ const UserCard = ({
       );
   };
 
+  const handleStartConvo = async(id) => {
+    const startConvo = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation`,
+      {
+        user_id: id,
+      },
+      {
+        headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+        withCredentials: true,
+      }).catch(
+        (error) => {
+          console.log(error);
+        }
+      );
+    router.push(`/messaging`);
+  }
+
   return (
     <>
       <RateModal id={user.id} />
@@ -136,7 +153,8 @@ const UserCard = ({
             </div>
             <div className="flex gap-1 mt-4">
               <button type="button" onClick={() => router.push(`/preview?id=${user.id}`)} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800">View Profile</button>
-              <button type="button" data-modal-target={`rate-job-modal-${user.id}`} data-modal-toggle={`rate-job-modal-${user.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800"><i class="fa-solid fa-message"></i></button>
+              {/* <button type="button" data-modal-target={`rate-job-modal-${user.id}`} data-modal-toggle={`rate-job-modal-${user.id}`} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800"><i class="fa-solid fa-message"></i></button> */}
+              <button type="button" onClick={()=>{handleStartConvo(user.id)}} className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-joblk-green-500 rounded-lg hover:bg-joblk-green-600 focus:ring-4 focus:outline-none focus:ring-joblk-green-300 dark:bg-joblk-green-600 dark:hover:bg-joblk-green-700 dark:focus:ring-joblk-green-800"><i class="fa-solid fa-message"></i></button>
             </div>
           </div>
         </div>

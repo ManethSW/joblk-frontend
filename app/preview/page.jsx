@@ -41,6 +41,23 @@ const Preview = () => {
     }
   };
 
+  const handleStartConvo = async(id) => {
+    const startConvo = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation`,
+      {
+        user_id: id,
+      },
+      {
+        headers: {auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN},
+        withCredentials: true,
+      }).catch(
+        (error) => {
+          console.log(error);
+        }
+      );
+    router.push(`/messaging`);
+  };
+
   const renderProject = (project) => {
     if (project) {
       return (
@@ -172,7 +189,7 @@ const Preview = () => {
             </div>
           </div>
           <div className={styles.chatbutton}>
-            <button>{chatTitle}</button>
+            <button type="button" onClick={() => handleStartConvo(user_id)}>{chatTitle}</button>
           </div>
         </div>
         <div className={styles.contentdivider}></div>
