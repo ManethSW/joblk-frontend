@@ -169,6 +169,22 @@ const Projects = () => {
 const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, projectStatus }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleMarkAsComplete = async (milestoneId) => {
+      try {
+        const response = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${milestoneId}/complete`,
+          {},
+          {
+            headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+            withCredentials: true,
+          }
+        );
+        setMilestones(milestones.map(milestone => milestone.id === milestoneId ? { ...milestone, status:   3 } : milestone));
+      } catch (error) {
+        console.error('Error marking milestone as complete:', error);
+      }
+    };
       
   
     useEffect(() => {
@@ -273,7 +289,7 @@ const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, proje
                             )}
                           </td>
                           <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            {milestone.status === 1 ? "Incomplete" : "Complete"}
+                            {milestone.status === 1 ? "Milestone" : milestone.status === 2 ? "Incomplete" : "Complete"}
                           </td>
                           <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             {milestone.priority === 1 && "Low"}
@@ -292,6 +308,19 @@ const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, proje
                               className="ml-2 mb-2 w-5 h-5 cursor-pointer"
                               onClick={() => openSubmissionModal(milestone)}
                             />
+                        </div>
+                        <div className="flex justify-start items-center space-x-2">
+                          {milestone.status !== 3 && (
+                            <i
+                              className="fas fa-check text-gray-500 cursor-pointer text-lg"
+                              onClick={() => handleMarkAsComplete(milestone.id)}
+                            />
+                          )}
+                          {milestone.status === 3 && (
+                            <i
+                              className="fas fa-check text-green-300 cursor-not-allowed text-lg"
+                            />
+                          )}
                         </div>
                         </td>
                         
