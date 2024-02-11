@@ -2,13 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import UserContext from '../../context/UserContext';
 
-const JobBids = ({ jobId }) => {
+const JobBids = ({ jobId, jobStatus }) => {
   const { user } = useContext(UserContext);
   const [bids, setBids] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");    
 
+    const handleSendMessage = (bidId, event) => {
+      event.preventDefault();
+    };
+  
   
 
   useEffect(() => {
@@ -28,6 +32,7 @@ const JobBids = ({ jobId }) => {
 
     if (jobId) {
       fetchBids();
+      console.log('Fetching bids for job status:', jobStatus);
     }
   }, [jobId, process.env.NEXT_PUBLIC_API_AUTH_TOKEN]);
 
@@ -101,18 +106,29 @@ const JobBids = ({ jobId }) => {
                 <td className="py-4 px-6">{bid.bid_Score}</td>
                 <td className="py-4 px-6">
                   <div className="flex items-center space-x-4 text-sm">
-                    <button
-                      onClick={(e) => handleAccept(bid.id, e)}
-                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                    >
-                      Accept
-                    </button>
-                    <button
-                      onClick={(e) => handleReject(bid.id, e)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                    >
-                      Reject
-                    </button>
+                  {jobStatus !==  2 ? (
+                <>
+                  <button
+                    onClick={(e) => handleAccept(bid.id, e)}
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={(e) => handleReject(bid.id, e)}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
+                  >
+                    Reject
+                  </button>
+                </>
+              ) : (
+                <img
+                src="/icons/message.svg"
+                alt="message"
+                className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                onClick={(e) => handleSendMessage(bid.id, e)}
+              />
+              )}
                   </div>
                 </td>
               </tr>

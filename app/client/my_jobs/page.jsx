@@ -607,7 +607,7 @@ const ViewJobModal = ({
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
                   <div className="flex items-center justify-center h-full">
-                    <JobBids jobId={data.id} />
+                    <JobBids jobId={data.id} jobStatus={data.job_status} />
                   </div>
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
