@@ -143,8 +143,8 @@ const Projects = () => {
                         {project.description}
                       </td>
                     <td className="px-6 py-4 md:px-3">
-                        {project.status === 1 ? "Active" :
-                         project.status === 2 ? "Completed" : ""}
+                        {project.status === 2 ? "Active" :
+                         project.status === 3 ? "Completed" : ""}
                     </td>
                     <td className="px-6 py-4 md:px-3">
                       <div className="flex items-center space-x-4 text-sm">
