@@ -85,7 +85,7 @@ const EmailInput = ({ email, setEmail, emailVerified, setEmailVerified }) => {
       auth_token: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
     };
     try {
-      const response = await axios.get(apiurl, {
+      const response = await axios.post(apiurl, {}, {
         headers,
         withCredentials: true,
       });

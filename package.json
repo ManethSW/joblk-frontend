@@ -15,6 +15,7 @@
     "dotenv": "^16.3.1",
     "flowbite": "^2.2.0",
     "flowbite-datepicker": "^1.2.6",
+    "flowbite-react": "^0.7.2",
     "framer-motion": "^10.16.5",
     "js-cookie": "^3.0.5",
     "moment": "^2.29.4",
@@ -24,6 +25,7 @@
     "react": "^18",
     "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
+    "socket.io-client": "^4.7.4",
     "tailwind-datepicker-react": "^1.4.3"
   },
   "devDependencies": {
