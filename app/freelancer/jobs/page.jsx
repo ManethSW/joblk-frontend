@@ -44,8 +44,12 @@ const Jobs = () => {
           withCredentials: true,
         }).then(
           (response) => {
-            setJobsProvider(response.data);
-            setFilteredJobs(response.data);
+            let jobs = response.data;
+            jobs = jobs.filter((job) => {
+              return job.job_status == 1;
+            });
+            setJobsProvider(jobs);
+            setFilteredJobs(jobs);
           }
         ).catch(
           (error) => {
@@ -63,23 +67,24 @@ const Jobs = () => {
     }
 
     const handleFilter = (e) => {
+      console.log(jobsProvider)
       const filterQuery = e.target.value;
       setFilter(filterQuery);
       if (filterQuery == 0) {
         setFilteredJobs(jobsProvider);
       } else if (filterQuery == 1) {
         const filteredJobs = jobsProvider.filter((job) => {
-          return job.job_status == 1;
+          return job.category == 1;
         });
         setFilteredJobs(filteredJobs);
       } else if (filterQuery == 2) {
         const filteredJobs = jobsProvider.filter((job) => {
-          return job.job_status == 2;
+          return job.category == 2;
         });
         setFilteredJobs(filteredJobs);
       } else if (filterQuery == 3) {
         const filteredJobs = jobsProvider.filter((job) => {
-          return job.job_status == 3;
+          return job.category == 3;
         });
         setFilteredJobs(filteredJobs);
       }
@@ -115,7 +120,7 @@ const Jobs = () => {
                         </svg>
                       </div>
                       <input type="text" id="default-search" onChange={handleSearch} className="border border-0 text-sm bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search Jobs..." required/>
-                      <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                      {/* <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-1.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button> */}
                     </div>
                   </div>
                 </div>
@@ -129,20 +134,22 @@ const Jobs = () => {
                   </label>
                   <label className={styles.option} htmlFor="pending">
                     <input type="radio" id="pending" name="filter" onChange={handleFilter} value="1"/>
-                    Pending
+                    Development
                   </label>
                   <label className={styles.option} htmlFor="ongoing">
                     <input type="radio" id="ongoing" name="filter" onChange={handleFilter} value="2"/>
-                    Ongoing
+                    Engineering
                   </label>
                   <label className={styles.option} htmlFor="completed">
                     <input type="radio" id="completed" name="filter" onChange={handleFilter} value="3"/>
-                    Completed
+                    Designing
                   </label>
                 </div>
               </div>
               <div className={`${styles.jobsSM} flex flex-wrap gap-3 py-3`}>
-                { filteredJobs.map((job) => { if (job.id) return <><JobCard data={job}/><ViewJobModal data={job}/></>}) }
+                {(filteredJobs.length == 0) ? (<p className="text-gray-900 dark:text-white">No jobs found</p>) : (
+                  filteredJobs.map((job) => { if (job.id) return <><JobCard data={job}/><ViewJobModal data={job}/></>})
+                )}
               </div>
             </div>
           </div>

@@ -121,21 +121,21 @@ const Projects = () => {
                             </td>
                             <td className="px-6 py-4 md:px-3">
                                 <div className="flex items-center space-x-4 text-sm">
-                                {project.status === 2 ? (
-                                      <button
-                                        onClick={() => openModal(project.id, project.status)}
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                                      >
-                                        Submission History
-                                      </button>
-                                    ) : (
-                                      <button
-                                        onClick={() => openModal(project.id, project.status)}
-                                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                                      >
-                                        View Milestones
-                                      </button>
-                                    )}
+                                {project.status ===  2 ? (
+                                  <img
+                                    src="/icons/view.svg"
+                                    alt="Submission History"
+                                    className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                                    onClick={() => openModal(project.id, project.status)}
+                                  />
+                                ) : (
+                                  <img
+                                    src="/icons/view.svg"
+                                    alt="View Milestones"
+                                    className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                                    onClick={() => openModal(project.id, project.status)}
+                                  />
+                                )}
                                 </div>
                             </td>
                         </tr>
@@ -272,12 +272,12 @@ const ViewMilestonesModal = ({ projectId, closeModal, projectStatus, openSubmiss
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <div className="flex justify-start items-center space-x-2">
-                          <button
-                                  onClick={() => openSubmissionModal(milestone)}
-                                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                              >
-                                  Submissions
-                          </button>
+                        <img
+                          src="/icons/plus.svg"
+                          alt="Submissions"
+                          className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                          onClick={() => openSubmissionModal(milestone)}
+                        />
             
                         </div>
                         </td>

@@ -32,8 +32,8 @@ const BidForm = ({ jobId, closeModal }) => {
         setSuccessMessage("Bid submitted successfully!");
         console.log('Bid submitted successfully!');
         // alert('Bid submitted successfully!');
-        closeModal();
-        // window.location.reload(false);
+        // closeModal();
+        window.location.reload(false);
       }
     } catch (error) {
       console.error('Failed to submit bid:', error);

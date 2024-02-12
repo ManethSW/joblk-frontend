@@ -6,6 +6,7 @@ import moment from "moment";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import UserContext from "@/app/context/UserContext";
+import withAuth from "@/app/hooks/UserChecker";
 import SessionContext from "@/app/context/SessionContext";
 import styles from "@/app/client/my_jobs/page.module.css";
 import JobBids from "@/app/components/Job/JobBids";
@@ -347,13 +348,13 @@ const AddJobModal = () => {
                   <div className="col-span-2">
                   <label htmlFor="tags" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Tags</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the tags by a comma)</p></label>
                     <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required/>
+                      <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Tags" required/>
                     </div>
                   </div>
                   <div className="col-span-2">
                   <label htmlFor="skills" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Required Skills</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the skills by a comma)</p></label>
                     <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                      <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required/>
+                      <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Skills" required/>
                     </div>
                   </div>
                 </div>
@@ -596,7 +597,7 @@ const ViewJobModal = ({
                         <div className="col-span-2">
                           <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Required Skills</label>
                           <div id="skills" className="border border-0 border-t border-gray-300 text-gray-900 text-sm block w-full p-2.5 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            {data.required ? data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={skill}>{skill}</span> }) : "No skills"}
+                            {data.required_skills ? data.required_skills.split(",").map((skill) => { return <span className="bg-gray-700 text-white text-xs font-medium m-0.5 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300" key={skill}>{skill}</span> }) : "No skills"}
                           </div>
                         </div>
                         
@@ -606,12 +607,12 @@ const ViewJobModal = ({
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
                   <div className="flex items-center justify-center h-full">
-                    <JobBids jobId={data.id} />
+                    <JobBids jobId={data.id} jobStatus={data.job_status} />
                   </div>
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
                   <div className="col-span-2">
-                    <label htmlFor="milestones" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</label>
+                    <div className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</div>
                     {milestones ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -679,7 +680,8 @@ const EditJobModal = ({
   const [milestonePriority, setMilestonePriority] = useState("");
   const [milestones, setMilestones] = useState();
   const [selectedMilestone, setSelectedMilestone] = useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     handleGetMilestone();
@@ -691,6 +693,11 @@ const EditJobModal = ({
   const handleEditMilestone = (milestone) => {
     setSelectedMilestone(milestone);
     setIsEditModalOpen(true);
+    isAddModalOpen ? setIsAddModalOpen(false) : null;
+  };
+  const handleAddMilestone = () => {
+    setIsAddModalOpen(true);
+    isEditModalOpen ? setIsEditModalOpen(false) : null;
   };
 
   const handleJobSave = async () => {
@@ -750,12 +757,11 @@ const EditJobModal = ({
         event.preventDefault();
         try {
           const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${milestone.id}`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${milestone.id}`,
             {
                 'name':name,
                 'description':description,
                 'due_date':dueDate,
-                
                 'priority':priority,
             },
             {
@@ -764,6 +770,7 @@ const EditJobModal = ({
             }
           );
           if (response.status === 200) {
+            handleGetMilestone();
             closeModal();
           }
         } catch (error) {
@@ -776,99 +783,222 @@ const EditJobModal = ({
     }
   
     return (
-          <div className={styles.modalOverlay} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-  
-          <div className={styles.frame}>
-            <div className={styles.div} style={{ width: '600px' }}>
-              <div className={styles.header}>
-                <div className="flex flex-row justify-between">
-                  {/* <div className={styles.cont}>
-                    <h1 className={styles.title}>Edit Milestone</h1>
-                    <span className={styles.titleUnderline}></span>
-                  </div> */}
-                  <h3 className="text-2xl font-semibold ms-3 mt-3">
-                Edit Milestones
-              </h3>
-                </div>
+      <div className={`${styles.modalOverlay} flex items-center justify-center`}>
+        <div className={styles.frame}>
+          <div className={styles.div} style={{ width: '600px' }}>
+            <div className={styles.header}>
+              <div className="flex flex-row justify-between">
+                {/* <div className={styles.cont}>
+                  <h1 className={styles.title}>Edit Milestone</h1>
+                  <span className={styles.titleUnderline}></span>
+                </div> */}
+                <h3 className="text-2xl font-semibold ms-3 mt-3">
+              Edit Milestones
+            </h3>
               </div>
-              
-              <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
-                <form 
-                    className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-                    onSubmit={handleUpdateMilestone}
-  
-                >
-                  <div className="px-6 py-3">
-                    <label htmlFor="name" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Name</label>
-                    <input
-                      type="text"
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    />
-                  </div>
-                  <div className="px-6 py-3">
-                    <label htmlFor="description" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Description</label>
-                    <textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    />
-                  </div>
-                  <div className="px-6 py-3">
-                    <label htmlFor="dueDate" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Due Date</label>
-                    <input
-                      type="date"
-                      id="dueDate"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    />
-                  </div>
+            </div>
+            
+            <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
+              <form 
+                  className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                  onSubmit={handleUpdateMilestone}
+
+              >
                 <div className="px-6 py-3">
-                    <label htmlFor="priority" className="block text-xs font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">Priority</label>
-                    <select
-                        id="priority"
-                        value={priority}
-                        onChange={(e) => setPriority(e.target.value)}
-                        className="w-full px-4 py-2 mt-2 text-gray-900 bg-white border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                    >
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+                  <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
                 </div>
-                  <div className="flex items-center justify-end px-6 py-3">
-                    <button
-                    //   onClick={handleUpdateMilestone}
-                    type='submit'
-                      className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none me-2"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={handleCloseModal}
-                      className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none"
-                    >
-                      Close
-                    </button>
-                    
-                  </div>
-                </form>
+                <div className="px-6 py-3">
+                  <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
+                  <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  />
+                </div>
+                <div className="px-6 py-3">
+                  <label htmlFor="dueDate" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Due Date</label>
+                  <input
+                    type="date"
+                    id="dueDate"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
+                </div>
+              <div className="px-6 py-3">
+                  <label htmlFor="priority" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Priority</label>
+                  <select
+                      id="priority"
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                  </select>
               </div>
+                <div className="flex items-center justify-end gap-1 px-6 py-3">
+                  <button
+                  //   onClick={handleUpdateMilestone}
+                  type='submit'
+                    className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={handleCloseModal}
+                    className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                  >
+                    Close
+                  </button>
+                  
+                </div>
+              </form>
             </div>
           </div>
         </div>
-      );
+      </div>
+    );
+  };
+
+  const AddMilestoneModal = ({ closeModal }) => {
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [dueDate, setDueDate] = useState(null);
+    const [priority, setPriority] = useState(1);
+  
+    const handleAddMilestone = async (event) => {
+        event.preventDefault();
+        try {
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone`,
+            {
+              'jobId': data.id,
+              'name':name,
+              'description':description,
+              'due_date':dueDate,
+              'priority':priority,
+            },
+            {
+              headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+              withCredentials: true,
+            }
+          );
+          if (response.status === 200) {
+            handleGetMilestone();
+            closeModal();
+          }
+        } catch (error) {
+          console.error('Error updating milestone:', error);
+        }
+      };
+  
+    const handleCloseModal = () => {
+        closeModal();
+    }
+  
+    return (
+      <div className={`${styles.modalOverlay} flex items-center justify-center`}>
+        <div className={styles.frame}>
+          <div className={styles.div} style={{ width: '600px' }}>
+            <div className={styles.header}>
+              <div className="flex flex-row justify-between">
+                {/* <div className={styles.cont}>
+                  <h1 className={styles.title}>Edit Milestone</h1>
+                  <span className={styles.titleUnderline}></span>
+                </div> */}
+                <h3 className="text-2xl font-semibold ms-3 mt-3">
+              Add Milestones
+            </h3>
+              </div>
+            </div>
+            
+            <div className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}>
+              <form 
+                  className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                  onSubmit={handleAddMilestone}
+
+              >
+                <div className="px-6 py-3">
+                  <label htmlFor="name" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Milestone Name"
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
+                </div>
+                <div className="px-6 py-3">
+                  <label htmlFor="description" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Description</label>
+                  <textarea
+                    id="description"
+                    placeholder="Milestone Description"
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="block p-2.5 w-full min-h-[70px] max-h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  />
+                </div>
+                <div className="px-6 py-3">
+                  <label htmlFor="dueDate" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Due Date</label>
+                  <input
+                    type="date"
+                    id="dueDate"
+                    onChange={(e) => setDueDate(e.target.value)}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  />
+                </div>
+              <div className="px-6 py-3">
+                  <label htmlFor="priority" className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white">Priority</label>
+                  <select
+                      id="priority"
+                      onChange={(e) => setPriority(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  >
+                      <option value="1" selected>1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                  </select>
+              </div>
+                <div className="flex items-center justify-end gap-1 px-6 py-3">
+                  <button
+                  //   onClick={handleUpdateMilestone}
+                  type='submit'
+                    className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={handleCloseModal}
+                    className="text-white inline-flex items-center bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                  >
+                    Close
+                  </button>
+                  
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div id={`edit-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 justify-center items-center w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
-      <div className="relative p-4 w-full max-w-4xl max-h-full">
+    <div id={`edit-job-modal-${data.id}`} tabIndex="-1" aria-hidden="true" className="hidden overflow-y-auto overflow-x-hidden fixed top-14 right-0 left-0 z-50 p-4 justify-center items-center gap-2 w-full lg:inset-0 h-[calc(100%-1rem)] max-h-full">
+      <div className="relative w-full max-w-4xl max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -883,8 +1013,8 @@ const EditJobModal = ({
           </div>  
           <form id="add-job" className="p-4 md:p-5">
             <div id="edit-carousel" className="relative w-full" data-carousel="static">
-              <div className="relative overflow-y-auto overflow-x-hidden rounded-lg h-96">
-                <div className="hidden duration-200 ease-linear" data-carousel-item="active">
+              <div className="relative overflow-y-hidden overflow-x-hidden rounded-lg h-96">
+                <div className="hidden duration-200 ease-linear overflow-y-auto" data-carousel-item="active">
                   <div className="grid gap-4 mb-4 grid-cols-2 max-md:grid-cols-1">
                     <div className="inline">
                       <div className="grid gap-4 mb-4 grid-cols-2">
@@ -914,7 +1044,7 @@ const EditJobModal = ({
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="deadline" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deadline</label>
-                          <Datepicker onChange={(selectedDate) => {setDeadline(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} />
+                          <Datepicker onChange={(selectedDate) => {setDeadline(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose}/>
                         </div>
                         <div className="col-span-2 sm:col-span-1">
                           <label htmlFor="budget" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Budget</label>
@@ -946,13 +1076,13 @@ const EditJobModal = ({
                         <div className="col-span-2">
                           <label htmlFor="tags" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Tags</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the tags by a comma)</p></label>
                           <div id="tags" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the tag" required defaultValue={data.job_tags.split(",").join(", ")}/>
+                            <input type="text" id="tag-search" onChange={(e) => {setJobTags(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Tags" required defaultValue={data.job_tags.split(",").join(", ")}/>
                           </div>
                         </div>
                         <div className="col-span-2">
                           <label htmlFor="skills" className="flex items-end gap-1 mb-2"><p className="text-sm font-medium text-gray-900 dark:text-white">Required Skills</p><p className="text-xs font-regular text-gray-900 dark:text-white">(Seperate the skills by a comma)</p></label>
                           <div id="skills" className="flex flex-row flex-wrap items-center gap-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-1  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Search the skill" required defaultValue={data.required_skills.split(",").join(", ")}/>
+                            <input type="text" id="skill-search" onChange={(e) => {setRequiredSkills(e.target.value.replace(/\s*,\s*/g, ","))}} className="border border-0 text-xs bg-gray-50 focus:border-0 focus:ring-0 block min-w-xs max-w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="Skills" required defaultValue={data.required_skills.split(",").join(", ")}/>
                           </div>
                         </div>
                       </div>
@@ -961,7 +1091,10 @@ const EditJobModal = ({
                 </div>
                 <div className="hidden duration-200 ease-linear" data-carousel-item>
                   <div className="col-span-2">
-                    <label htmlFor="milestones" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</label>
+                    <div className="flex justify-between">
+                      <div className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Milestones</div>
+                      <button type="button" onClick={handleAddMilestone} className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Add Milestone</button>
+                    </div>
                     {milestones ? (
                       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -973,15 +1106,7 @@ const EditJobModal = ({
                             <th scope="col" className="py-3 px-6">Actions</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {/* {milestones.map((milestone) => (
-                            <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                              <td className="py-4 px-6"><input type="text" name="name" id="name" onChange={(e)=>{setMilestoneName(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" defaultValue={milestone.name}/></td>
-                              <td className="py-4 px-6"><textarea id="description" name="description" onChange={(e)=>{setMilestoneDesc(e.target.value)}} rows="4" className="block p-2.5 w-60 h-[70px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Give us the gist of it" defaultValue={milestone.description}></textarea></td>
-                              <td className="py-4 px-6"><Datepicker onChange={(selectedDate) => {setMilestoneDueDate(moment(selectedDate).format("YYYY-MM-DD 00:00:00"))}} show={show} setShow={handleClose} /></td>
-                              <td className="py-4 px-6"><input type="number" name="priority" id="priority" max={5} min={1} onChange={(e)=>{setMilestonePriority(e.target.value)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="" defaultValue={milestone.priority}/></td>
-                            </tr>
-                          ))} */}
+                        <tbody className="overflow-y-auto">
                           {milestones.map((milestone) => (
                             <tr key={milestone.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                               <td className="py-4 px-6">{milestone.name}</td>
@@ -990,13 +1115,18 @@ const EditJobModal = ({
                               <td className="py-4 px-6">{milestone.priority}</td>
                               <td className="py-4 px-6">
                               <div className="flex items-center space-x-4 text-sm">
-                              <button onClick={() => handleEditMilestone(milestone)}>
+                              <button type="button" onClick={() => handleEditMilestone(milestone)}>
                                   <img src="/icons/edit.svg" className="w-4 h-4"/>
                                 </button>
-
-                                <button data-modal-target={`delete-milestone-modal-${milestone.id}`} data-modal-toggle={`delete-milestone-modal-${milestone.id}`}>
-                                  <img src="/icons/delete.svg" className="w-4 h-4"/>
-                                </button>
+                                
+                                {/* check if it is the final milestone in the list */}
+                                {milestones.length > 1 ? (
+                                  <button data-modal-target={`delete-milestone-modal-${milestone.id}`} data-modal-toggle={`delete-milestone-modal-${milestone.id}`}>
+                                    <img src="/icons/delete.svg" className="w-4 h-4"/>
+                                  </button>
+                                ) : (
+                                  ''
+                                )}
                               </div>
                               </td>
                             </tr>
@@ -1027,11 +1157,16 @@ const EditJobModal = ({
         </div>
       </div>
       {isEditModalOpen && (
-      <EditMilestoneModal 
-        milestone={selectedMilestone} 
-        closeModal={() => setIsEditModalOpen(false)} 
-      />
-    )}
+        <EditMilestoneModal 
+          milestone={selectedMilestone} 
+          closeModal={() => setIsEditModalOpen(false)} 
+        />
+      )}
+      {isAddModalOpen && (
+        <AddMilestoneModal 
+          closeModal={() => setIsAddModalOpen(false)} 
+        />
+      )}
     </div>
   )
 }
@@ -1089,4 +1224,4 @@ const checkAll = () => {
   }
 }
 
-export default MyJobs;
+export default withAuth(MyJobs);

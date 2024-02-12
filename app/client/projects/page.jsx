@@ -13,6 +13,7 @@ const Projects = () => {
   const [selectedMilestone, setSelectedMilestone] = useState(null);
   const [selectedProjectStatus, setSelectedProjectStatus] = useState(null);
     const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
   const openSubmissionModal = (milestone) => {
     setSelectedMilestone(milestone);
     setIsSubmissionModalOpen(true);
@@ -59,6 +60,26 @@ const Projects = () => {
     }
   }, [user]);
 
+  const handleMarkAsComplete = async (projectId) => {
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/project/${projectId}/complete`,
+        {},
+        {
+          headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+          withCredentials: true,
+        }
+      );
+      setProjects(projects.map(project => project.id === projectId ? { ...project, status:   3 } : project));
+    } catch (error) {
+      if (error.response) {
+        setErrorMessage(error.response.data.error);
+      } else {
+        console.error('Error marking project as complete:', error);
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -69,6 +90,7 @@ const Projects = () => {
 
   return (
     <div className={styles.container}>
+
       <div className={styles.jobs}>
         <div className={styles.frame}>
           <div className={styles.div}>
@@ -76,13 +98,17 @@ const Projects = () => {
               <div className="flex flex-row justify-between">
                 <div className={styles.cont}>
                   <h1 className={styles.title}>Projects</h1>
+
                   <span className={styles.titleUnderline}></span>
+
                 </div>
               </div>
             </div>
             <div
               className={`${styles.jobsTable} jobs-table relative overflow-x-auto shadow-sm sm:rounded-lg mt-3`}
             >
+                                {errorMessage && <div className="mt-4 text-red-500 mb-4">{errorMessage}</div>}
+
               <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
@@ -120,26 +146,42 @@ const Projects = () => {
                         {project.status === 1 ? "Active" :
                          project.status === 2 ? "Completed" : ""}
                     </td>
-                      <td className="px-6 py-4 md:px-3">
-                        <div className="flex items-center space-x-4 text-sm">
-                          {project.status === 2 ? (
-                            <button
-                              onClick={() => openModal(project.id, project.status)}
-                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                            >
-                              Submission History
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => openModal(project.id, project.status)}
-                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-                            >
-                              View Milestones
-                            </button>
-                          )}
-                          
-                        </div>
-                      </td>
+                    <td className="px-6 py-4 md:px-3">
+                      <div className="flex items-center space-x-4 text-sm">
+                        {project.status ===  2 ? (
+                          <img
+                            src="/icons/view.svg"
+                            alt="Submission History"
+                            className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                            onClick={() => openModal(project.id, project.status)}
+                          />
+                        ) : (
+                          <img
+                            src="/icons/view.svg"
+                            alt="View Milestones"
+                            className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                            onClick={() => openModal(project.id, project.status)}
+                          />
+                        )}
+                        {project.status ===  1 && (
+                          <i
+                            className="fas fa-check text-gray-500 cursor-pointer text-2xl font-bold"
+                            onClick={() => handleMarkAsComplete(project.id)}
+                          />
+                        )}
+                        {project.status ===  2 && (
+                          <i
+                            className="fas fa-check text-gray-500 cursor-pointer text-2xl font-bold"
+                            onClick={() => handleMarkAsComplete(project.id)}
+                          />
+                        )}
+                        {project.status ===  3 && (
+                          <i
+                            className="fas fa-check text-green-300 text-2xl font-bold"
+                          />
+                        )}
+                      </div>
+                    </td>
                     </tr>
                   ))}
                 </tbody>
@@ -169,6 +211,22 @@ const Projects = () => {
 const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, projectStatus }) => {
     const [milestones, setMilestones] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleMarkAsComplete = async (milestoneId) => {
+      try {
+        const response = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/milestone/${milestoneId}/complete`,
+          {},
+          {
+            headers: { 'auth_token': process.env.NEXT_PUBLIC_API_AUTH_TOKEN },
+            withCredentials: true,
+          }
+        );
+        setMilestones(milestones.map(milestone => milestone.id === milestoneId ? { ...milestone, status:   3 } : milestone));
+      } catch (error) {
+        console.error('Error marking milestone as complete:', error);
+      }
+    };
       
   
     useEffect(() => {
@@ -273,7 +331,7 @@ const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, proje
                             )}
                           </td>
                           <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            {milestone.status === 1 ? "Incomplete" : "Complete"}
+                            {milestone.status === 1 ? "Milestone" : milestone.status === 2 ? "Incomplete" : "Complete"}
                           </td>
                           <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             {milestone.priority === 1 && "Low"}
@@ -283,17 +341,26 @@ const ViewMilestonesModal = ({ projectId, closeModal, openSubmissionModal, proje
                             {milestone.priority === 5 && "Critical"}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <div className="flex justify-start items-center space-x-2">
-                            {/*add upload files modal*/}
-                          
-                            <button
-                                onClick={() => openSubmissionModal(milestone)}
-                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
-                            >
-                                Submissions
-                            </button>
+                        <div className="flex justify-start items-center space-x-3">
+                          <img
+                            src="/icons/view.svg"
+                            alt="Submissions"
+                            className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                            onClick={() => openSubmissionModal(milestone)}
+                          />
+                          {milestone.status !==  3 && (
+                            <i
+                              className="fas fa-check text-gray-500 cursor-pointer text-2xl"
+                              onClick={() => handleMarkAsComplete(milestone.id)}
+                            />
+                          )}
+                          {milestone.status ===  3 && (
+                            <i
+                              className="fas fa-check text-green-300 text-2xl"
+                            />
+                          )}
                         </div>
-                        </td>
+                      </td>
                         
                         {/* <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           {milestone.order_number}
@@ -395,9 +462,12 @@ const SubmissionModal = ({ milestone, closeModal }) => {
                                 <td className="border px-3 py-3">{file.reference.split('/').pop()}</td>
                                 <td className="border px-3 py-3">{new Date(file.createdAt).toLocaleDateString()}</td>
                                 <td className="border px-3 py-3">
-                                  <button onClick={() => handleFileView(file.reference, file.reference.split('/').pop())} className="text-green-500 hover:text-blue-800">
-                                    View
-                                  </button>
+                                <img
+                                    src="/icons/view.svg"
+                                    alt="View File"
+                                    className="ml-2 mb-2 w-5 h-5 cursor-pointer"
+                                    onClick={() => handleFileView(file.reference, file.reference.split('/').pop())}
+                                  />
                                 </td>
                               </tr>
                             ))}
