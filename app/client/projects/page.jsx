@@ -171,12 +171,6 @@ const Projects = () => {
                         )}
                         {project.status ===  2 && (
                           <i
-                            className="fas fa-check text-gray-500 cursor-pointer text-2xl font-bold"
-                            onClick={() => handleMarkAsComplete(project.id)}
-                          />
-                        )}
-                        {project.status ===  3 && (
-                          <i
                             className="fas fa-check text-green-300 text-2xl font-bold"
                           />
                         )}
