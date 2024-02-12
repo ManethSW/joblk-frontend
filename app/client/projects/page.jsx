@@ -143,8 +143,8 @@ const Projects = () => {
                         {project.description}
                       </td>
                     <td className="px-6 py-4 md:px-3">
-                        {project.status === 2 ? "Active" :
-                         project.status === 3 ? "Completed" : ""}
+                        {project.status === 1 ? "Active" :
+                         project.status === 2 ? "Completed" : ""}
                     </td>
                     <td className="px-6 py-4 md:px-3">
                       <div className="flex items-center space-x-4 text-sm">
@@ -170,12 +170,6 @@ const Projects = () => {
                           />
                         )}
                         {project.status ===  2 && (
-                          <i
-                            className="fas fa-check text-gray-500 cursor-pointer text-2xl font-bold"
-                            onClick={() => handleMarkAsComplete(project.id)}
-                          />
-                        )}
-                        {project.status ===  3 && (
                           <i
                             className="fas fa-check text-green-300 text-2xl font-bold"
                           />
