@@ -36,17 +36,16 @@ const Preview = () => {
       });
       if (response.status === 200) {
         setUserData(response.data);
-        if (response.data.reviews.length > 0) {
+        if (response.data.reviews?.length > 0) {
           let totalRating = 0;
           response.data.reviews.forEach((review) => {
             totalRating += review.rating;
           });
-          const averageRating = totalRating / response.data.reviews.length;
+          const averageRating = totalRating / response.data.reviews?.length;
           setAverageRating(averageRating);
         } else {
           setAverageRating(0);
         }
-        console.log(averageRating);
         setIsLoading(false);
       } else {
         console.error("Failed to fetch projects", response);
@@ -97,7 +96,7 @@ const Preview = () => {
   const renderSections = () => {
     let sections = [];
     const noProjects = `No projects uploaded by ${userData.username} :'(`;
-    if (userData.projects.length == 0) {
+    if (userData.projects?.length == 0) {
       sections.push(
         <div className={styles.sectionbody}>
           <div className={styles.emptyprojects}>
@@ -107,7 +106,7 @@ const Preview = () => {
         </div>
       );
     } else {
-      for (let i = 0; i < userData.projects.length; i += 3) {
+      for (let i = 0; i < userData.projects?.length; i += 3) {
         sections.push(
           <div className={styles.sectionbody}>
             {renderProject(userData.projects[i])}
@@ -135,17 +134,17 @@ const Preview = () => {
     const ratingCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
     // Count the number of each rating
-    reviews.forEach((review) => {
+    reviews?.forEach((review) => {
       ratingCounts[review.rating]++;
     });
 
     // Calculate the total number of reviews
-    const totalReviews = reviews.length;
+    const totalReviews = reviews?.length;
 
     // Calculate the percentage of each rating
     const ratingPercentages = {};
     for (let rating in ratingCounts) {
-      ratingPercentages[rating] = (ratingCounts[rating] / totalReviews) * 225;
+      ratingPercentages[rating] = (ratingCounts[rating] / totalReviews) * 205;
     }
 
     return (
@@ -159,7 +158,7 @@ const Preview = () => {
                 </h4>
                 <i class="fa-solid fa-star"></i>
               </div>
-              <div className="mx-4 h-3 w-4/5 rounded-badge bg-gray-300 dark:bg-gray-700">
+              <div className="mx-4 h-3 w-1/5 rounded-badge bg-gray-300 dark:bg-gray-700">
                 <div
                   className="h-3 rounded-badge bg-joblk-green-500 border-black"
                   style={{ width: `${ratingPercentages[rating]}px` }}
@@ -197,7 +196,7 @@ const Preview = () => {
     
     return (
       <div className={styles.parentContainer}>
-        {reviews.map((review) => (
+        {reviews?.map((review) => (
           <div
             key={review.id}
             className={styles.reviewcontainer}
@@ -295,7 +294,7 @@ const Preview = () => {
         <div className={styles.contentdivider}></div>
         <div className={styles.section}>
           <div className={styles.sectionheader}>
-            <h3>Portfolio</h3>
+            <h3>Portfolio - Freelancer</h3>
           </div>
           {renderSections()}
         </div>
