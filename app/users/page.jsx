@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import UserContext from "../context/UserContext";
 import SessionContext from "../context/SessionContext";
 import styles from "./page.module.css";
+import { object } from "prop-types";
 
 const Users = () => {
     const { user } = useContext(UserContext);
@@ -135,7 +136,7 @@ const UserCard = ({
         <div className="flex flex-col items-center">
           <div className="flex justify-center items-center rounded-lg w-full py-10 bg-joblk-green-500">
             <div className="flex justify-center items-center w-24 h-24 rounded-full shadow-lg bg-gray-100">
-              { !user.avatar || user.avatar == " " ? ( <i className="fa-solid fa-user text-2xl"></i> ) : ( <img className="w-full h-full rounded-full" src={user.avatar} alt="avatar" /> )}
+              { !user.avatar || user.avatar == " " ? ( <i className="fa-solid fa-user text-2xl"></i> ) : ( <img className="w-full h-full rounded-full object-cover" src={user.avatar} alt="avatar" /> )}
             </div>
           </div>
           <div className="my-4 mx-3 flex items-center flex-col">
