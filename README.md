@@ -32,6 +32,15 @@ Joblk is a comprehensive platform designed to streamline the process of freelanc
 ![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/d7eb137b-b839-471b-ab4c-aae2d3fba679)
 ![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/e3fc2975-bea3-436d-a563-dc366911b6a9)
 
+* <b>Job Viewing - Freelancer: <a href="https://github.com/DEXOW">Thinal Perera</a></b>
+![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/7fe22db8-aa9c-49ff-9a39-f8995310363e)
+![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/93cdb219-fa98-4967-96ec-791f4b911c67)
+![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/f0f65e72-db7f-4c23-a281-a387b020c190)
+![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/bffa3bb5-947e-4f26-af04-06fdf593de4c)
+
+* <b>User searching: <a href="https://github.com/DEXOW">Thinal Perera</a></b>
+![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/beffcf77-92af-4083-9ceb-d7dbb341738e)
+
 
 ## Features
 
@@ -46,6 +55,12 @@ Allows users to add, edit and delete projects from their portfolio for the publi
 
 * <b>Preview Profile:</b>
 Provides a profile preview for the user to see how their profile will look for public users.
+
+* <b>Job Management:</b>
+Allows clients to create, update and delete job posts. The clients are also able manage milestones in each job via the update method.
+
+* <b>User Searching:</b>
+Users have the capability to find other users that are on the platform and view their profile. These profiles contain the users social, projects from the portfolio, ratings and reviews. Through the user preview users are also able to start up a conversation with the user that they are currently viewing.
 
 ## Installation
 
