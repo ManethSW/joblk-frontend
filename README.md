@@ -41,6 +41,27 @@ Joblk is a comprehensive platform designed to streamline the process of freelanc
 * <b>User searching: <a href="https://github.com/DEXOW">Thinal Perera</a></b>
 ![image](https://github.com/ManethSW/joblk-frontend/assets/51286591/beffcf77-92af-4083-9ceb-d7dbb341738e)
 
+* <b>My bids - Freelancer: <a href="https://github.com/dinilgamage">Dinil Gamage</a></b>
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/8da775b3-5f6a-468f-bab8-ddc71abdc098)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/f7825bcf-9f81-4331-9eaa-e83661e8ce81)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/21b15f8a-23e0-4e91-ba0b-22a6597c44ca)
+
+* <b>Project Management - Freelancer: <a href="https://github.com/dinilgamage">Dinil Gamage</a></b>
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/c46b9a6d-dee5-4ccf-8a96-193448760f76)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/9ddd6e2c-c841-4b24-b973-dea212bef148)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/7f295920-e8f1-45d7-816f-37842cb00bcb)
+
+* <b>Project Management - Client: <a href="https://github.com/dinilgamage">Dinil Gamage</a></b>
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/c4127772-b134-4cc9-8ae5-e82b8f05d6bd)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/ff48ca0c-4e19-4677-b3f7-c5029a304034)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/ddd5c259-c3a4-46be-b65a-3729e66b9016)
+
+* <b>Messaging <a href="https://github.com/dinilgamage">Dinil Gamage</a></b>
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/db3fd2f3-1316-4d27-8953-7fa117336482)
+![image](https://github.com/ManethSW/joblk-frontend/assets/113094888/b745c7c4-6c4a-4f84-b491-2e7bb93003d9)
+
+
+
 
 ## Features
 
